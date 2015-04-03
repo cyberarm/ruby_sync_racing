@@ -1,10 +1,11 @@
 class Car
   class Parser
+    attr_accessor :data
     def initialize(filename = "")
       if File.exist?(filename)
-        return MultiJson.load(open(filename).read)
+        @data = MultiJson.load(open(filename).read)
       else
-        raise "#{self.class}: 'filename' is not a file!"
+        raise "#{self.class}: '#{filename}' is not a file!"
       end
     end
   end

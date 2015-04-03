@@ -1,0 +1,9 @@
+{
+  "name":"Really Awesome Car",
+  "spec":{
+    "drag":1,
+    "top_speed":500,
+    "break_speed":16,
+    "image":"assets/cars/CAR.png"
+  }
+}

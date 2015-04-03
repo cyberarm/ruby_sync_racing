@@ -5,9 +5,11 @@ GEM
       gosu (>= 0.7.45)
       gosu (>= 0.7.45)
     gosu (0.8.7.2-x86-mingw32)
+    multi_json (1.11.0)
 
 PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
   chingu
+  multi_json
