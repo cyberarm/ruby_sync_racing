@@ -1,9 +1,45 @@
 {
-  "name":"Really Awesome Car",
+  "name":"Test Car",
   "spec":{
-    "drag":1,
-    "top_speed":500,
-    "break_speed":16,
-    "image":"assets/cars/CAR.png"
+    "drag":0.008,
+    "top_speed":5.0,
+    "break_speed":0.08,
+    "image":"assets/cars/CAR.png",
+    "lights":{
+      "head_lights":[
+        {
+          "top":0,
+          "left":8,
+          "width":3,
+          "height":1
+        },
+        {
+          "top":0,
+          "left":15,
+          "width":2,
+          "height":1
+        },
+        {
+          "top":0,
+          "left":22,
+          "width":3,
+          "height":1
+        }
+      ],
+      "tail_lights":[
+        {
+          "top":62,
+          "left":7,
+          "width":3,
+          "height":1
+        },
+        {
+          "top":62,
+          "left":22,
+          "width":3,
+          "height":1
+        }
+      ]
+    }
   }
 }

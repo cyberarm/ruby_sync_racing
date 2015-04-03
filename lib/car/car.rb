@@ -2,18 +2,20 @@ class Car < Chingu::GameObject
   attr_reader :speed
 
   def setup
+    self.zorder = 5
     @car_data = Car::Parser.new(@options[:spec]).data
 
     @image = Gosu::Image[@car_data["spec"]["image"]]
     @physics = Car::Physics.new(self)
 
-    @debug = Chingu::Text.new("", size: 50)
+    @debug = Game::Text.new("", size: 50)
+    @name  = Game::Text.new("#{@car_data["name"]}", size: 30)
 
     @speed = 0.0
 
-    @drag = Integer(@car_data["spec"]["drag"])/100.0
-    @top_speed   = Integer(@car_data["spec"]["top_speed"])/100.0
-    @break_speed = Integer(@car_data["spec"]["break_speed"])/100.0
+    @drag        = @car_data["spec"]["drag"]
+    @top_speed   = @car_data["spec"]["top_speed"]
+    @break_speed = @car_data["spec"]["break_speed"]
 
     @braking = false
     @tick = 0
@@ -22,13 +24,34 @@ class Car < Chingu::GameObject
   def draw
     super
     @debug.draw
+    @name.draw
+
+    # Do some kind of transformation to rotate in sync with car
+    $window.rotate(self.angle, self.x, self.y) do
+      _yellow = Gosu::Color.rgb(rand(255), rand(255), 0) # Flicker
+      @car_data["spec"]["lights"]["head_lights"].each do |light|
+        $window.fill_rect([(self.x-@image.width/2)+light["left"],
+                           (self.y-@image.height/2)+light["top"],
+                           light["width"],
+                           light["height"]], _yellow, 6)
+      end
+
+      _red = Gosu::Color.rgb(rand(255), 0, 0) # Flicker
+      @car_data["spec"]["lights"]["tail_lights"].each do |light|
+        $window.fill_rect([(self.x-@image.width/2)+light["left"],
+                           (self.y-@image.height/2)+light["top"],
+                           light["width"],
+                           light["height"]], _red, 6)
+      end
+    end
   end
 
   def update
     super
     @tick+=1
 
-    @debug.text = "Angle:#{self.angle.round(2)} Speed:#{@speed.round(2)}"
+    @debug.text = "Angle:#{self.angle.round(2)} Speed:#{@speed.round(2)} Pixels Per Frame - #{Gosu.fps}"
+    @name.x,@name.y = self.x-@name.width/2,self.y-@name.height
     @physics.update
 
     unless @speed >= @top_speed
@@ -37,7 +60,7 @@ class Car < Chingu::GameObject
           @braking = true
           @speed+=@break_speed
         else
-          @speed+=0.05
+          @speed+=@top_speed/100.0
         end
       end
     end
@@ -48,7 +71,7 @@ class Car < Chingu::GameObject
           @speed-=@break_speed
           @braking = true
         else
-          @speed-=0.05
+          @speed-=@top_speed/100.0
         end
       end
     end

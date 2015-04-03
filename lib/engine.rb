@@ -1,4 +1,5 @@
 require_relative "display"
+require_relative "text"
 
 require_relative "car/car"
 require_relative "car/car_parser"

@@ -1,4 +1,5 @@
 require "bundler"
+require "pp"
 require "matrix"
 
 Bundler.require
