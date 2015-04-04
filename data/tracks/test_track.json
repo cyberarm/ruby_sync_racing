@@ -1,0 +1,35 @@
+{
+  "name":"Test Track",
+  "tiles":[
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
+      "x":64,
+      "y":64
+    }
+  ],
+  "checkpoints":[
+    {
+      "type":"hidden",
+      "image":"assets/tracks/general/road/checkpoint.png",
+      "x":64,
+      "y":64,
+      "width":128,
+      "height":64
+    }
+  ],
+  "decorations":[
+    {
+      "type":"solid",
+      "image":"assets/tracks/general/decor/tree.png",
+      "x":64,
+      "y":64
+    },
+    {
+      "type":"no_mass",
+      "image":"assets/tracks/general/decor/bush.png",
+      "x":64,
+      "y":64
+    }
+  ]
+}
