@@ -442,6 +442,24 @@
     {
       "type":"asphalt",
       "image":"assets/tracks/general/road/asphalt.png",
+      "x":704,
+      "y":448
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
+      "x":768,
+      "y":448
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_right.png",
+      "x":832,
+      "y":448
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
       "x":192,
       "y":512
     },
@@ -489,6 +507,24 @@
     },
     {
       "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
+      "x":704,
+      "y":512
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
+      "x":768,
+      "y":512
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_right.png",
+      "x":832,
+      "y":512
+    },
+    {
+      "type":"asphalt",
       "image":"assets/tracks/general/road/asphalt_bottom.png",
       "x":192,
       "y":576
@@ -534,6 +570,96 @@
       "image":"assets/tracks/general/road/asphalt_bottom.png",
       "x":640,
       "y":576
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_bottom.png",
+      "x":704,
+      "y":576
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_bottom.png",
+      "x":768,
+      "y":576
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_right_bottom.png",
+      "x":832,
+      "y":576
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_left.png",
+      "x":704,
+      "y":192
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_left.png",
+      "x":704,
+      "y":256
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_left.png",
+      "x":704,
+      "y":320
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_left.png",
+      "x":704,
+      "y":384
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
+      "x":768,
+      "y":192
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
+      "x":768,
+      "y":256
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
+      "x":768,
+      "y":320
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt.png",
+      "x":768,
+      "y":384
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_right.png",
+      "x":832,
+      "y":192
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_right.png",
+      "x":832,
+      "y":256
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_right.png",
+      "x":832,
+      "y":320
+    },
+    {
+      "type":"asphalt",
+      "image":"assets/tracks/general/road/asphalt_right.png",
+      "x":832,
+      "y":384
     }
   ],
   "checkpoints":[
