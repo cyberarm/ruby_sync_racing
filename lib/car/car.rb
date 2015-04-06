@@ -50,7 +50,7 @@ class Car < Chingu::GameObject
     super
     @tick+=1
 
-    @debug.text = "Angle:#{self.angle.round(2)} Speed:#{@speed.round(2)} Pixels Per Frame - #{Gosu.fps}"
+    @debug.text = "Angle:#{self.angle.round(1)} Speed:#{@speed.round(1)} Pixels Per Frame - #{Gosu.fps}"
     @name.x,@name.y = self.x-@name.width/2,self.y-@name.height
     @physics.update
 
@@ -79,7 +79,12 @@ class Car < Chingu::GameObject
     @speed-=@drag if @speed >= 0.00
     @speed+=@drag if @speed <= -0.00
 
-    @angle-=2 if holding?(:left)
-    @angle+=2 if holding?(:right)
+    if @speed >= 0.0
+      @angle-=2 if holding?(:left)
+      @angle+=2 if holding?(:right)
+    else
+      @angle+=2 if holding?(:left)
+      @angle-=2 if holding?(:right)
+    end
   end
 end

@@ -3,7 +3,6 @@ class Track < Chingu::GameObject
 
   def setup
     @track = Track::Parser.new(@options[:spec])
-    p @track
 
     @tiles = []
     process_tiles
@@ -14,7 +13,7 @@ class Track < Chingu::GameObject
       @tiles << {tile: tile, image: Gosu::Image[tile["image"]]}
     end
 
-    p @tiles
+    p @tiles.count
   end
 
   def draw

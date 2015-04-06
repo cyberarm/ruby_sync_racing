@@ -8,7 +8,6 @@ class Scene
     def draw
       super
       fill(Gosu::Color.rgba(100,254,78,144))
-
     end
   end
 end
