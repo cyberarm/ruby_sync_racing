@@ -1,5 +1,11 @@
 {
   "name":"Test Track",
+  "background":{
+    "red":100,
+    "green":254,
+    "blue":78,
+    "alpha":144
+    },
   "tiles":[
     {
       "type":"asphalt",

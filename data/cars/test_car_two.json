@@ -1,0 +1,40 @@
+{
+  "name":"Test Sport Car",
+  "spec":{
+    "drag":0.008,
+    "top_speed":6.0,
+    "break_speed":0.1,
+    "image":"assets/cars/sport.png",
+    "factor":0.5,
+    "lights":{
+      "head_lights":[
+        {
+          "top":4,
+          "left":4,
+          "width":3,
+          "height":2
+        },
+        {
+          "top":3.5,
+          "left":24,
+          "width":3,
+          "height":2
+        }
+      ],
+      "tail_lights":[
+        {
+          "top":60,
+          "left":7,
+          "width":3,
+          "height":3
+        },
+        {
+          "top":60,
+          "left":22,
+          "width":3,
+          "height":3
+        }
+      ]
+    }
+  }
+}

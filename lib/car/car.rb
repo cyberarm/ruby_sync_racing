@@ -6,6 +6,7 @@ class Car < Chingu::GameObject
     @car_data = Car::Parser.new(@options[:spec]).data
 
     @image = Gosu::Image[@car_data["spec"]["image"]]
+    self.factor = @car_data["spec"]["factor"]
     @physics = Car::Physics.new(self)
 
     @debug = Game::Text.new("", size: 50)
@@ -30,16 +31,16 @@ class Car < Chingu::GameObject
     $window.rotate(self.angle, self.x, self.y) do
       _yellow = Gosu::Color.rgb(rand(255), rand(255), 0) # Flicker
       @car_data["spec"]["lights"]["head_lights"].each do |light|
-        $window.fill_rect([(self.x-@image.width/2)+light["left"],
-                           (self.y-@image.height/2)+light["top"],
+        $window.fill_rect([(self.x-(self.width/2))+light["left"],
+                           (self.y-(self.height/2))+light["top"],
                            light["width"],
                            light["height"]], _yellow, 6)
       end
 
       _red = Gosu::Color.rgb(rand(255), 0, 0) # Flicker
       @car_data["spec"]["lights"]["tail_lights"].each do |light|
-        $window.fill_rect([(self.x-@image.width/2)+light["left"],
-                           (self.y-@image.height/2)+light["top"],
+        $window.fill_rect([(self.x-(self.width/2))+light["left"],
+                           (self.y-(self.height/2))+light["top"],
                            light["width"],
                            light["height"]], _red, 6)
       end
