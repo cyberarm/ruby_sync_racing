@@ -1,5 +1,6 @@
+ # Contains all the tiles for track.
 class Track < Chingu::GameObject
-  # Contains all the tiles for track.
+  Tile = Struct.new(:type, :image, :x, :y)
 
   def setup
     @track = Track::Parser.new(@options[:spec])
@@ -10,7 +11,7 @@ class Track < Chingu::GameObject
 
   def process_tiles
     @track.tiles.each do |tile|
-      @tiles << {tile: tile, image: Gosu::Image[tile["image"]]}
+      @tiles << Tile.new(tile["type"], Gosu::Image[tile["image"]], tile["x"], tile["y"])
     end
 
     p @tiles.count
@@ -19,7 +20,10 @@ class Track < Chingu::GameObject
   def draw
     super
     @tiles.each do |tile|
-      tile[:image].draw(tile[:tile]["x"], tile[:tile]["y"], 3)
+      p @track.tiles.first
+      p tile
+      exit
+      tile.image.draw(tile.x, tile.y, 3)
     end
   end
 end
