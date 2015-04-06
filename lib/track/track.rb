@@ -13,16 +13,11 @@ class Track < Chingu::GameObject
     @track.tiles.each do |tile|
       @tiles << Tile.new(tile["type"], Gosu::Image[tile["image"]], tile["x"], tile["y"])
     end
-
-    p @tiles.count
   end
 
   def draw
     super
     @tiles.each do |tile|
-      p @track.tiles.first
-      p tile
-      exit
       tile.image.draw(tile.x, tile.y, 3)
     end
   end
