@@ -51,7 +51,7 @@ class Car < Chingu::GameObject
     super
     @tick+=1
 
-    @debug.text = "Angle:#{self.angle.round(1)} Speed:#{@speed.round(1)} Pixels Per Frame - #{Gosu.fps}"
+    @debug.text = "Angle:#{self.angle.round(1)} Speed:#{@speed.round(1)} Pixels Per Frame - FPS:#{Gosu.fps}"
     @name.x,@name.y = self.x-@name.width/2,self.y-@name.height
     @physics.update
 
