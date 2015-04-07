@@ -89,6 +89,11 @@ class Track::Editor::Edit < Chingu::GameState
       end
       _y+=30
     end
+
+    if ($window.button_down?(Gosu::KbLeftShift) || $window.button_down?(Gosu::KbRightShift)) && $window.button_down?(Gosu::KbEscape)
+      @messages << "FORCE CLOSE!"
+      push_game_state(Track::Editor::Menu)
+    end
   end
 
   def normalize(integer)
@@ -102,6 +107,14 @@ class Track::Editor::Edit < Chingu::GameState
 
   def button_up(id)
     case id
+    when Gosu::KbEscape
+      if @tiles.count == 0
+        push_game_state(Track::Editor::Menu)
+      else
+        @messages << "Map has content, can not close!"
+        @messages << "Press Shift+Esc to force."
+      end
+
     when Gosu::MsLeft
       _x = normalize($window.mouse_x)
       _y = normalize($window.mouse_y)
