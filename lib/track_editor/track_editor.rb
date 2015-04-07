@@ -1,8 +1,8 @@
 class Track
   class Editor
     class Window < Chingu::Window
-      def initialize
-        super(1280,832,false)
+      def initialize(width = 1280, height = 832, fullscreen = false)
+        super(width, height, fullscreen)
         self.caption = "Track Editor - Ruby Sync Racing"
 
         push_game_state(Menu)

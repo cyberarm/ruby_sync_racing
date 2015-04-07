@@ -1,7 +1,7 @@
 class Game
   class Text
     attr_accessor :text, :x, :y, :z, :factor_x, :factor_y, :color, :options
-    attr_reader :width, :height, :size
+    attr_reader :width, :height, :size, :font
 
     def initialize(text, options)
       @text = text

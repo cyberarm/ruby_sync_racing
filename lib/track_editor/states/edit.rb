@@ -1,4 +1,6 @@
 class Track::Editor::Edit < Chingu::GameState
+  attr_accessor :save_file, :messages
+
   def setup
     @fps = Game::Text.new("", size: 20, x: $window.width-60, color: Gosu::Color::BLACK)
     @instructions = Game::Text.new("Instructions: Left click: Place track, Right click: Remove track, Scroll up/down: Change tile, 's': Save track, 'r': Reset track.",
@@ -6,6 +8,7 @@ class Track::Editor::Edit < Chingu::GameState
     @tiles = []
     @tile_size = 64
     @mouse = Gosu::Image["assets/tracks/general/road/asphalt.png"]
+    @mouse_pos = {x: 0, y: 0}
     @mouse_click = Gosu::Sample["assets/track_editor/click.ogg"]
 
     @tile_index  = 0
@@ -20,6 +23,7 @@ class Track::Editor::Edit < Chingu::GameState
                     "assets/tracks/general/road/asphalt_right_bottom.png"]
 
     @messages = []
+    @save_file = nil
   end
 
   def draw
@@ -36,13 +40,19 @@ class Track::Editor::Edit < Chingu::GameState
       end
     end
 
+    @messages.each do |message|
+      if message.is_a?(Hash)
+        message[:text].draw
+      end
+    end
+
     @fps.draw
     @instructions.draw
 
     @tiles.each do |x|
       if x
         x.each do |y|
-          if y.is_a?(Tile)
+          if y.is_a?(Track::Tile)
             tile = y
             tile.image.draw(tile.x, tile.y, 5)
           end
@@ -50,12 +60,35 @@ class Track::Editor::Edit < Chingu::GameState
       end
     end
 
-    @mouse.draw($window.mouse_x-@mouse.width/2, $window.mouse_y-@mouse.height/2, 15, 1, 1, Gosu::Color.rgba(255,255,255,150))
+    @mouse.draw(@mouse_pos[:x], @mouse_pos[:y], 15, 1, 1, Gosu::Color.rgba(255,255,255,150))
   end
 
   def update
     super
     @fps.text = "FPS:#{Gosu.fps}"
+    @mouse_pos[:x] = $window.mouse_x-@mouse.width/2
+    @mouse_pos[:y] = $window.mouse_y-@mouse.height/2
+
+    _y = 30
+    @messages.each_with_index do |message, index|
+      if message.is_a?(String)
+        text = Game::Text.new("#{message}", x: 30, size: 26, z: 100, color: Gosu::Color::WHITE)
+        _message = {text: text, time: (message.length/10)*60, alpha: 255}
+        @messages[index] = _message
+      end
+
+      if message.is_a?(Hash)
+        message[:time]-=1
+        message[:alpha]-=2 if message[:time] <= 0
+        message[:text].color = Gosu::Color.rgba(255,255,255,message[:alpha])
+
+        message[:text].y = _y
+        if message[:alpha] <= 0
+          @messages.delete_at(index)
+        end
+      end
+      _y+=30
+    end
   end
 
   def normalize(integer)
@@ -75,7 +108,7 @@ class Track::Editor::Edit < Chingu::GameState
 
       @tiles[_x] = [_x] unless @tiles[_x]
 
-      if @tiles[_x] && !@tiles[_x][_y].is_a?(Tile)
+      if @tiles[_x] && !@tiles[_x][_y].is_a?(Track::Tile)
         @mouse_click.play
 
         @tiles[_x][_y] = Track::Tile.new("asphalt",
@@ -89,7 +122,7 @@ class Track::Editor::Edit < Chingu::GameState
       _y = normalize($window.mouse_y)
 
       if @tiles[_x].is_a?(Array)
-        if @tiles[_x][_y].is_a?(Tile)
+        if @tiles[_x][_y].is_a?(Track::Tile)
           @mouse_click.play
           @tiles[_x][_y] = nil
         end
@@ -117,39 +150,7 @@ class Track::Editor::Edit < Chingu::GameState
       end
 
     when Gosu::KbS
-      push_game_state(Chingu::GameStates::Popup.new(text: "Planet Earth"))
-      # puts
-      # print "Enter Tracks Name => "
-      # name = $stdin.gets.chomp
-      # puts
-      # puts "========================="
-      # puts "Saving... track_#{name.downcase}.json"
-      # hash = {"name" => "#{name}",
-      #         "background"  => {"red"=> 100,
-      #                        "green" => 254,
-      #                        "blue"  =>  78,
-      #                        "alpha" => 144},
-      #         "tiles" => [], "decorations" => [], "checkpoints" => []}
-      #
-      # @tiles.each do |x|
-      #   if x
-      #     x.each do |tile|
-      #       if tile.is_a?(Tile)
-      #         hash["tiles"] << {"type" => "asphalt",
-      #                           "image"=> tile.image.name,
-      #                           "x" => tile.x,
-      #                           "y" => tile.y}
-      #       end
-      #     end
-      #   end
-      # end
-      #
-      # data = MultiJson.dump(hash)
-      # unless File.exist?("data/tracks/custom/#{name.downcase}.json")
-      #   File.open("data/tracks/custom/#{name.downcase}.json", "w").write(data)
-      # end
-      # puts "SAVED."
-      # puts "========================="
+      push_game_state(Track::Editor::Save.new(tiles: @tiles))
     end
   end
 end
