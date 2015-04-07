@@ -9,5 +9,5 @@ require_relative "lib/engine" # require all the things.
 unless ARGV.join.include?("--editor")
   Display.new(1280, 800, false).show
 else
-  Track::Editor.new.show
+  Track::Editor::Window.new.show
 end
