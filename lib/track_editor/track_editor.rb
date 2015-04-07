@@ -9,6 +9,7 @@ class Track
       @tiles = []
       @tile_size = 64
       @mouse = Gosu::Image["assets/tracks/general/road/asphalt.png"]
+      @mouse_click = Gosu::Sample["assets/track_editor/click.ogg"]
 
       @tile_index  = 0
       @track_tiles = ["assets/tracks/general/road/asphalt.png",
@@ -76,6 +77,8 @@ class Track
         @tiles[_x] = [_x] unless @tiles[_x]
 
         if @tiles[_x] && !@tiles[_x][_y].is_a?(Tile)
+          @mouse_click.play
+
           @tiles[_x][_y] = Track::Tile.new("asphalt",
                                            Gosu::Image[@mouse.name],
                                            _x,
@@ -88,6 +91,7 @@ class Track
 
         if @tiles[_x].is_a?(Array)
           if @tiles[_x][_y].is_a?(Tile)
+            @mouse_click.play
             @tiles[_x][_y] = nil
           end
         end
