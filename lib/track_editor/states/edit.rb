@@ -24,6 +24,28 @@ class Track::Editor::Edit < Chingu::GameState
 
     @messages = []
     @save_file = nil
+
+    if @options[:track_file]
+      @track_file = @options[:track_file]
+      @save_file = File.basename(@track_file)
+      p self.save_file
+      @track_data = MultiJson.load(File.open(@track_file).read)
+
+      @track_data["tiles"].each do |tile|
+        _x = tile["x"]
+        _y = tile["y"]
+
+        @tiles[_x] = [_x] unless @tiles[_x]
+
+        if @tiles[_x] && !@tiles[_x][_y].is_a?(Track::Tile)
+          _tile = Track::Tile.new(tile["type"],
+                                  Gosu::Image[tile["image"]],
+                                  _x,
+                                  _y)
+          @tiles[_x][_y] = _tile
+        end
+      end
+    end
   end
 
   def draw

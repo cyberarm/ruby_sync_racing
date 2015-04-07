@@ -63,7 +63,7 @@ class Track
           @tracks.detect do |track|
             if $window.mouse_x.between?(track.x-4, track.x+track.width+8)
               if $window.mouse_y.between?(track.y-4, track.y+track.height+4)
-                p track.text
+                push_game_state(Track::Editor::Edit.new(track_file: track.text))
               end
             end
           end

@@ -17,12 +17,6 @@ class Track
         @title = Game::Text.new("Enter Track Name:", y: $window.height/4, size: 50)
         @name = Game::Text.new("#{@tiles.count}", y: $window.height/4+100, size: 30)
         @save = Game::Text.new("Save", y: $window.height/4+200, size: 23)
-
-        if previous_game_state && previous_game_state.save_file
-          save(previous_game_state.save_file)
-          previous_game_state.messages << "Saved track: #{previous_game_state.save_file}"
-          push_game_state(previous_game_state, setup: false)
-        end
       end
 
       def draw
@@ -44,6 +38,13 @@ class Track
 
       def update
         super
+
+        # Auto save and return to Edit if Edit.save_file is set.
+        if previous_game_state && defined?(previous_game_state.save_file) && previous_game_state.save_file
+          save_track(previous_game_state.save_file)
+          push_game_state(previous_game_state, setup: false)
+        end
+
         @tick+=1
 
         @title.x = ($window.width/2)-(@title.width/2)
@@ -68,18 +69,18 @@ class Track
           push_game_state(previous_game_state, setup: false)
 
         when Gosu::KbEnter
-          save(@name.text)
+          save_track(@name.text)
           previous_game_state.save_file = @name.text
           push_game_state(previous_game_state, setup: false)
 
         when Gosu::KbReturn
-          save(@name.text)
+          save_track(@name.text)
           previous_game_state.save_file = @name.text
           push_game_state(previous_game_state, setup: false)
         end
       end
 
-      def save(name)
+      def save_track(name)
         hash = {"name" => "#{name}",
                 "background"  => {"red"=> 100,
                                "green" => 254,
