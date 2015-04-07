@@ -93,13 +93,11 @@ class Track
         end
 
       when Gosu::MsWheelUp
-        p "Up"
         @tile_index+=1
         @tile_index = @track_tiles.index(@track_tiles.first) if @tile_index > @track_tiles.count-1
         @mouse = Gosu::Image[@track_tiles[@tile_index]]
 
       when Gosu::MsWheelDown
-        p "DOwn"
         @tile_index-=1
 
         @tile_index = @track_tiles.index(@track_tiles.last) if @tile_index < 0
@@ -107,12 +105,36 @@ class Track
 
       when Gosu::KbS
         puts
-        print "Save Map as:"
+        print "Enter Tracks Name => "
         name = $stdin.gets.chomp
         puts
         puts "========================="
         puts "Saving... track_#{name.downcase}.json"
-        hash = {}
+        hash = {"name" => "#{name}",
+                "background"  => {"red"=>   100,
+                               "green" => 100,
+                               "blue"  =>  100,
+                               "alpha" => 100},
+                "tiles" => [], "decorations" => [], "checkpoints" => []}
+
+        @tiles.each do |x|
+          if x
+            x.each do |tile|
+              if tile.is_a?(Tile)
+                hash["tiles"] << {"type" => "asphalt",
+                                  "image"=> tile.image,
+                                  "x" => tile.x,
+                                  "y" => tile.y}
+              end
+            end
+          end
+        end
+
+        data = MultiJson.dump(hash)
+        unless File.exist?("data/tracks/custom/#{name.downcase}.json")
+          File.open("data/tracks/custom/#{name.downcase}.json", "w").write(data)
+        end
+        puts "SAVED."
         puts "========================="
       end
     end
