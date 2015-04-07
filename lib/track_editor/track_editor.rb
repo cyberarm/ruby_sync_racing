@@ -111,10 +111,10 @@ class Track
         puts "========================="
         puts "Saving... track_#{name.downcase}.json"
         hash = {"name" => "#{name}",
-                "background"  => {"red"=>   100,
-                               "green" => 100,
-                               "blue"  =>  100,
-                               "alpha" => 100},
+                "background"  => {"red"=> 100,
+                               "green" => 254,
+                               "blue"  =>  78,
+                               "alpha" => 144},
                 "tiles" => [], "decorations" => [], "checkpoints" => []}
 
         @tiles.each do |x|
@@ -122,7 +122,7 @@ class Track
             x.each do |tile|
               if tile.is_a?(Tile)
                 hash["tiles"] << {"type" => "asphalt",
-                                  "image"=> tile.image,
+                                  "image"=> tile.image.name,
                                   "x" => tile.x,
                                   "y" => tile.y}
               end
