@@ -1,6 +1,8 @@
 class Scene
   class Game < Chingu::GameState
     def setup
+      $window.show_cursor = false
+
       @car = Car.create(x: $window.width/2, y: $window.height/2, spec: "data/cars/test_car_two.json")
       @track = Track.create(spec: "data/tracks/test_track.json")
       @last_tile = nil
