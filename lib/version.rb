@@ -1,3 +1,3 @@
 class Game
-  VERSION = "dev"
+  VERSION = "developer_build"
 end

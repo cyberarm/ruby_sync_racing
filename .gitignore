@@ -1,3 +1,4 @@
 *.png
 /pkg/*
 data/tracks/custom/*.json
+vender/*

@@ -4,16 +4,16 @@ require_relative "lib/version"
 
 Releasy::Project.new do
   name "Ruby Sync Racing"
-  version "dev-00"# "#{Game::VERSION}"
+  version "#{Game::VERSION}"
 
   executable "ruby_sync_racing.rb"
   files ["lib/**/*.*", "assets/**/*.*", "data/**/*.*"]
   exclude_encoding # Applications that don't use advanced encoding (e.g. Japanese characters) can save build size with this.
-  exclude_tcl_tk
+  verbose
 
   add_build :windows_folder do
     # icon "assets/icon.ico"
-    executable_type :windows # Assuming you don't want it to run with a console window.
+    executable_type :console # Assuming you don't want it to run with a console window.
     add_package :exe # Windows self-extracting archive.
   end
 end

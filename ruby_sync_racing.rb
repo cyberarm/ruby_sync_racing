@@ -1,13 +1,18 @@
-require "bundler"
+require 'bundler/setup'
 require "pp"
 require "set"
 
-Bundler.require
+require "chingu"
+require "multi_json"
 
 require_relative "lib/engine" # require all the things.
 
-unless ARGV.join.include?("--editor")
-  Display.new(1280, 800, false).show
+if not defined?(Ocra)
+  unless ARGV.join.include?("--editor")
+    Display.new(1280, 800, false).show
+  else
+    Track::Editor::Window.new.show
+  end
 else
-  Track::Editor::Window.new.show
+  puts "Ocra detected."
 end
