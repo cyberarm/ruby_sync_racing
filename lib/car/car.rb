@@ -18,6 +18,13 @@ class Car < Chingu::GameObject
     @top_speed   = @car_data["spec"]["top_speed"]
     @break_speed = @car_data["spec"]["break_speed"]
 
+    # @engine = Gosu::Sample["assets/sound/engine.wav"]
+    # @engine_instance = nil
+
+    @brake = Gosu::Sample["assets/sound/brakes.ogg"]
+    @brake_instance = nil
+    @brake_volume   = 0.0
+
     @braking = false
     @tick = 0
     @yellow_up = false
@@ -75,6 +82,53 @@ class Car < Chingu::GameObject
         @yellow_up = true
       else
         @yellow_int-=1
+      end
+    end
+
+    # Engine Sound stuff.
+    # Disabled until I can find a decent sound loop
+    #
+    # if @engine_instance && @engine_instance.playing?
+    #   volume = @speed.to_f/@top_speed.to_f
+    #   volume.round(2)
+    #   volume = 0.1 if volume < 0.1
+    #   @engine_instance.volume = volume
+    # end
+
+    # unless @braking
+      # if @speed <= -0.01 or @speed >= 0.01
+      #   if !@engine_instance
+      #     @engine_instance = @engine.play(1,1,true)
+      #   end
+      # end
+    # end
+
+    if @braking
+      if @speed <= -0.01 or @speed >= 0.01
+        # Play braking sound
+        if @brake_instance && @brake_instance.playing?
+        else
+          # Make sure that @speed is a positive number
+          _speed = @speed*-1 if @speed < -0.01
+          _speed = @speed if @speed > 0.0
+
+          volume = _speed.to_f/@top_speed.to_f
+          volume.round(2)
+          volume = 0.1 if volume < 0.1
+
+          speed = volume
+          speed = 0.7 unless volume > 0.7
+
+          @brake_instance = @brake.play(volume, speed)
+          @brake_volume = volume
+        end
+      end
+
+    else
+      if @brake_instance && @brake_instance.playing?
+        @brake_volume-=0.1
+        @brake_instance.volume = @brake_volume
+        @brake_instance.stop if @brake_volume <= 0.0
       end
     end
 
