@@ -5,8 +5,8 @@ class Scene
       @render = false
       @alpha = 0
 
-      @text = Chingu::Text.new("Ruby Sync Racing", x: $window.width/3, y: $window.height/3, size: 60)
-      @instructions = Chingu::Text.new("Press ENTER to continue", x: $window.width/3, y: $window.height/2, size: 30, color: Gosu::Color::GRAY)
+      @text = Game::Text.new("Ruby Sync Racing", x: $window.width/3, y: $window.height/3, size: 60)
+      @instructions = Game::Text.new("Press ENTER to continue", x: $window.width/3, y: $window.height/2, size: 30, color: Gosu::Color::GRAY)
     end
 
     def draw

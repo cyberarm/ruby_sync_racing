@@ -1,10 +1,10 @@
 class Scene
   class MainMenu < Chingu::GameState
     def setup
-      @title = Chingu::Text.new("Ruby Sync Racing", x: $window.width/2, y: 100, color: Gosu::Color::WHITE, size: 80)
+      @title = Game::Text.new("Ruby Sync Racing", x: $window.width/2, y: 100, color: Gosu::Color::WHITE, size: 80)
 
-      @play = Chingu::Text.new("Play", x: $window.width/3, y: 200, size: 40)
-      @exit = Chingu::Text.new("Exit", x: $window.width/3, y: 280, size: 40)
+      @play = Game::Text.new("Play", x: $window.width/3, y: 200, size: 40)
+      @exit = Game::Text.new("Exit", x: $window.width/3, y: 280, size: 40)
 
       $window.show_cursor = true
 
@@ -31,7 +31,7 @@ class Scene
         # Play Button
         if $window.mouse_x.between?(@play.x-10, @play.x+@play.width+20)
           if $window.mouse_y.between?(@play.y-5, @play.y+@play.height+10)
-            push_game_state(Game)
+            push_game_state(LevelSelection)
           end
         end
 

@@ -10,7 +10,7 @@ require_relative "lib/engine" # require all the things.
 
 if not defined?(Ocra)
   unless ARGV.join.include?("--editor")
-    Display.new(1280, 800, false).show
+    Game::Display.new.show
   else
     Track::Editor::Window.new.show
   end
