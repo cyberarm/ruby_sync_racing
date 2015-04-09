@@ -4,6 +4,7 @@ require "set"
 
 require "chingu"
 require "multi_json"
+require "chipmunk"
 
 require_relative "lib/engine" # require all the things.
 
@@ -14,5 +15,5 @@ if not defined?(Ocra)
     Track::Editor::Window.new.show
   end
 else
-  puts "Ocra detected."
+  puts "Ocra detected,", "Not running game."
 end

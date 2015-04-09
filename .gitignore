@@ -2,3 +2,4 @@
 /pkg/*
 data/tracks/custom/*.json
 vender/*
+mini/*
