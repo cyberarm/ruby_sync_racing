@@ -1,7 +1,7 @@
-class Game
+module Game
   class Text
-    attr_accessor :text, :x, :y, :z, :factor_x, :factor_y, :color, :options
-    attr_reader :width, :height, :size, :font
+    attr_accessor :x, :y, :z, :factor_x, :factor_y, :color, :options
+    attr_reader :text, :width, :height, :size, :font, :alpha
 
     def initialize(text, options)
       @text = text
@@ -14,7 +14,8 @@ class Game
       @options[:factor_x] ||= 1.0
       @options[:factor_y] ||= 1.0
 
-      @options[:color] ||= Gosu::Color::WHITE
+      @options[:color] ||= Gosu::Color.rgba(255,255,255,255)
+      @options[:alpha] ||= @options[:color].alpha
       @options[:size]  ||= 13
 
       @x = @options[:x]
@@ -25,6 +26,8 @@ class Game
       @factor_y = @options[:factor_y]
 
       @color = @options[:color]
+      @alpha = @options[:alpha]
+      @color.alpha = @options[:alpha]
       @size  = @options[:size]
 
       @font = Gosu::Font.new($window, @options[:font], @options[:size])
@@ -37,8 +40,13 @@ class Game
       @font.draw(@text, @x, @y, @z, @factor_x, @factor_y, @color)
     end
 
-    def update
-      @width = @font.text_width(@text, @factor_x)
+    def text=string
+      @width = @font.text_width(string, @factor_x)
+      @text  = string
+    end
+
+    def alpha=integer
+      @color.alpha = integer
     end
   end
 end

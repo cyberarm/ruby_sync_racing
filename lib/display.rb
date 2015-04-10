@@ -1,4 +1,4 @@
-class Game
+module Game
   class Display < Chingu::Window
     attr_accessor :show_cursor
 
