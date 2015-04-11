@@ -24,13 +24,13 @@ module Game
         if @up
           @alpha+=1.5 unless @alpha >= 255
         else
-          @alpha-=1.5 unless @alpha <= 25
+          @alpha-=1.5 unless @alpha <= 50
         end
 
         if @alpha >= 255
           @up = false
           @render = true
-        elsif @alpha <= 25
+        elsif @alpha <= 50
           @up = true
         end
       end

@@ -42,11 +42,11 @@ module Game
         @sub_title.draw
 
         @car_list.each do |car|
-          $window.fill_rect([car["text"].x-4,car["text"].y-4, car["text"].width+8, car["text"].height+4], Gosu::Color::GRAY, 1)
+          $window.fill_rect([car["text"].x-4,car["text"].y-4, car["text"].width+8, car["text"].height+4], Gosu::Color.rgba(0,0,0,200), 1)
 
           if $window.mouse_x.between?(car["text"].x-4, car["text"].x+car["text"].width+8)
             if $window.mouse_y.between?(car["text"].y-4, car["text"].y+car["text"].height+4)
-              $window.fill_rect([car["text"].x-4,car["text"].y-4, car["text"].width+8, car["text"].height+4], Gosu::Color.rgba(0,0,0,200), 1)
+              $window.fill_rect([car["text"].x-4,car["text"].y-4, car["text"].width+8, car["text"].height+4], Gosu::Color::GRAY, 1)
             end
           end
 
