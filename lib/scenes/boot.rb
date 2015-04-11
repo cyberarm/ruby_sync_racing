@@ -33,8 +33,13 @@ module Game
         elsif @alpha <= 25
           @up = true
         end
+      end
 
-        if holding_any?(:enter, :return)
+      def button_up(id)
+        case id
+        when Gosu::KbEscape
+          exit
+        else
           push_game_state(MainMenu)
         end
       end

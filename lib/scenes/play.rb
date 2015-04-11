@@ -4,7 +4,7 @@ module Game
       def setup
         $window.show_cursor = false
 
-        @car = Car.create(x: $window.width/2, y: $window.height/2, spec: "data/cars/test_car_two.json")
+        @car = Car.create(x: $window.width/2, y: $window.height/2, spec: @options[:carfile])
         @trackfile = @options[:trackfile] || "data/tracks/test_track.json"
         @track = Track.create(spec: @trackfile)
         @last_tile = nil

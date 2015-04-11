@@ -55,7 +55,7 @@ module Game
           (@tracks).detect do |track|
             if $window.mouse_x.between?(track.x-4, track.x+track.width+8)
               if $window.mouse_y.between?(track.y-4, track.y+track.height+4)
-                push_game_state(Play.new(trackfile: track.options[:track_path]))
+                push_game_state(CarSelection.new(trackfile: track.options[:track_path]))
               end
             end
           end
