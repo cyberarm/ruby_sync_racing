@@ -34,6 +34,13 @@ module Game
           tile.color = Gosu::Color::GRAY
         end
       end
+
+      def button_up(id)
+        case id
+        when Gosu::KbEscape
+          push_game_state(Pause.new(last_state: self))
+        end
+      end
     end
   end
 end
