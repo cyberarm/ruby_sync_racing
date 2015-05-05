@@ -1,3 +1,4 @@
 module Game
-  VERSION = "developer_build"
+  VERSION = "0.0.6"
+  VERSION_NAME = "developer_build"
 end
