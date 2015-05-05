@@ -7,6 +7,10 @@ module Game
           push_game_state(LevelSelection)
         end
 
+        button "Play Online" do
+          push_game_state(MultiplayerLoginMenu)
+        end
+
         button "Exit" do
           exit
         end
