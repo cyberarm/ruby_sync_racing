@@ -5,6 +5,8 @@ require "set"
 require "chingu"
 require "multi_json"
 require "chipmunk"
+require "gameoverseer/version"
+require "gameoverseer/client"
 
 require_relative "lib/engine" # require all the things.
 

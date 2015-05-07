@@ -3,3 +3,4 @@
 data/tracks/custom/*.json
 vender/*
 mini/*
+logs/*.txt

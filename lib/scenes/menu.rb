@@ -1,6 +1,6 @@
 module Game
   Button = Struct.new(:text, :rect, :background_color, :proc)
-  Input  = Struct.new(:text, :rect, :focus, :secret, :text_input)
+  Input  = Struct.new(:text, :rect, :focus, :secret, :value, :text_input)
 
   class Scene
     class Menu < Chingu::GameState
@@ -31,7 +31,8 @@ module Game
             end
           elsif e.is_a?(Game::Input)
             e.text.draw
-            fill_rect(e.rect, Gosu::Color::GRAY)
+            fill_rect(e.rect, Gosu::Color::GRAY) unless e.focus
+            fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212)) if e.focus
             if $window.mouse_x.between?(e.rect[0], e.rect[0]+e.rect[2])
               if $window.mouse_y.between?(e.rect[1], e.rect[1]+e.rect[3])
                 fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212))
@@ -45,18 +46,25 @@ module Game
         super
 
         @elements.each do |e|
-          if e.is_a?(Game::Input) && e.focus == true
-            e.text.text = e.text_input.text
-            e.text.x = $window.width/2-e.text.width/2
-            e.rect[0] = e.text.x-10
+          # Center text
+          e.x = $window.width/2-e.width/2 if e.is_a?(Game::Text)
 
-            if e.text.width > 120
-              e.rect[2] = e.text.width+20
-            else
-               e.rect[2] = 120
+          if e.is_a?(Game::Input)
+            e.value = e.text_input.text
+            if e.focus == true
+              e.text.text = e.text_input.text
+              e.value = e.text_input.text
+              e.text.x = $window.width/2-e.text.width/2
+              e.rect[0] = e.text.x-10
+
+              if e.text.width > 120
+                e.rect[2] = e.text.width+20
+              else
+                 e.rect[2] = 120
+              end
+
+              $window.text_input = e.text_input unless $window.text_input == e.text_input
             end
-
-            $window.text_input = e.text_input# unless $window.text_input == e.text_input
           end
         end
       end
@@ -73,10 +81,11 @@ module Game
 
         @elements.push(text)
         @y+=(text.height/3)+text.height
+
+        return text
       end
 
       def label(string, options={}, proc = nil)
-        # {y: @y, size: 26}
         options[:y] ||= @y
         options[:size] ||= 26
 
@@ -85,14 +94,16 @@ module Game
 
         @elements.push(text)
         @y+=(text.height*2)
+
+        return text
       end
 
-      def edit_line(focus: false, secret: false)
+      def edit_line(string = "", focus = false, secret = false)
         options = {}
         options[:y] ||= @y
         options[:size] ||= 26
 
-        text  = Game::Text.new("", options)
+        text  = Game::Text.new(string, options)
         text.x = $window.width/2-text.width/2
 
         x = text.x-10
@@ -105,6 +116,7 @@ module Game
         input.focus= focus
         input.secret = secret
         input.text_input = Gosu::TextInput.new
+        input.text_input.text = string
         input.rect = [x,y, width,height]
 
         @elements.push(input)
@@ -128,6 +140,8 @@ module Game
 
         @elements.push(button)
         @y+=(height/2)+height
+
+        return button
       end
 
       def button_up(id)

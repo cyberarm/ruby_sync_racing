@@ -1,7 +1,7 @@
 module Game
   class Text
     attr_accessor :x, :y, :z, :factor_x, :factor_y, :color, :options
-    attr_reader :text, :width, :height, :size, :font, :alpha
+    attr_reader :text, :height, :size, :font, :alpha
 
     def initialize(text, options)
       @text = text
@@ -32,12 +32,15 @@ module Game
 
       @font = Gosu::Font.new($window, @options[:font], @options[:size])
 
-      @width = @font.text_width(@text, @factor_x)
       @height = @font.height
     end
 
     def draw
       @font.draw(@text, @x, @y, @z, @factor_x, @factor_y, @color)
+    end
+
+    def width
+      return @font.text_width(@text, @factor_x)
     end
 
     def text=string
