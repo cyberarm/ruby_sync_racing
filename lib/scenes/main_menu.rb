@@ -8,7 +8,7 @@ module Game
         end
 
         button "Play Online" do
-          push_game_state(MultiplayerLoginMenu)
+          push_game_state(MultiplayerMenu)
         end
 
         button "Exit" do

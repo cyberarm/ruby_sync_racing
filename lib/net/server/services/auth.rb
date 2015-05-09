@@ -1,8 +1,9 @@
-module Server
+module Game
   class Server
     class Auth < GameOverseer::Service
       def setup
         channel_manager.register_channel("auth", self)
+        set_safe_methods([:connect, :connected])
       end
 
       def process(data)
@@ -10,16 +11,23 @@ module Server
       end
 
       def connect(data)
-        if client_manager.get(client_id)['username'] == nil
+        username_in_use = client_manager.clients.detect do |client|
+          if client[:username] == data['data']['username']
+            true
+          end
+        end
+
+        if not username_in_use
           puts "#{data["data"]["username"]} connected."
-          token = SecureRandom.hex(24)
+
           client_manager.update(client_id, 'username', data["data"]["username"])
-          client_manager.update(client_id, 'username', token)
+          token = SecureRandom.hex(24)
+          client_manager.update(client_id, 'token', token)
           data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 200, token: "#{token}"}}
           message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         else
           puts "#{data["data"]["username"]} is already connected."
-          data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "#{data["data"]["username"]} is already connected."}}
+          data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "Username '#{data["data"]["username"]}' is already in use."}}
           message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         end
       end
@@ -31,7 +39,6 @@ module Server
           client_manager.update(client_id, 'online', true)
           # Finished handshake
           # TODO: player things
-          p data
         end
       end
 

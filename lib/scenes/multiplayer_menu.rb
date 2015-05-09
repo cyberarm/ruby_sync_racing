@@ -2,6 +2,7 @@ module Game
   class Scene
     class MultiplayerMenu < Menu
       attr_reader :messages
+      attr_accessor :lock
 
       def prepare
         MultiplayerMenu.instance = self
@@ -10,9 +11,10 @@ module Game
 
         title "Ruby Sync Racing"
         label "Multiplayer", size: 50
-        label "Hey #{@options[:username].text.text.capitalize}"
         @messages = label ""
 
+        label "Enter a Username:"
+        username = edit_line "cyberarm"
         label "Host:"
         @host = edit_line "localhost"
         label "Port:"
@@ -20,14 +22,13 @@ module Game
 
         button "Connect" do
           @tick   = 0
-          unless @locked
-            @client = Game::Net::Client.new(@host.value, Integer(@port.value))
-            if @client.connected?
-              data = {username: @options[:username].text.text}
-              @client.transmit("auth", "connect", data, GameOverseer::Client::HANDSHAKE)
-            end
-          else
-            @messages.text = "Already connected to server."
+          Game::Net::Client.username = username.text.text
+
+          @client = Game::Net::Client.new(@host.value, Integer(@port.value)) unless defined?(@client)
+          Game::Net::Client.instance = @client
+          if @client.connected?
+            data = {username: Game::Net::Client.username}
+            @client.transmit("auth", "connect", data, GameOverseer::Client::HANDSHAKE)
           end
 
           @locked = true
@@ -62,6 +63,8 @@ module Game
 
         if defined?(@client) && @client.is_a?(Game::Net::Client)
           @client.update
+          push_game_state(MultiplayerLobbyMenu) if @client.connected? && Game::Net::Client.token
+
           if @tick >= 60*5 && !@client.connected?
             @client.disconnect
             @messages.text = "Connection to #{@host.value}:#{@port.value} failed."

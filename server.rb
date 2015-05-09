@@ -2,12 +2,14 @@ require 'bundler/setup'
 require "pp"
 require "set"
 
-require "chingu"
 require "multi_json"
-require "chipmunk"
-require "gameoverseer/version"
-require "gameoverseer"
+begin
+  require "../rewrite-gameoverseer/lib/gameoverseer"
+rescue
+  require "gameoverseer"
+end
 
-require_relative "lib/engine" # require all the things.
-
+require_relative "lib/net/server/server"
+require_relative "lib/net/server/services/lobby"
+require_relative "lib/net/server/services/auth"
 Game::Server.new('localhost', 56789)

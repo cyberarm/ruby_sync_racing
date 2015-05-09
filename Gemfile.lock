@@ -3,7 +3,7 @@ PATH
   specs:
     gameoverseer-client (0.0.1)
       multi_json
-      renet
+      renet (>= 0.2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -23,7 +23,7 @@ GEM
     faster_xml_simple (0.5.0)
       libxml-ruby (>= 0.3.8.4)
     ffi (1.9.8-x86-mingw32)
-    gameoverseer (0.1.1)
+    gameoverseer (0.1.2)
       celluloid
       gosu
       multi_json

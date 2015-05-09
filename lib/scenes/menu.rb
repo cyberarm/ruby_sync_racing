@@ -31,8 +31,11 @@ module Game
             end
           elsif e.is_a?(Game::Input)
             e.text.draw
-            fill_rect(e.rect, Gosu::Color::GRAY) unless e.focus
-            fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212)) if e.focus
+            if e.focus
+              fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212))
+            else
+              fill_rect(e.rect, Gosu::Color::GRAY)
+            end
             if $window.mouse_x.between?(e.rect[0], e.rect[0]+e.rect[2])
               if $window.mouse_y.between?(e.rect[1], e.rect[1]+e.rect[3])
                 fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212))
@@ -98,10 +101,11 @@ module Game
         return text
       end
 
-      def edit_line(string = "", focus = false, secret = false)
-        options = {}
-        options[:y] ||= @y
-        options[:size] ||= 26
+      def edit_line(string = "", options = {})
+        options[:y]      ||= @y
+        options[:size]   ||= 26
+        options[:focus]  ||= false
+        options[:secret] ||= false
 
         text  = Game::Text.new(string, options)
         text.x = $window.width/2-text.width/2
@@ -113,8 +117,8 @@ module Game
 
         input = Game::Input.new
         input.text = text
-        input.focus= focus
-        input.secret = secret
+        input.focus= options[:focus]
+        input.secret = options[:secret]
         input.text_input = Gosu::TextInput.new
         input.text_input.text = string
         input.rect = [x,y, width,height]
