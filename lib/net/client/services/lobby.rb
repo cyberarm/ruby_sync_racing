@@ -22,6 +22,7 @@ module Game
         when 'player_joined'
           puts "joined"
           @players = data['data']['players']
+          p @players
 
         when 'ready'
           @players.detect do |hash|
@@ -32,10 +33,16 @@ module Game
             end
           end
 
+        when 'start'
+          puts "Everyones ready!"
+          Game::Scene::MultiplayerLobbyMenu.instance.start
+
+
 
         when 'player_left'
           puts "left"
           @players.each do |hash|
+            p hash
             if hash['peer_id'] == data['data']['client_id']
               @players.delete(hash)
             end

@@ -24,7 +24,7 @@ module Game
           @tick   = 0
           Game::Net::Client.username = username.text.text
 
-          @client = Game::Net::Client.new(@host.value, Integer(@port.value)) unless defined?(@client)
+          @client = Game::Net::Client.new(@host.value, Integer(@port.value)) unless @locked
           Game::Net::Client.instance = @client
           if @client.connected?
             data = {username: Game::Net::Client.username}

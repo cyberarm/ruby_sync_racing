@@ -23,6 +23,13 @@ if not defined?(Ocra)
     puts "ruby #{__FILE__} --help"
   else
     Game::Display.new.show
+
+    at_exit do
+      @client = Game::Net::Client.instance
+      if @client
+        @client.disconnect
+      end
+    end
   end
 else
   puts "Ocra detected,", "Not running game."

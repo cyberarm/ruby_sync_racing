@@ -2,11 +2,11 @@ class Track
   class Editor
     class Menu < Chingu::GameState
       def setup
-        @title = Game::Text.new("Track Editor", size: 50, y: 100)
-        @sub_title = Game::Text.new("Ruby Sync Racing", size: 40, y: 150)
-        @new_track = Game::Text.new("New Track", size: 23, y: 220, z: 2)
+        @title      = Game::Text.new("Track Editor", size: 50, y: 100)
+        @sub_title  = Game::Text.new("Ruby Sync Racing", size: 40, y: 150)
+        @new_track  = Game::Text.new("New Track", size: 23, y: 220, z: 2)
         @load_track = Game::Text.new("Load Track", size: 23, y: 320, z: 2)
-        @quit = Game::Text.new("Quit", size: 23, y: 420, z: 2)
+        @quit       = Game::Text.new("Quit", size: 23, y: 420, z: 2)
       end
 
       def draw
@@ -23,11 +23,11 @@ class Track
       end
 
       def update
-        @title.x = ($window.width/2)-(@title.width/2)
-        @sub_title.x = ($window.width/2)-(@sub_title.width/2)
-        @new_track.x = ($window.width/2)-(@new_track.width/2)
+        @title.x      = ($window.width/2)-(@title.width/2)
+        @sub_title.x  = ($window.width/2)-(@sub_title.width/2)
+        @new_track.x  = ($window.width/2)-(@new_track.width/2)
         @load_track.x = ($window.width/2)-(@load_track.width/2)
-        @quit.x = ($window.width/2)-(@quit.width/2)
+        @quit.x       = ($window.width/2)-(@quit.width/2)
       end
 
       def button_up(id)

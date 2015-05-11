@@ -1,5 +1,5 @@
 class Car < Chingu::GameObject
-  attr_reader :speed, :braking
+  attr_reader :speed, :braking, :changed
 
   def setup
     self.zorder = 5
@@ -10,7 +10,8 @@ class Car < Chingu::GameObject
     @physics = Car::Physics.new(self)
 
     @debug = Game::Text.new("", size: 50)
-    @name  = Game::Text.new("#{@car_data["name"]}", size: 20)
+    @username = @options[:username] || "#{@car_data["name"]}"
+    @name  = Game::Text.new(@username, size: 20)
 
     @speed = 0.0
 

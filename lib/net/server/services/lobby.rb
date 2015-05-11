@@ -4,10 +4,30 @@ module Game
       def setup
         channel_manager.register_channel("lobby", self)
         set_safe_methods([:join, :ready, :leave])
+        @started = false
       end
 
       def process(data)
         data_to_method(data)
+      end
+
+      def enable
+        every 100 do
+          unless @started
+            start = 0
+            if client_manager.clients.count > 1
+              client_manager.clients.each do |client|
+                start+=1 if client[:lobby_ready]
+              end
+            end
+
+            if start == client_manager.clients.count && client_manager.clients.count > 1
+              client_manager.clients.each {|c| c[:lobby_ready] = false}
+              data = {channel: 'lobby', mode: 'start', data: {status: 200}}
+              message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
+            end
+          end
+        end
       end
 
       def join(data)

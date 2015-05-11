@@ -17,7 +17,10 @@ module Game
           end
         end
 
-        if not username_in_use
+        blank = true if data['data']['username'].length < 3
+        blank = false if data['data']['username'].length >= 3
+
+        if !username_in_use && !blank
           puts "#{data["data"]["username"]} connected."
 
           client_manager.update(client_id, 'username', data["data"]["username"])
@@ -26,8 +29,14 @@ module Game
           data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 200, token: "#{token}"}}
           message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         else
-          puts "#{data["data"]["username"]} is already connected."
-          data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "Username '#{data["data"]["username"]}' is already in use."}}
+          if username_in_use
+            puts "#{data["data"]["username"]} is already connected."
+            data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "Username '#{data["data"]["username"]}' is already in use."}}
+
+          elsif blank
+            puts "Username is less than 3 characters long."
+            data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "Username is less than 3 characters long."}}
+          end
           message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         end
       end
