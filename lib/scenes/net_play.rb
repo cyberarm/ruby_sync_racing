@@ -55,6 +55,7 @@ module Game
           tile.color = Gosu::Color::GRAY
         end
 
+        puts "Local Car Angle: #{@car.angle}"
         @client.transmit('game', 'player_moved', {angle: @car.angle, x: @car.x, y: @car.y}, GameOverseer::Client::WORLD, false)
         @client.update(0)
       end

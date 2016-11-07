@@ -22,13 +22,11 @@ module Game
         when 'player_joined'
           puts "joined"
           @players = data['data']['players']
-          p @players
 
         when 'ready'
           @players.detect do |hash|
             if data['data']['client_id'] == hash['client_id']
               hash['ready'] = data['data']['ready']
-              p data, hash
               true
             end
           end
@@ -42,7 +40,6 @@ module Game
         when 'player_left'
           puts "left"
           @players.each do |hash|
-            p hash
             if hash['client_id'] == data['data']['client_id']
               @players.delete(hash)
             end

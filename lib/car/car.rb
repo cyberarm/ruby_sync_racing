@@ -167,14 +167,18 @@ class Car < Chingu::GameObject
     @speed-=@drag if @speed >= 0.00
     @speed+=@drag if @speed <= -0.00
 
-    if @speed >= 0.0
+    if @speed > 0.0
       puts "angle: #{@angle}"
       @angle-=2 if holding?(:left)
       @angle+=2 if holding?(:right)
-    else
+    elsif @speed < 0.0
       puts "-angle: #{@angle}"
       @angle+=2 if holding?(:left)
       @angle-=2 if holding?(:right)
+    else
+      puts "0_0"
+      puts "/|_|\\"
+      puts "_|-|_"
     end
   end
 end
