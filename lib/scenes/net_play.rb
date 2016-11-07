@@ -47,14 +47,6 @@ module Game
 
       def update
         super
-        @net_tick+=1
-
-        # if @net_tick > 1
-          @client.update(0)
-          # @net_tick = 0
-        # end
-
-        @client.transmit('game', 'player_moved', {angle: @car.angle, x: @car.x, y: @car.y}, GameOverseer::Client::WORLD, false)
 
         tile = @track.collision.find(@car.x, @car.y)
         if tile
@@ -62,6 +54,9 @@ module Game
           @last_tile = tile
           tile.color = Gosu::Color::GRAY
         end
+
+        @client.transmit('game', 'player_moved', {angle: @car.angle, x: @car.x, y: @car.y}, GameOverseer::Client::WORLD, false)
+        @client.update(0)
       end
 
       def button_up(id)

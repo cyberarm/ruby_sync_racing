@@ -70,6 +70,7 @@ class Car < Chingu::GameObject
 
   def update
     super
+    @angle = (@angle % 360)
     @tick+=1
 
     if @yellow_up
@@ -167,9 +168,11 @@ class Car < Chingu::GameObject
     @speed+=@drag if @speed <= -0.00
 
     if @speed >= 0.0
+      puts "angle: #{@angle}"
       @angle-=2 if holding?(:left)
       @angle+=2 if holding?(:right)
     else
+      puts "-angle: #{@angle}"
       @angle+=2 if holding?(:left)
       @angle-=2 if holding?(:right)
     end
