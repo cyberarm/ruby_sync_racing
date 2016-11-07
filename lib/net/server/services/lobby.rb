@@ -35,7 +35,7 @@ module Game
         client_manager.update(client_id, 'lobby_ready', false)
 
         client_manager.clients.each do |c|
-          players.push({client_id: c[:client_id], username: c[:username], ready: c[:lobby_ready]})
+          players.push({client_id: c[:client_id], username: c['username'], ready: c['lobby_ready']})
         end
 
         data = {channel: 'lobby', mode: 'player_joined', data: {status: 200, players: players}}
@@ -45,6 +45,16 @@ module Game
       def ready(data)
         client_manager.update(client_id, 'lobby_ready', data['data']['ready'])
         data = {channel: 'lobby', mode: 'ready', data: {status: 200, client_id: client_id, ready: data['data']['ready']}}
+        message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
+
+        all_ready = true
+        client_manager.clients.detect do |c|
+          unless c['lobby_ready']
+            all_ready = false
+          end
+        end
+
+        data = {channel: 'lobby', mode: 'start', data: {status: 200}}
         message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
       end
 

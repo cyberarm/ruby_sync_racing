@@ -18,7 +18,7 @@ module Game
         client_manager.update(client_id, 'y',     data['data']['y'])
 
         client_manager.clients.each do |c|
-          players.push({client_id: c[:client_id], username: c[:username], angle: c[:angle], x: c[:x], y: c[:y]})
+          players.push({client_id: c[:client_id], username: c['username'], angle: c['angle'], x: c['x'], y: c['y']})
         end
 
         data = {channel: 'game', mode: 'player_moved', data: {status: 200, players: players}}

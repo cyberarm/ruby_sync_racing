@@ -49,10 +49,10 @@ module Game
         super
         @net_tick+=1
 
-        if @net_tick > 1
+        # if @net_tick > 1
           @client.update(0)
-          @net_tick = 0
-        end
+          # @net_tick = 0
+        # end
 
         @client.transmit('game', 'player_moved', {angle: @car.angle, x: @car.x, y: @car.y}, GameOverseer::Client::WORLD, false)
 

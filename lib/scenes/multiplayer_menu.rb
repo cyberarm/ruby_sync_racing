@@ -26,6 +26,9 @@ module Game
           @client = Game::Net::Client.new(@host.value, Integer(@port.value)) unless @locked
           Game::Net::Client.instance = @client
           if @client.connected?
+            puts "-=-=-=-=-=-=-=-=-=-="
+            puts "username.text.text - #{username.text.text}"
+            puts "-=-=-=-=-=-=-=-=-=-="
             data = {username: username.text.text}
             @client.transmit("auth", "connect", data, GameOverseer::Client::HANDSHAKE)
           end
