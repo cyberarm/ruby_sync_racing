@@ -20,6 +20,8 @@ module Game
         button "Leave" do
           @client.transmit('lobby', 'leave', {status: 200, token: Game::Net::Client.token}, GameOverseer::Client::WORLD, true)
           @client.disconnect
+          Game::Net::Client.token = nil
+          Game::Net::Client.username = nil
           push_game_state(MainMenu)
         end
 
@@ -47,6 +49,14 @@ module Game
 
       def start
         push_game_state(NetPlay)
+      end
+
+      def recalculate_peers
+        @_y = 400
+        @player_elements.each do |e|
+          e.y = @_y
+          @_y+=26
+        end
       end
 
       def draw
@@ -78,12 +88,14 @@ module Game
               @player_elements.push(Game::Text.new(player['username'], y: @_y, size: 26, color: Gosu::Color::GRAY))
             end
 
+            p "created: #{player['username']} - IAM: #{Game::Net::Client.username}"
             @_y+=26
           end
         end
 
-        @players.each do |player|
+        @players.each_with_index do |player, index|
           @player_elements.each do |e|
+            puts "#{player}-#{index}"
             if player['ready']
               if player['username'] == Game::Net::Client.username
                 e.color = Gosu::Color::YELLOW
@@ -108,7 +120,10 @@ module Game
             end
           end
 
-          @player_elements.delete(e) unless detected
+          unless detected
+            @player_elements.delete(e)
+            recalculate_peers
+          end
         end
       end
     end

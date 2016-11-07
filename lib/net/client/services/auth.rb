@@ -12,6 +12,7 @@ module Game
           case data['data']['status']
           when 200
             @token = data['data']['token']
+            Game::Net::Client.username = data['data']['username']
             transmit('auth', 'connected', {status: 200, token: @token}, GameOverseer::Client::HANDSHAKE, true)
             Game::Net::Client.token = @token
           when 400

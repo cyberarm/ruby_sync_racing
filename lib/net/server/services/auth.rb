@@ -7,6 +7,7 @@ module Game
       end
 
       def process(data)
+        p data
         data_to_method(data)
       end
 
@@ -26,7 +27,7 @@ module Game
           client_manager.update(client_id, 'username', data["data"]["username"])
           token = SecureRandom.hex(24)
           client_manager.update(client_id, 'token', token)
-          data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 200, token: "#{token}"}}
+          data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 200, token: "#{token}", username: "#{data["data"]["username"]}"}}
           message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         else
           if username_in_use

@@ -43,7 +43,7 @@ module Game
           puts "left"
           @players.each do |hash|
             p hash
-            if hash['peer_id'] == data['data']['client_id']
+            if hash['client_id'] == data['data']['client_id']
               @players.delete(hash)
             end
           end

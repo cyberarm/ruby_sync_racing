@@ -4,9 +4,9 @@ require "set"
 
 require "multi_json"
 begin
-  require "../rewrite-gameoverseer/lib/gameoverseer"
-rescue
   require "gameoverseer"
+rescue
+  require "../rewrite-gameoverseer/lib/gameoverseer"
 end
 
 require_relative "lib/net/server/server"

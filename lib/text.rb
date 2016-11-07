@@ -17,6 +17,7 @@ module Game
       @options[:color] ||= Gosu::Color.rgba(255,255,255,255)
       @options[:alpha] ||= @options[:color].alpha
       @options[:size]  ||= 13
+      @options[:font]  ||= Gosu.default_font_name
 
       @x = @options[:x]
       @y = @options[:y]
@@ -27,7 +28,7 @@ module Game
 
       @color = @options[:color]
       @alpha = @options[:alpha]
-      @color.alpha = @options[:alpha]
+      self.alpha = @options[:alpha]
       @size  = @options[:size]
 
       @font = Gosu::Font.new($window, @options[:font], @options[:size])
@@ -37,6 +38,9 @@ module Game
 
     def draw
       @font.draw(@text, @x, @y, @z, @factor_x, @factor_y, @color)
+    end
+
+    def update
     end
 
     def width
@@ -49,7 +53,7 @@ module Game
     end
 
     def alpha=integer
-      @color.alpha = integer
+      @color = Gosu::Color.rgba(@color.red, @color.green, @color.blue, integer)
     end
   end
 end
