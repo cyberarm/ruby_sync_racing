@@ -25,9 +25,10 @@ module Game
             user = @players.detect {|_user| _user.client_id == player['client_id']}
             unless user
               car = Game::Net::Car.new
+              car.text      = Text.new(player['username'], x: 0, y: 0)
               car.client_id = player['client_id']
               car.username  = player['username']
-              car.angle     = player['angle']
+              # car.angle     = player['angle']
               car.x         = player['x']
               car.y         = player['y']
               car.image     = Gosu::Image['assets/cars/CAR.png']
@@ -36,7 +37,7 @@ module Game
             else
               @players.detect do |_user|
                 if _user.client_id == player['client_id']
-                  _user.angle = player['angle']
+                  # _user.angle = player['angle']
                   _user.x     = player['x']
                   _user.y     = player['y']
                   true

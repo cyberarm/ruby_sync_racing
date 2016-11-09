@@ -13,13 +13,13 @@ module Game
 
       def connect(data)
         username_in_use = client_manager.clients.detect do |client|
-          if client[:username] == data['data']['username']
+          if client['username'] == data['data']['username']
             true
           end
         end
 
-        blank = true if data['data']['username'].length < 3
-        blank = false if data['data']['username'].length >= 3
+        blank = true if data['data']['username'].length < 2
+        blank = false if data['data']['username'].length >= 2
 
         if !username_in_use && !blank
           puts "#{data["data"]["username"]} connected."
@@ -27,7 +27,7 @@ module Game
           client_manager.update(client_id, 'username', data["data"]["username"])
           token = SecureRandom.hex(24)
           client_manager.update(client_id, 'token', token)
-          data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 200, token: "#{token}", username: "#{data["data"]["username"]}"}}
+          data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 200, client_id: client_id, token: "#{token}", username: "#{data["data"]["username"]}"}}
           message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         else
           if username_in_use
@@ -35,8 +35,8 @@ module Game
             data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "Username '#{data["data"]["username"]}' is already in use."}}
 
           elsif blank
-            puts "Username is less than 3 characters long."
-            data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "Username is less than 3 characters long."}}
+            puts "Username is less than 2 characters long."
+            data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "Username is less than 2 characters long."}}
           end
           message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         end

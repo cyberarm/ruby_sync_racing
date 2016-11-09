@@ -11,6 +11,7 @@ module Game
         when 'connect'
           case data['data']['status']
           when 200
+            Game::Net::Client.id = data['data']['client_id']
             @token = data['data']['token']
             Game::Net::Client.username = data['data']['username']
             transmit('auth', 'connected', {status: 200, token: @token}, GameOverseer::Client::HANDSHAKE, true)
@@ -20,11 +21,10 @@ module Game
             Game::Scene::MultiplayerMenu.instance.messages.color = Gosu::Color::RED
             Game::Scene::MultiplayerMenu.instance.messages.text = "Error <#{data['data']['status']}>: #{data['data']['message']}"
           end
+
         when 'connected'
           Game::Scene::MultiplayerMenu.instance.messages.color = Gosu::Color::WHITE
-
           Game::Scene::MultiplayerMenu.instance.messages.text = "Handshake completed. You are now connected to the server."
-          Game::Scene::MultiplayerMenu.instance.messages.text = "Token: #{@token}"
         end
       end
     end

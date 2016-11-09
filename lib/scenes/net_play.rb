@@ -41,6 +41,9 @@ module Game
         fill(@color)
         Game::Net::GamePlay.instance.players.each do |car|
           next unless car.angle
+          car.text.x = car.x
+          car.text.y = car.y
+          car.text.draw
           car.image.draw_rot(car.x, car.y, 5, car.angle)
         end
       end

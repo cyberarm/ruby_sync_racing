@@ -75,6 +75,9 @@ module Game
 
 
         @players.each do |player|
+          puts "PLAYER PLAYER"
+          p "player - #{player}"
+          puts "PLAYER PLAYER"
           create = @player_elements.detect do |e|
             if player['username'] == e.text
               true
@@ -82,7 +85,7 @@ module Game
           end
 
           unless create
-            if player['username'] == Game::Net::Client.username
+            if player['client_id'] == Game::Net::Client.id
               @player_elements.push(Game::Text.new(player['username'], y: @_y, size: 26, color: Gosu::Color::BLUE))
             else
               @player_elements.push(Game::Text.new(player['username'], y: @_y, size: 26, color: Gosu::Color::GRAY))
@@ -97,14 +100,14 @@ module Game
           @player_elements.each do |e|
             puts "#{player}-#{index}"
             if player['ready']
-              if player['username'] == Game::Net::Client.username
+              if player['client_id'] == Game::Net::Client.id
                 e.color = Gosu::Color::YELLOW
               else
                 e.color = Gosu::Color::WHITE
               end
 
             else
-              if player['username'] == Game::Net::Client.username
+              if player['client_id'] == Game::Net::Client.id
                 e.color = Gosu::Color::BLUE
               else
                 e.color = Gosu::Color::GRAY

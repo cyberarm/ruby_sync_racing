@@ -17,12 +17,12 @@ module Game
             start = 0
             if client_manager.clients.count > 1
               client_manager.clients.each do |client|
-                start+=1 if client[:lobby_ready]
+                start+=1 if client['lobby_ready']
               end
             end
 
             if start == client_manager.clients.count && client_manager.clients.count > 1
-              client_manager.clients.each {|c| c[:lobby_ready] = false}
+              client_manager.clients.each {|c| c['lobby_ready'] = false}
               data = {channel: 'lobby', mode: 'start', data: {status: 200}}
               message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
             end
@@ -45,16 +45,6 @@ module Game
       def ready(data)
         client_manager.update(client_id, 'lobby_ready', data['data']['ready'])
         data = {channel: 'lobby', mode: 'ready', data: {status: 200, client_id: client_id, ready: data['data']['ready']}}
-        message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
-
-        all_ready = true
-        client_manager.clients.detect do |c|
-          unless c['lobby_ready']
-            all_ready = false
-          end
-        end
-
-        data = {channel: 'lobby', mode: 'start', data: {status: 200}}
         message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
       end
 

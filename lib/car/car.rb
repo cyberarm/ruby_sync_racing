@@ -180,5 +180,11 @@ class Car < Chingu::GameObject
       puts "/|_|\\"
       puts "_|-|_"
     end
+
+    if $window.button_down?(Gosu::KbLeft)
+      puts "LEFT"
+    elsif $window.button_down?(Gosu::KbRight)
+      puts "RIGHT"
+    end
   end
 end

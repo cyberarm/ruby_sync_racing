@@ -1,6 +1,13 @@
 module Game
   module Net
     class Client < GameOverseer::Client
+      def self.id
+        @id
+      end
+      def self.id=string
+        @id=string
+      end
+
       def self.username
         @username
       end
