@@ -4,7 +4,7 @@ class Track
 
     def initialize(trackfile)
       raise "#{self.class}: '#{trackfile}' is not a file." unless File.exist?(trackfile)
-      @data = MultiJson.load(open(trackfile).read)
+      @data = AbstractJSON.load(open(trackfile).read)
     end
 
     def tiles

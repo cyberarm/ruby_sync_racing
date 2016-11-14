@@ -28,7 +28,7 @@ module Game
           token = SecureRandom.hex(24)
           client_manager.update(client_id, 'token', token)
           data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 200, client_id: client_id, token: "#{token}", username: "#{data["data"]["username"]}"}}
-          message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
+          message_manager.message(client_id, AbstractJSON.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         else
           if username_in_use
             puts "#{data["data"]["username"]} is already connected."
@@ -38,14 +38,14 @@ module Game
             puts "Username is less than 2 characters long."
             data = {'channel' => 'auth', 'mode' => 'connect', 'data' => {status: 400, message: "Username is less than 2 characters long."}}
           end
-          message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
+          message_manager.message(client_id, AbstractJSON.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
         end
       end
 
       def connected(data)
         if data['data']['status'] == 200
           data = {'channel' => 'auth', 'mode' => 'connected', 'data' => {status: 200}}
-          message_manager.message(client_id, MultiJson.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
+          message_manager.message(client_id, AbstractJSON.dump(data), true, GameOverseer::ChannelManager::HANDSHAKE)
           client_manager.update(client_id, 'online', true)
           # Finished handshake
           # TODO: player things

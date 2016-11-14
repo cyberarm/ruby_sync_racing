@@ -29,7 +29,7 @@ class Track::Editor::Edit < Chingu::GameState
       @track_file = @options[:track_file]
       @save_file = File.basename(@track_file)
       p self.save_file
-      @track_data = MultiJson.load(File.open(@track_file).read)
+      @track_data = AbstractJSON.load(File.open(@track_file).read)
 
       @track_data["tiles"].each do |tile|
         _x = tile["x"]

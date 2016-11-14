@@ -13,7 +13,7 @@ module Game
         @custom_track_list = Dir.glob("data/tracks/custom/*.json")
 
         (@track_list+@custom_track_list).each do |track|
-          _track = MultiJson.load(open(track).read)["name"]
+          _track = AbstractJSON.load(open(track).read)["name"]
           _track = "#{_track} (Custom)" if track.include?("/custom/")
 
           button(_track) do

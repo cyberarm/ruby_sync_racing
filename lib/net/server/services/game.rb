@@ -22,17 +22,17 @@ module Game
         end
 
         data = {channel: 'game', mode: 'player_moved', data: {status: 200, players: players}}
-        message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
+        message_manager.broadcast(AbstractJSON.dump(data), true, GameOverseer::ChannelManager::WORLD)
       end
 
       def leave(data)
         data = {channel: 'game', mode: 'player_left', data: {status: 200, client_id: client_id}}
-        message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
+        message_manager.broadcast(AbstractJSON.dump(data), true, GameOverseer::ChannelManager::WORLD)
       end
 
       def client_disconnected(client_id)
         data = {channel: 'game', mode: 'player_left', 'data' => {status: 200, client_id: client_id}}
-        message_manager.broadcast(MultiJson.dump(data), true, GameOverseer::ChannelManager::WORLD)
+        message_manager.broadcast(AbstractJSON.dump(data), true, GameOverseer::ChannelManager::WORLD)
       end
 
       def version

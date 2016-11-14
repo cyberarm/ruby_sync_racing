@@ -3,7 +3,7 @@ require "pp"
 require "set"
 
 require "chingu"
-require "multi_json"
+require "json/pure"
 # require "chipmunk"
 require "gameoverseer/version"
 require "gameoverseer/client"

@@ -20,7 +20,7 @@ module Game
         y = 180
 
         @cars.each do |car|
-          _car = MultiJson.load(open(car).read)
+          _car = AbstractJSON.load(open(car).read)
           image = Gosu::Image[_car["spec"]["image"]]
           text  = Game::Text.new(_car["name"], x: $window.width/3, y: y, size: 26)
           y+=30

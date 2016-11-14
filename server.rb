@@ -2,13 +2,14 @@ require "pp"
 require "set"
 require "securerandom"
 
-require "multi_json"
+require "json/pure"
 begin
   require "gameoverseer"
 rescue
   require "../rewrite-gameoverseer/lib/gameoverseer"
 end
 
+require_relative "lib/abstract_json"
 require_relative "lib/net/server/server"
 require_relative "lib/net/server/services/lobby"
 require_relative "lib/net/server/services/auth"

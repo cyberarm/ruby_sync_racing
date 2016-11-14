@@ -101,7 +101,7 @@ class Track
           end
         end
 
-        data = MultiJson.dump(hash)
+        data = AbstractJSON.dump(hash)
         unless File.exist?("data/tracks/custom/#{name.downcase}")
           File.open("data/tracks/custom/#{name.downcase}", "w").write(data)
         else
