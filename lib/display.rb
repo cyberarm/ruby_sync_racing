@@ -3,7 +3,8 @@ module Game
     attr_accessor :show_cursor
 
     def initialize(width = 1280, height = 832, fullscreen = false)
-      super(width, height, fullscreen)
+      # super(width, height, fullscreen)
+      super(Gosu.screen_width, Gosu.screen_height, true)
 
       @show_cursor = false
       $window.caption = "Ruby Sync Racing"

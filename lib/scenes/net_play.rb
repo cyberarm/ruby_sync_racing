@@ -39,12 +39,12 @@ module Game
       def draw
         super
         fill(@color)
-        Game::Net::GamePlay.instance.players.each do |car|
-          next unless car.angle
-          car.text.x = car.x
-          car.text.y = car.y
-          car.text.draw
-          car.image.draw_rot(car.x, car.y, 5, car.angle)
+        Game::Net::GamePlay.instance.players.each do |_car|
+          next unless _car.angle
+          _car.text.x = _car.x
+          _car.text.y = _car.y
+          _car.text.draw
+          _car.image.draw_rot(_car.x, _car.y, 5, _car.angle)
         end
       end
 
@@ -59,7 +59,7 @@ module Game
         end
 
         puts "Local Car Angle: #{@car.angle}"
-        @client.transmit('game', 'player_moved', {angle: @car.angle, x: @car.x, y: @car.y}, GameOverseer::Client::WORLD, false)
+        @client.transmit('game', 'player_moved', {angle: @car.angle, x: @car.x, y: @car.y, timestamp: Engine.timestamp}, GameOverseer::Client::WORLD, false)
         @client.update(0)
       end
 

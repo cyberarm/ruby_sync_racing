@@ -141,7 +141,7 @@ class Car < Chingu::GameObject
     unless @speed >= @top_speed
       @braking = false
 
-      if holding?(:up)
+      if holding?(:up)  or holding?(:w)
         if @speed <= -0.01
           @braking = true
           @speed+=@break_speed
@@ -153,7 +153,7 @@ class Car < Chingu::GameObject
     end
 
     unless @speed <= -@top_speed
-      if holding?(:down)
+      if holding?(:down)  or holding?(:s)
         if @speed >= 0.01
           @speed-=@break_speed
           @braking = true
@@ -168,23 +168,11 @@ class Car < Chingu::GameObject
     @speed+=@drag if @speed <= -0.00
 
     if @speed > 0.0
-      puts "angle: #{@angle}"
-      @angle-=2 if holding?(:left)
-      @angle+=2 if holding?(:right)
+      @angle-=2 if holding?(:left) or holding?(:a)
+      @angle+=2 if holding?(:right) or holding?(:d)
     elsif @speed < 0.0
-      puts "-angle: #{@angle}"
-      @angle+=2 if holding?(:left)
-      @angle-=2 if holding?(:right)
-    else
-      puts "0_0"
-      puts "/|_|\\"
-      puts "_|-|_"
-    end
-
-    if $window.button_down?(Gosu::KbLeft)
-      puts "LEFT"
-    elsif $window.button_down?(Gosu::KbRight)
-      puts "RIGHT"
+      @angle+=2 if holding?(:left) or holding?(:a)
+      @angle-=2 if holding?(:right) or holding?(:d)
     end
   end
 end
