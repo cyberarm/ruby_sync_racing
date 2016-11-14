@@ -12,6 +12,6 @@ gem "gameoverseer"
 gem "gameoverseer-client"
 
 group :package do
-  gem "releasy"
+  gem "releasy", github: "Spooner/releasy"
   # gem "libxml-ruby", "2.7.0"
 end
