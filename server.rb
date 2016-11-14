@@ -1,6 +1,6 @@
-require 'bundler/setup'
 require "pp"
 require "set"
+require "securerandom"
 
 require "multi_json"
 begin

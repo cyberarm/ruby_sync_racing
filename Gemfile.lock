@@ -11,11 +11,10 @@ GEM
     chingu (0.9rc9)
       gosu (>= 0.7.45)
     concurrent-ruby (1.0.2)
-    gameoverseer (0.1.4)
+    gameoverseer (0.1.6)
       concurrent-ruby
-      gosu (>= 0.10.6)
       multi_json
-      renet
+      renet (~> 0.2, >= 0.2.2)
     gosu (0.10.8)
     gosu (0.10.8-x64-mingw32)
     gosu (0.10.8-x86-mingw32)
