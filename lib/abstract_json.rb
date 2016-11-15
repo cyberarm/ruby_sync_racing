@@ -1,9 +1,11 @@
 module AbstractJSON
+  require "multi_json"
+
   def self.dump(object)
-    JSON.generate(object)
+    MultiJson.dump(object)
   end
 
   def self.load(string)
-    JSON.parse(string)
+    MultiJson.load(string)
   end
 end

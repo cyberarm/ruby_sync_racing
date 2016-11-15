@@ -2,7 +2,6 @@ require "pp"
 require "set"
 require "securerandom"
 
-require "json/pure"
 begin
   require "gameoverseer"
 rescue
