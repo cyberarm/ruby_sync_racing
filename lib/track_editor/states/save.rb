@@ -83,7 +83,7 @@ class Track
       end
 
       def save_track(name)
-        hash = {"name" => "#{name}",
+        hash = {"name" => "#{name.sub('.json','')}",
                 "background"  => {"red"=> 100,
                                "green" => 254,
                                "blue"  =>  78,

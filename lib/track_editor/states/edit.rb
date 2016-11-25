@@ -199,16 +199,16 @@ class Track::Editor::Edit < Chingu::GameState
       end
 
     # Screen offect
-    when Gosu::KbW
+  when Gosu::KbW, Gosu::KbUp
       @screen_vector.y+=@tile_size
 
-    when Gosu::KbS
+    when Gosu::KbS, Gosu::KbDown
       @screen_vector.y-=@tile_size
 
-    when Gosu::KbA
+    when Gosu::KbA, Gosu::KbLeft
       @screen_vector.x+=@tile_size
 
-    when Gosu::KbD
+    when Gosu::KbD, Gosu::KbRight
       @screen_vector.x-=@tile_size
 
     when Gosu::Kb0
