@@ -12,6 +12,8 @@ class Track
         @caret= true
 
         @tiles = @options[:tiles]
+        @decorations = @options[:decorations]
+        @checkpoints = @options[:checkpoints]
         $window.text_input = NameInput.new
 
         @title = Game::Text.new("Enter Track Name:", y: $window.height/4, size: 50)

@@ -9,6 +9,8 @@ require "gameoverseer/version"
 require "gameoverseer/client"
 
 require_relative "lib/engine" # require all the things.
+Vector2D = Struct.new(:x, :y)
+Vector3D = Struct.new(:x, :y, :z)
 
 if not defined?(Ocra)
   if ARGV.join.include?("--editor")

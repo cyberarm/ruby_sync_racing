@@ -2,14 +2,17 @@ class Track::Editor::Edit < Chingu::GameState
   attr_accessor :save_file, :messages
 
   def setup
+    @screen_vector = Vector2D.new(0, 0)
     @fps = Game::Text.new("", size: 20, x: $window.width-60, color: Gosu::Color::BLACK)
-    @instructions = Game::Text.new("Instructions: Left click: Place track, Right click: Remove track, Scroll up/down: Change tile, 's': Save track, 'r': Reset track.",
-                                    size: 22, color: Gosu::Color::BLACK)
-    @tiles = []
+    @information = Game::Text.new("", size: 18, color: Gosu::Color::BLACK)
     @tile_size = 64
+    @tiles = []
+    @decorations = []
+    @checkpoints = []
     @mouse = Gosu::Image["assets/tracks/general/road/asphalt.png"]
     @mouse_pos = {x: 0, y: 0}
     @mouse_click = Gosu::Sample["assets/track_editor/click.ogg"]
+    @error_sound = Gosu::Sample["assets/track_editor/error.ogg"]
 
     @tile_index  = 0
     @track_tiles = ["assets/tracks/general/road/asphalt.png",
@@ -55,10 +58,10 @@ class Track::Editor::Edit < Chingu::GameState
     $window.fill_rect([0, 0, $window.width, 20], Gosu::Color.rgba(255,255,255,140))
 
     # Draw grid
-    ($window.width/64).times do |x|
-        $window.draw_line(64*x, 0,Gosu::Color::WHITE, 64*x, $window.height, Gosu::Color::WHITE, 10)
-      ($window.height/64).times do |y|
-        $window.draw_line(0,64*y,Gosu::Color::WHITE, $window.width,64*y, Gosu::Color::WHITE, 10)
+    ($window.width/@tile_size).times do |x|
+        $window.draw_line(@tile_size*x, 0,Gosu::Color::WHITE, @tile_size*x, $window.height, Gosu::Color::WHITE, 10)
+      ($window.height/@tile_size).times do |y|
+        $window.draw_line(0,@tile_size*y,Gosu::Color::WHITE, $window.width,@tile_size*y, Gosu::Color::WHITE, 10)
       end
     end
 
@@ -69,14 +72,17 @@ class Track::Editor::Edit < Chingu::GameState
     end
 
     @fps.draw
-    @instructions.draw
+    @information.draw
 
-    @tiles.each do |x|
-      if x
-        x.each do |y|
-          if y.is_a?(Track::Tile)
-            tile = y
-            tile.image.draw(tile.x, tile.y, 5)
+    #Window Translation
+    $window.translate(@screen_vector.x, @screen_vector.y) do
+      @tiles.each do |x|
+        if x
+          x.each do |y|
+            if y.is_a?(Track::Tile)
+              tile = y
+              tile.image.draw(tile.x, tile.y, 5)
+            end
           end
         end
       end
@@ -87,7 +93,12 @@ class Track::Editor::Edit < Chingu::GameState
 
   def update
     super
+    _tile_count = 0
+    @tiles.each {|x| if x then x.each {|y| if y.is_a?(Track::Tile); _tile_count+=1;end};end}
+
     @fps.text = "FPS:#{Gosu.fps}"
+    @information.text = "Tiles: #{_tile_count}, Decorations: #{@decorations.count}, Checkpoints: #{@checkpoints.count}|Screen Vector2D: #{@screen_vector.x}-#{@screen_vector.y}"
+
     @mouse_pos[:x] = $window.mouse_x-@mouse.width/2
     @mouse_pos[:y] = $window.mouse_y-@mouse.height/2
 
@@ -116,6 +127,8 @@ class Track::Editor::Edit < Chingu::GameState
       @messages << "FORCE CLOSE!"
       push_game_state(Track::Editor::Menu)
     end
+
+    button_down_input_checker
   end
 
   def normalize(integer)
@@ -133,13 +146,12 @@ class Track::Editor::Edit < Chingu::GameState
       if @tiles.count == 0
         push_game_state(Track::Editor::Menu)
       else
-        @messages << "Map has content, can not close!"
-        @messages << "Press Shift+Esc to force."
+        @messages << "Map has content, can not close! Press 'Shift'+'Escape' to force."
       end
 
     when Gosu::MsLeft
-      _x = normalize($window.mouse_x)
-      _y = normalize($window.mouse_y)
+      _x = normalize($window.mouse_x-@screen_vector.x)
+      _y = normalize($window.mouse_y-@screen_vector.y)
 
       @tiles[_x] = [_x] unless @tiles[_x]
 
@@ -150,11 +162,13 @@ class Track::Editor::Edit < Chingu::GameState
                                          Gosu::Image[@mouse.name],
                                          _x,
                                          _y)
+      else
+        @error_sound.play
       end
 
     when Gosu::MsRight
-      _x = normalize($window.mouse_x)
-      _y = normalize($window.mouse_y)
+      _x = normalize($window.mouse_x-@screen_vector.x)
+      _y = normalize($window.mouse_y-@screen_vector.y)
 
       if @tiles[_x].is_a?(Array)
         if @tiles[_x][_y].is_a?(Track::Tile)
@@ -184,8 +198,29 @@ class Track::Editor::Edit < Chingu::GameState
         end
       end
 
+    # Screen offect
+    when Gosu::KbW
+      @screen_vector.y+=@tile_size
+
     when Gosu::KbS
-      push_game_state(Track::Editor::Save.new(tiles: @tiles))
+      @screen_vector.y-=@tile_size
+
+    when Gosu::KbA
+      @screen_vector.x+=@tile_size
+
+    when Gosu::KbD
+      @screen_vector.x-=@tile_size
+
+    when Gosu::Kb0
+      @messages << "Screen reset to default position"
+      @screen_vector.x=0
+      @screen_vector.y=0
+    end
+  end
+
+  def button_down_input_checker
+    if ($window.button_down?(Gosu::KbLeftControl) or $window.button_down?(Gosu::KbRightControl)) && $window.button_down?(Gosu::KbS)
+      push_game_state(Track::Editor::Save.new(tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints))
     end
   end
 end
