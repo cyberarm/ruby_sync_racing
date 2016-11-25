@@ -97,7 +97,9 @@ class Track
                 hash["tiles"] << {"type" => "asphalt",
                                   "image"=> tile.image.name,
                                   "x" => tile.x,
-                                  "y" => tile.y}
+                                  "y" => tile.y,
+                                  "z" => tile.z,
+                                  "angle" => title.angle}
               end
             end
           end
