@@ -93,10 +93,8 @@ class Track::Editor::Edit < Chingu::GameState
 
   def update
     super
-    _tile_count = tile_count
-
     @fps.text = "FPS:#{Gosu.fps}"
-    @information.text = "Tiles: #{_tile_count}, Decorations: #{@decorations.count}, Checkpoints: #{@checkpoints.count}|Screen Vector2D: #{@screen_vector.x}-#{@screen_vector.y}"
+    @information.text = "Tiles: #{tile_count}, Decorations: #{@decorations.count}, Checkpoints: #{@checkpoints.count}|Screen Vector2D: #{@screen_vector.x}-#{@screen_vector.y}"
 
     @mouse_pos[:x] = ($window.mouse_x-@screen_vector.x)-@mouse.width/2
     @mouse_pos[:y] = ($window.mouse_y-@screen_vector.y)-@mouse.height/2
