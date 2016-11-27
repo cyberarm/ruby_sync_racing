@@ -88,19 +88,18 @@ class Track::Editor::Edit < Chingu::GameState
       end
     end
 
-    @mouse.draw(@mouse_pos[:x], @mouse_pos[:y], 15, 1, 1, Gosu::Color.rgba(255,255,255,150))
+    @mouse.draw($window.mouse_x-@mouse.width/2, $window.mouse_y-@mouse.height/2, 15, 1, 1, Gosu::Color.rgba(255,255,255,150))
   end
 
   def update
     super
-    _tile_count = 0
-    @tiles.each {|x| if x then x.each {|y| if y.is_a?(Track::Tile); _tile_count+=1;end};end}
+    _tile_count = tile_count
 
     @fps.text = "FPS:#{Gosu.fps}"
     @information.text = "Tiles: #{_tile_count}, Decorations: #{@decorations.count}, Checkpoints: #{@checkpoints.count}|Screen Vector2D: #{@screen_vector.x}-#{@screen_vector.y}"
 
-    @mouse_pos[:x] = $window.mouse_x-@mouse.width/2
-    @mouse_pos[:y] = $window.mouse_y-@mouse.height/2
+    @mouse_pos[:x] = ($window.mouse_x-@screen_vector.x)-@mouse.width/2
+    @mouse_pos[:y] = ($window.mouse_y-@screen_vector.y)-@mouse.height/2
 
     _y = 30
     @messages.each_with_index do |message, index|
@@ -131,7 +130,14 @@ class Track::Editor::Edit < Chingu::GameState
     button_down_input_checker
   end
 
+  def tile_count(tiles_array = @tiles)
+    _tile_count = 0
+    tiles_array.each {|x| if x then x.each {|y| if y.is_a?(Track::Tile); _tile_count+=1;end};end}
+    return _tile_count
+  end
+
   def normalize(integer)
+    p (integer/@tile_size).to_f.round(1).to_s.split('.').first
     string = (integer/@tile_size).to_f.round(1).to_s
     array  = string.split('.')
     number = array[0].to_i
@@ -150,8 +156,8 @@ class Track::Editor::Edit < Chingu::GameState
       end
 
     when Gosu::MsLeft
-      _x = normalize($window.mouse_x-@screen_vector.x)
-      _y = normalize($window.mouse_y-@screen_vector.y)
+      _x = normalize(@mouse_pos[:x]+@mouse.width/2)
+      _y = normalize(@mouse_pos[:y]+@mouse.width/2)
 
       @tiles[_x] = [_x] unless @tiles[_x]
 
