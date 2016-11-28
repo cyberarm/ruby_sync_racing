@@ -67,9 +67,9 @@ class Track::Editor::Edit < Chingu::GameState
     $window.fill_rect([0, 0, $window.width, 20], Gosu::Color.rgba(255,255,255,140))
 
     # Draw grid
-    ($window.width/@tile_size).times do |x|
+    ($window.width/@tile_size+1).times do |x|
         $window.draw_line(@tile_size*x, 0,Gosu::Color::WHITE, @tile_size*x, $window.height, Gosu::Color::WHITE, 10)
-      ($window.height/@tile_size).times do |y|
+      ($window.height/@tile_size+1).times do |y|
         $window.draw_line(0,@tile_size*y,Gosu::Color::WHITE, $window.width,@tile_size*y, Gosu::Color::WHITE, 10)
       end
     end
@@ -90,7 +90,7 @@ class Track::Editor::Edit < Chingu::GameState
           x.each do |y|
             if y.is_a?(Track::Tile)
               tile = y
-              tile.image.draw_rot(tile.x, tile.y, 5, tile.angle, 0, 0, 1, 1)
+              tile.image.draw_rot(tile.x+@tile_size/2, tile.y+@tile_size/2, 5, tile.angle, 0.5, 0.5, 1, 1)
             end
           end
         end
