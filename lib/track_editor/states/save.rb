@@ -99,7 +99,7 @@ class Track
                                   "x" => tile.x,
                                   "y" => tile.y,
                                   "z" => tile.z,
-                                  "angle" => title.angle}
+                                  "angle" => tile.angle}
               end
             end
           end

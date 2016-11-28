@@ -2,7 +2,7 @@
 class Track < Chingu::GameObject
   Tile = Struct.new(:type, :image, :x, :y, :z, :angle, :color)
 
-  attr_reader :collision, :track
+  attr_reader :collision, :track, :tiles
 
   def setup
     @track = Track::Parser.new(@options[:spec])
@@ -22,7 +22,7 @@ class Track < Chingu::GameObject
   def draw
     super
     @tiles.each do |tile|
-      if tile.color
+      if DEBUG && tile.color
         tile.image.draw(tile.x, tile.y, 3, 1, 1, tile.color)
       else
         tile.image.draw(tile.x, tile.y, 3, 1, 1)

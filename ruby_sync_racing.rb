@@ -1,3 +1,9 @@
+if ARGV.join.include?("--debug")
+  DEBUG = true
+  puts "Debug mode"
+else
+  DEBUG = false
+end
 require 'bundler/setup'
 require "pp"
 require "set"

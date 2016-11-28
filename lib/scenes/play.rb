@@ -18,11 +18,14 @@ module Game
         end
 
         @color = _color
+        @car.calc_boundry(@track.tiles)
+        puts "Car boundry: #{@car.boundry}"
       end
 
       def draw
         $window.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
           super
+          fill_rect(@car.boundry, Gosu::Color.rgba(255, 0, 0, 150)) if DEBUG
           @car.draw
         end
         fill(@color)

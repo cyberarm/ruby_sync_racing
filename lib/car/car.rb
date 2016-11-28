@@ -1,5 +1,5 @@
 class Car < Chingu::GameObject
-  attr_reader :speed, :braking, :changed
+  attr_reader :speed, :braking, :changed, :boundry
 
   def setup
     self.zorder = 5
@@ -30,6 +30,7 @@ class Car < Chingu::GameObject
     @tick = 0
     @yellow_up = false
     @yellow_int = 255
+    @tile_size = 64
   end
 
   def draw
@@ -174,5 +175,33 @@ class Car < Chingu::GameObject
       @angle+=2 if holding?(:left) or holding?(:a)
       @angle-=2 if holding?(:right) or holding?(:d)
     end
+  end
+
+  def calc_boundry(track_tiles)
+    low_x, low_y  = 0, 0
+    high_x, high_y  = 0, 0
+
+    track_tiles.each do |tile|
+      if tile.x <= low_x
+        low_x = tile.x
+      end
+      if tile.x >= high_x
+        high_x = tile.x
+      end
+
+      if tile.y <= low_y
+        low_y = tile.y
+      end
+      if tile.y >= high_y
+        high_y = tile.y
+      end
+    end
+
+    low_x-=@tile_size*4
+    low_y-=@tile_size*4
+    high_x+=@tile_size*4
+    high_y+=@tile_size*4
+
+    @boundry = [low_x, low_y, high_x, high_y]
   end
 end

@@ -98,7 +98,7 @@ class Track::Editor::Edit < Chingu::GameState
   def update
     super
     @fps.text = "FPS:#{Gosu.fps}"
-    @information.text = "Tiles: #{tile_count}, Decorations: #{@decorations.count}, Checkpoints: #{@checkpoints.count}|Screen Vector2D: #{@screen_vector.x}-#{@screen_vector.y} | Mouse Pos: #{@mouse_pos[:x]}-#{@mouse_pos[:x]}_#{@mouse_pos[:angle]}"
+    @information.text = "Tiles: #{tile_count}, Decorations: #{@decorations.count}, Checkpoints: #{@checkpoints.count}|Screen Vector2D: #{@screen_vector.x}-#{@screen_vector.y} | Mouse Pos: #{@mouse_pos[:x]}-#{@mouse_pos[:x]}_#{@mouse_pos[:angle]} | AX: #{normalize($window.mouse_x-@screen_vector.x)} AY: #{normalize($window.mouse_y-@screen_vector.y)}"
 
     @mouse_pos[:x] = ($window.mouse_x-@screen_vector.x)-@mouse.width/2
     @mouse_pos[:y] = ($window.mouse_y-@screen_vector.y)-@mouse.height/2
@@ -144,7 +144,6 @@ class Track::Editor::Edit < Chingu::GameState
     array  = string.split('.')
     number = array[0].to_i
 
-    number = (number*@tile_size)
     return number
   end
 
@@ -156,6 +155,9 @@ class Track::Editor::Edit < Chingu::GameState
       else
         @messages << "Map has content, can not close! Press 'Shift'+'Escape' to force."
       end
+
+    when Gosu::KbTab
+      @messages << "Mode switched [N/A]"
 
     when Gosu::MsLeft
       # _x = normalize(@mouse_pos[:x])#+@mouse.width)
@@ -172,8 +174,8 @@ class Track::Editor::Edit < Chingu::GameState
 
         @tiles[_x][_y] = Track::Tile.new("asphalt",
                                          Gosu::Image[@mouse.name],
-                                         _x,
-                                         _y,
+                                         _x*@tile_size,
+                                         _y*@tile_size,
                                          _z,
                                          _angle)
       else
@@ -191,12 +193,12 @@ class Track::Editor::Edit < Chingu::GameState
         end
       end
 
-    when Gosu::MsWheelUp
+    when Gosu::MsWheelUp, Gosu::KbJ
       @tile_index+=1
       @tile_index = @track_tiles.index(@track_tiles.first) if @tile_index > @track_tiles.count-1
       @mouse = Gosu::Image[@track_tiles[@tile_index]]
 
-    when Gosu::MsWheelDown
+    when Gosu::MsWheelDown, Gosu::KbK
       @tile_index-=1
 
       @tile_index = @track_tiles.index(@track_tiles.last) if @tile_index < 0
