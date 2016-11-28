@@ -15,6 +15,7 @@ class Track::Editor::Edit < Chingu::GameState
     @error_sound = Gosu::Sample["assets/track_editor/error.ogg"]
 
     @tile_index  = 0
+    @tile_type   = "asphalt"
     @track_tiles = ["assets/tracks/general/road/asphalt.png",
                     "assets/tracks/general/road/asphalt_top.png",
                     "assets/tracks/general/road/asphalt_bottom.png",
@@ -39,6 +40,9 @@ class Track::Editor::Edit < Chingu::GameState
         _y = tile["y"]
         _z = tile["z"]
         _angle = tile["angle"]
+        # Correct for old maps that don't have z and angle stored.
+        _z     ||= 0
+        _angle ||= 0
 
         @tiles[_x] = [_x] unless @tiles[_x]
 
@@ -50,6 +54,7 @@ class Track::Editor::Edit < Chingu::GameState
                                   _z,
                                   _angle)
           @tiles[_x][_y] = _tile
+          p _tile
         end
       end
     end
@@ -160,8 +165,6 @@ class Track::Editor::Edit < Chingu::GameState
       @messages << "Mode switched [N/A]"
 
     when Gosu::MsLeft
-      # _x = normalize(@mouse_pos[:x])#+@mouse.width)
-      # _y = normalize(@mouse_pos[:y])#+@mouse.width)
       _x = normalize($window.mouse_x-@screen_vector.x)
       _y = normalize($window.mouse_y-@screen_vector.y)
       _z = 0
@@ -172,7 +175,7 @@ class Track::Editor::Edit < Chingu::GameState
       if @tiles[_x] && !@tiles[_x][_y].is_a?(Track::Tile)
         @mouse_click.play
 
-        @tiles[_x][_y] = Track::Tile.new("asphalt",
+        @tiles[_x][_y] = Track::Tile.new(@tile_type,
                                          Gosu::Image[@mouse.name],
                                          _x*@tile_size,
                                          _y*@tile_size,
@@ -216,13 +219,13 @@ class Track::Editor::Edit < Chingu::GameState
 
     # Screen offect
     when Gosu::KbW, Gosu::KbUp
-      @screen_vector.y+=@tile_size
+      @screen_vector.y+=@tile_size unless @screen_vector.y-@tile_size >= 0
 
     when Gosu::KbS, Gosu::KbDown
       @screen_vector.y-=@tile_size
 
     when Gosu::KbA, Gosu::KbLeft
-      @screen_vector.x+=@tile_size
+      @screen_vector.x+=@tile_size unless @screen_vector.x-@tile_size >= 0
 
     when Gosu::KbD, Gosu::KbRight
       @screen_vector.x-=@tile_size

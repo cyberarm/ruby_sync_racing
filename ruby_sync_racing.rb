@@ -20,7 +20,11 @@ Vector3D = Struct.new(:x, :y, :z)
 
 if not defined?(Ocra)
   if ARGV.join.include?("--editor")
-    Track::Editor::Window.new.show
+    if ARGV.join.include?("--debug")
+      Track::Editor::Window.new(1000, 700, false).show
+    else
+      Track::Editor::Window.new.show
+    end
   elsif ARGV.join.include?("--help")
     puts "Ruby Sync Racing version: #{Game::VERSION}"
     puts
