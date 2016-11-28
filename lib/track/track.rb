@@ -1,6 +1,6 @@
  # Contains all the tiles for track.
 class Track < Chingu::GameObject
-  Tile = Struct.new(:type, :image, :x, :y, :color)
+  Tile = Struct.new(:type, :image, :x, :y, :z, :angle, :color)
 
   attr_reader :collision, :track
 

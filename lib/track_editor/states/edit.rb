@@ -10,7 +10,7 @@ class Track::Editor::Edit < Chingu::GameState
     @decorations = []
     @checkpoints = []
     @mouse = Gosu::Image["assets/tracks/general/road/asphalt.png"]
-    @mouse_pos = {x: 0, y: 0}
+    @mouse_pos = {x: 0, y: 0, angle: 0}
     @mouse_click = Gosu::Sample["assets/track_editor/click.ogg"]
     @error_sound = Gosu::Sample["assets/track_editor/error.ogg"]
 
@@ -37,6 +37,8 @@ class Track::Editor::Edit < Chingu::GameState
       @track_data["tiles"].each do |tile|
         _x = tile["x"]
         _y = tile["y"]
+        _z = tile["z"]
+        _angle = tile["angle"]
 
         @tiles[_x] = [_x] unless @tiles[_x]
 
@@ -44,7 +46,9 @@ class Track::Editor::Edit < Chingu::GameState
           _tile = Track::Tile.new(tile["type"],
                                   Gosu::Image[tile["image"]],
                                   _x,
-                                  _y)
+                                  _y,
+                                  _z,
+                                  _angle)
           @tiles[_x][_y] = _tile
         end
       end
@@ -81,20 +85,20 @@ class Track::Editor::Edit < Chingu::GameState
           x.each do |y|
             if y.is_a?(Track::Tile)
               tile = y
-              tile.image.draw(tile.x, tile.y, 5)
+              tile.image.draw_rot(tile.x, tile.y, 5, tile.angle, 0, 0, 1, 1)
             end
           end
         end
       end
     end
 
-    @mouse.draw($window.mouse_x-@mouse.width/2, $window.mouse_y-@mouse.height/2, 15, 1, 1, Gosu::Color.rgba(255,255,255,150))
+    @mouse.draw_rot($window.mouse_x, $window.mouse_y, 15, @mouse_pos[:angle], 0.5, 0.5, 1, 1, Gosu::Color.rgba(255,255,255,150))
   end
 
   def update
     super
     @fps.text = "FPS:#{Gosu.fps}"
-    @information.text = "Tiles: #{tile_count}, Decorations: #{@decorations.count}, Checkpoints: #{@checkpoints.count}|Screen Vector2D: #{@screen_vector.x}-#{@screen_vector.y}"
+    @information.text = "Tiles: #{tile_count}, Decorations: #{@decorations.count}, Checkpoints: #{@checkpoints.count}|Screen Vector2D: #{@screen_vector.x}-#{@screen_vector.y} | Mouse Pos: #{@mouse_pos[:x]}-#{@mouse_pos[:x]}_#{@mouse_pos[:angle]}"
 
     @mouse_pos[:x] = ($window.mouse_x-@screen_vector.x)-@mouse.width/2
     @mouse_pos[:y] = ($window.mouse_y-@screen_vector.y)-@mouse.height/2
@@ -154,8 +158,12 @@ class Track::Editor::Edit < Chingu::GameState
       end
 
     when Gosu::MsLeft
-      _x = normalize(@mouse_pos[:x]+@mouse.width/2)
-      _y = normalize(@mouse_pos[:y]+@mouse.width/2)
+      # _x = normalize(@mouse_pos[:x])#+@mouse.width)
+      # _y = normalize(@mouse_pos[:y])#+@mouse.width)
+      _x = normalize($window.mouse_x-@screen_vector.x)
+      _y = normalize($window.mouse_y-@screen_vector.y)
+      _z = 0
+      _angle = @mouse_pos[:angle]
 
       @tiles[_x] = [_x] unless @tiles[_x]
 
@@ -165,7 +173,9 @@ class Track::Editor::Edit < Chingu::GameState
         @tiles[_x][_y] = Track::Tile.new("asphalt",
                                          Gosu::Image[@mouse.name],
                                          _x,
-                                         _y)
+                                         _y,
+                                         _z,
+                                         _angle)
       else
         @error_sound.play
       end
@@ -203,7 +213,7 @@ class Track::Editor::Edit < Chingu::GameState
       end
 
     # Screen offect
-  when Gosu::KbW, Gosu::KbUp
+    when Gosu::KbW, Gosu::KbUp
       @screen_vector.y+=@tile_size
 
     when Gosu::KbS, Gosu::KbDown
@@ -219,6 +229,10 @@ class Track::Editor::Edit < Chingu::GameState
       @messages << "Screen reset to default position"
       @screen_vector.x=0
       @screen_vector.y=0
+
+    when Gosu::KbR
+       @mouse_pos[:angle]+=90
+       @mouse_pos[:angle]%=360
     end
   end
 
