@@ -4,6 +4,7 @@ class Car < Chingu::GameObject
   def setup
     self.zorder = 5
     @car_data = Car::Parser.new(@options[:spec]).data
+    @last_x, @last_y, @last_speed = 0, 0, 0
 
     @image = Gosu::Image[@car_data["spec"]["image"]]
     self.factor = @car_data["spec"]["factor"]
@@ -73,6 +74,13 @@ class Car < Chingu::GameObject
     super
     @angle = (@angle % 360)
     @tick+=1
+
+    unless inside_boundry?
+      puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if DEBUG
+      @x = @last_x
+      @y = @last_y
+      @speed = 0.5#@last_speed
+    end
 
     if @yellow_up
       if @yellow_int >= 255
@@ -175,6 +183,10 @@ class Car < Chingu::GameObject
       @angle+=2 if holding?(:left) or holding?(:a)
       @angle-=2 if holding?(:right) or holding?(:d)
     end
+
+    @last_x = @x
+    @last_y = @y
+    @last_speed = @speed
   end
 
   def calc_boundry(track_tiles)
@@ -203,5 +215,15 @@ class Car < Chingu::GameObject
     high_y+=@tile_size*4
 
     @boundry = [low_x, low_y, high_x, high_y]
+  end
+
+  def inside_boundry?
+    b = false
+    if x.between?(@boundry[0], @boundry[2])
+      if y.between?(@boundry[1], @boundry[3])
+        b = true
+      end
+    end
+    return b
   end
 end
