@@ -28,7 +28,7 @@ module Game
           fill_rect(@car.boundry, Gosu::Color.rgba(255, 0, 0, 150), 100) if DEBUG
           @car.draw
         end
-        fill(@color)
+        fill(@color, -1)
       end
 
       def update

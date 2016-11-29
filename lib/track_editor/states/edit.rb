@@ -17,14 +17,8 @@ class Track::Editor::Edit < Chingu::GameState
     @tile_index  = 0
     @tile_type   = "asphalt"
     @track_tiles = ["assets/tracks/general/road/asphalt.png",
-                    "assets/tracks/general/road/asphalt_top.png",
-                    "assets/tracks/general/road/asphalt_bottom.png",
-                    "assets/tracks/general/road/asphalt_right.png",
                     "assets/tracks/general/road/asphalt_left.png",
-                    "assets/tracks/general/road/asphalt_left_top.png",
-                    "assets/tracks/general/road/asphalt_left_bottom.png",
-                    "assets/tracks/general/road/asphalt_right_top.png",
-                    "assets/tracks/general/road/asphalt_right_bottom.png"]
+                    "assets/tracks/general/road/asphalt_left_bottom.png"]
 
     @messages = []
     @save_file = nil
@@ -144,7 +138,6 @@ class Track::Editor::Edit < Chingu::GameState
   end
 
   def normalize(integer)
-    p (integer/@tile_size).to_f.round(1).to_s.split('.').first
     string = (integer/@tile_size).to_f.round(1).to_s
     array  = string.split('.')
     number = array[0].to_i
@@ -155,7 +148,7 @@ class Track::Editor::Edit < Chingu::GameState
   def button_up(id)
     case id
     when Gosu::KbEscape
-      if @tiles.count == 0
+      if tile_count == 0
         push_game_state(Track::Editor::Menu)
       else
         @messages << "Map has content, can not close! Press 'Shift'+'Escape' to force."

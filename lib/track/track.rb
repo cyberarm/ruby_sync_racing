@@ -5,6 +5,7 @@ class Track < Chingu::GameObject
   attr_reader :collision, :track, :tiles
 
   def setup
+    @tile_size = 64
     @track = Track::Parser.new(@options[:spec])
 
     @tiles = []
@@ -15,7 +16,7 @@ class Track < Chingu::GameObject
 
   def process_tiles
     @track.tiles.each do |tile|
-      @tiles << Tile.new(tile["type"], Gosu::Image[tile["image"]], tile["x"], tile["y"], nil)
+      @tiles << Tile.new(tile["type"], Gosu::Image[tile["image"]], tile["x"], tile["y"], tile["z"], tile["angle"], nil)
     end
   end
 
@@ -23,9 +24,9 @@ class Track < Chingu::GameObject
     super
     @tiles.each do |tile|
       if DEBUG && tile.color
-        tile.image.draw(tile.x, tile.y, 3, 1, 1, tile.color)
+        tile.image.draw_rot(tile.x+@tile_size/2, tile.y+@tile_size/2, tile.z, tile.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)#tile.color)
       else
-        tile.image.draw(tile.x, tile.y, 3, 1, 1)
+        tile.image.draw_rot(tile.x+@tile_size/2, tile.y+@tile_size/2, tile.z, tile.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)
       end
     end
   end
