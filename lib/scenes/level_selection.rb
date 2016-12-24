@@ -4,6 +4,8 @@ module Game
       def prepare
         title("Ruby Sync Racing")
         label("Choose Track", size: 50)
+        button("← Main Menu") {push_game_state(previous_game_state)}
+        label("", size: 25)
 
         process_tracks
       end

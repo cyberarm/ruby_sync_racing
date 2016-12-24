@@ -187,6 +187,8 @@ class Car < Chingu::GameObject
     @last_x = @x
     @last_y = @y
     @last_speed = @speed
+    if @speed.abs <= 0.008 then @speed = 0.0; end
+    if @speed == 0.0 then @braking = true; end
   end
 
   def calc_boundry(track_tiles)

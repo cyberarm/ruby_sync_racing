@@ -16,7 +16,10 @@ class Track < Chingu::GameObject
 
   def process_tiles
     @track.tiles.each do |tile|
-      @tiles << Tile.new(tile["type"], Gosu::Image[tile["image"]], tile["x"], tile["y"], tile["z"], tile["angle"], nil)
+       _tile = Tile.new(tile["type"], Gosu::Image[tile["image"]], tile["x"], tile["y"], tile["z"], tile["angle"], nil)
+       unless tile["z"] then _tile["z"] = 0; end
+       unless tile["angle"] then _tile["angle"] = 0; end
+      @tiles << _tile
     end
   end
 

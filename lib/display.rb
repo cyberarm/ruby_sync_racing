@@ -2,9 +2,8 @@ module Game
   class Display < Chingu::Window
     attr_accessor :show_cursor
 
-    def initialize(width = 1280, height = 832, fullscreen = false)
-      # super(width, height, fullscreen)
-      super(Gosu.screen_width, Gosu.screen_height, true)
+    def initialize(width = Gosu.screen_width, height = Gosu.screen_height, fullscreen = true)
+      super(width, height, fullscreen)
 
       @show_cursor = false
       $window.caption = "Ruby Sync Racing"

@@ -13,6 +13,17 @@ module Game
         @z = -5
 
         prepare if defined?(self.prepare)
+        @max_button_width = 0
+        @least_button_x   = Gosu.screen_width
+        @elements.each do |e|
+          if e.is_a?(Game::Button)
+            if e.text.x < @least_button_x; then @least_button_x = e.text.x; end
+            if e.rect[2] > @max_button_width then @max_button_width = e.rect[2]; end
+          end
+        end
+        p @max_button_width, @least_button_x
+        @elements.each {|e| if e.is_a?(Game::Button); e.rect[0] = @least_button_x-10;end}
+        @elements.each {|e| if e.is_a?(Game::Button); e.rect[2] = @max_button_width;end}
       end
 
       def draw
@@ -24,8 +35,8 @@ module Game
           elsif e.is_a?(Game::Button)
             e.text.draw
             fill_rect(e.rect, e.background_color)
-            if $window.mouse_x.between?(e.text.x-10, e.text.x+e.text.width+10)
-              if $window.mouse_y.between?(e.text.y-10, e.text.y+e.text.height+10)
+            if $window.mouse_x.between?(e.rect[0], e.rect[0]+e.rect[2])
+              if $window.mouse_y.between?(e.rect[1], e.rect[1]+e.rect[3])
                 fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212))
               end
             end
@@ -59,12 +70,6 @@ module Game
               e.value = e.text_input.text
               e.text.x = $window.width/2-e.text.width/2
               e.rect[0] = e.text.x-10
-
-              if e.text.width > 120
-                e.rect[2] = e.text.width+20
-              else
-                 e.rect[2] = 120
-              end
 
               $window.text_input = e.text_input unless $window.text_input == e.text_input
             end
@@ -153,8 +158,8 @@ module Game
         when Gosu::MsLeft
           @elements.each do |e|
             next unless e.is_a?(Game::Button) or e.is_a?(Game::Input)
-            if e.is_a?(Game::Button) && $window.mouse_x.between?(e.text.x-10, e.text.x+e.text.width+10)
-              if $window.mouse_y.between?(e.text.y-10, e.text.y+e.text.height+10)
+            if e.is_a?(Game::Button) && $window.mouse_x.between?(e.rect[0], e.rect[0]+e.rect[2])
+              if $window.mouse_y.between?(e.rect[1], e.rect[1]+e.rect[3])
                 e.proc.call if e.proc.is_a?(Proc)
               end
             end
