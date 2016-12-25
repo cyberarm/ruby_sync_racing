@@ -2,7 +2,7 @@
 class Track < Chingu::GameObject
   Tile = Struct.new(:type, :image, :x, :y, :z, :angle, :color)
 
-  attr_reader :collision, :track, :tiles
+  attr_reader :collision, :track, :tiles, :tile_size
 
   def setup
     @tile_size = 64
@@ -12,6 +12,7 @@ class Track < Chingu::GameObject
     process_tiles
 
     @collision = Track::Collision.new(@tiles)
+    @tile_size = @tiles.first.image.width
   end
 
   def process_tiles
