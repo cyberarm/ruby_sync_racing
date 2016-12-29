@@ -17,8 +17,6 @@ module Game
       end
 
       def process_cars
-        y = 180
-
         @cars.each_with_index do |car, i|
           _car = AbstractJSON.load(open(car).read)
 

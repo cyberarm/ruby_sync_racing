@@ -1,5 +1,6 @@
 /pkg/*
 data/tracks/custom/*.json
+data/config.ini
 vender/*
 mini/*
 logs/*.txt

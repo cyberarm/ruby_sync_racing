@@ -34,6 +34,9 @@ if not defined?(Ocra)
     puts "Show help:"
     puts "ruby #{__FILE__} --help"
   else
+    Config.ensure_config_exists
+    Config.new("./data/config.ini")
+
     Game::Display.new.show
 
     at_exit do

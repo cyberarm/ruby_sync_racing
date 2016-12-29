@@ -14,11 +14,11 @@ module Game
         @messages = label ""
 
         label "Enter a Username:"
-        username = edit_line "cyberarm"
+        username = edit_line Config.get(:player_username)#"cyberarm"
         label "Host:"
-        @host = edit_line "localhost"
+        @host = edit_line Config.get(:player_last_host)#"localhost"
         label "Port:"
-        @port = edit_line "56789"
+        @port = edit_line Config.get(:player_last_port)#"56789"
 
         button "Connect" do
           @tick   = 0
@@ -26,9 +26,10 @@ module Game
           @client = Game::Net::Client.new(@host.value, Integer(@port.value)) unless @locked
           Game::Net::Client.instance = @client
           if @client.connected?
-            puts "-=-=-=-=-=-=-=-=-=-="
-            puts "username.text.text - #{username.text.text}"
-            puts "-=-=-=-=-=-=-=-=-=-="
+            Config.set(:player_username, username.text.text)
+            Config.set(:player_last_host, @host.value)
+            Config.set(:player_last_port, @port.value)
+            Config.save
             data = {username: username.text.text}
             @client.transmit("auth", "connect", data, GameOverseer::Client::HANDSHAKE)
           end

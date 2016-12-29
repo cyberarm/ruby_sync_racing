@@ -64,7 +64,9 @@ module Game
           e.x = $window.width/2-e.width/2 if e.is_a?(Game::Text)
 
           if e.is_a?(Game::Input)
+            e.rect[2] = e.text.width+20
             e.value = e.text_input.text
+
             if e.focus == true
               e.text.text = e.text_input.text
               e.value = e.text_input.text

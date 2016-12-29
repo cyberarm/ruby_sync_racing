@@ -21,6 +21,8 @@ class Track::Editor::Edit < Chingu::GameState
                     "assets/tracks/general/road/asphalt_left_bottom.png"]
 
     @messages = []
+    @edit_modes = [:track, :decoration, :checkpoint, :spawn]
+    @edit_mode  = 0
     @save_file = nil
 
     if @options[:track_file]
@@ -155,7 +157,13 @@ class Track::Editor::Edit < Chingu::GameState
       end
 
     when Gosu::KbTab
-      @messages << "Mode switched [N/A]"
+      if @edit_mode < @edit_modes.count-1
+        @edit_mode+=1
+      else
+        @edit_mode = 0
+      end
+
+      @messages << "Mode switched [#{@edit_modes[@edit_mode]}]"
 
     when Gosu::MsLeft
       _x = normalize($window.mouse_x-@screen_vector.x)
