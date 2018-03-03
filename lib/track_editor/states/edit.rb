@@ -93,7 +93,7 @@ class Track::Editor::Edit < GameState
       end
     end
 
-    @mouse.draw_rot($window.mouse_x, $window.mouse_y, 15, @mouse_pos[:angle], 0.5, 0.5, 1, 1, Gosu::Color.rgba(255,255,255,150))
+    @mouse.draw_rot(normalize($window.mouse_x)*@tile_size+@tile_size/2, normalize($window.mouse_y)*@tile_size+@tile_size/2, 15, @mouse_pos[:angle], 0.5, 0.5, 1, 1, Gosu::Color.rgba(255,255,255,150))
   end
 
   def update
@@ -176,7 +176,6 @@ class Track::Editor::Edit < GameState
       if @tiles[_x] && !@tiles[_x][_y].is_a?(Track::Tile)
         @mouse_click.play
 
-        p @mouse
         @tiles[_x][_y] = Track::Tile.new(@tile_type,
                                          @mouse,
                                          _x*@tile_size,
