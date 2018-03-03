@@ -31,7 +31,7 @@ module Game
               car.angle     = player['angle']
               car.x         = player['x']
               car.y         = player['y']
-              car.image     = Gosu::Image['assets/cars/CAR.png']
+              car.image     = Gosu::Image.new('assets/cars/CAR.png')
 
               @players.push(car)
             else

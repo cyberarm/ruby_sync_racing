@@ -1,6 +1,6 @@
 module Game
   class Scene
-    class NetPlay < GameState
+    class NetPlay < Play
       attr_accessor :peer_cars
 
       def setup
@@ -12,21 +12,8 @@ module Game
 
         @peer_cars = []
 
-        @carfile = @options[:carfile] || "data/cars/test_car.json"
-
-        @car = Car.create(x: $window.width/2, y: $window.height/2, spec: @carfile)
-        @trackfile = @options[:trackfile] || "data/tracks/test_track.json"
-        @track = Track.create(spec: @trackfile)
-        @last_tile = nil
-
-        if @track.track.data["background"]
-          _background = @track.track.data["background"]
-          _color = Gosu::Color.rgba(_background["red"], _background["green"], _background["blue"], _background["alpha"])
-        else
-          _color = Gosu::Color.rgba(100,254,78,144) # Soft, forest green.
-        end
-
-        @color = _color
+        @options[:carfile] = @options[:carfile] ? @options[:carfile] : "data/cars/test_car.json"
+        super
       end
 
       def self.instance=instance
@@ -38,18 +25,20 @@ module Game
 
       def draw
         super
+        @car.draw
         fill(@color)
         Game::Net::GamePlay.instance.players.each do |_car|
           next unless _car.angle
-          _car.text.x = _car.x
-          _car.text.y = _car.y
+          _car.text.x = _car.x.to_f
+          _car.text.y = _car.y.to_f
           _car.text.draw
-          _car.image.draw_rot(_car.x, _car.y, 5, _car.angle)
+          _car.image.draw_rot(_car.x.to_f, _car.y.to_f, 5, _car.angle)
         end
       end
 
       def update
         super
+        @car.update
 
         tile = @track.collision.find(@car.x, @car.y)
         if tile
