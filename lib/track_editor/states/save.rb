@@ -27,10 +27,10 @@ class Track
         $window.flush
         $window.fill(Gosu::Color.rgba(0,0,0,180))
 
-        $window.fill_rect([@save.x-20, @save.y-20, @save.width+40, @save.height+40], Gosu::Color::GRAY, 1)
+        $window.fill_rect(@save.x-20, @save.y-20, @save.width+40, @save.height+40, Gosu::Color::GRAY, 1)
 
         pos = @name.font.text_width("track_#{$window.text_input.text[0...$window.text_input.caret_pos]}")
-        $window.fill_rect([@name.x+pos, @name.y, 3, 25], Gosu::Color::WHITE, 2) if @caret
+        $window.fill_rect(@name.x+pos, @name.y, 3, 25, Gosu::Color::WHITE, 2) if @caret
 
         @title.draw
         @name.draw

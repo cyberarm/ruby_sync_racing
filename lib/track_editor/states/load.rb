@@ -24,14 +24,14 @@ class Track
         super
         if @current
           @current.color = Gosu::Color::BLACK
-          $window.fill_rect([@current.x-4,@current.y-4, @current.width+8, @current.height+4], Gosu::Color::WHITE, 2)
+          $window.fill_rect(@current.x-4,@current.y-4, @current.width+8, @current.height+4, Gosu::Color::WHITE, 2)
         end
 
         @title.draw
         @sub_title.draw
 
         @tracks.each do |track|
-          $window.fill_rect([track.x-4,track.y-4, track.width+8, track.height+4], Gosu::Color::GRAY, 1)
+          $window.fill_rect(track.x-4,track.y-4, track.width+8, track.height+4, Gosu::Color::GRAY, 1)
           track.draw
         end
 

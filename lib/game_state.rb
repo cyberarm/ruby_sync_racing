@@ -39,6 +39,45 @@ class GameState
     end
   end
 
+  def image(image_path)
+    image = nil
+    GameObject::IMAGES.detect do |img, instance|
+      if img == image_path
+        image = instance
+        true
+      end
+    end
+
+    unless image
+      instance = Gosu::Image.new(image_path)
+      GameObject::IMAGES[image_path] = instance
+      image = instance
+    end
+
+    return image
+  end
+
+  def sample(sample_path)
+    sample = nil
+    GameObject::SAMPLES.detect do |smp, instance|
+      if smp == sample_path
+        sample = instance
+        true
+      end
+    end
+
+    unless sample
+      instance = Gosu::Sample.new(sample_path)
+      GameObject::SAMPLES[sample_path] = instance
+      sample = instance
+    end
+
+    return sample
+  end
+
+  def song()
+  end
+
   def destroy
     @options = nil
     @game_objects = nil

@@ -9,10 +9,10 @@ class Track::Editor::Edit < GameState
     @tiles = []
     @decorations = []
     @checkpoints = []
-    @mouse = Gosu::Image["assets/tracks/general/road/asphalt.png"]
+    @mouse = image("assets/tracks/general/road/asphalt.png")
     @mouse_pos = {x: 0, y: 0, angle: 0}
-    @mouse_click = Gosu::Sample["assets/track_editor/click.ogg"]
-    @error_sound = Gosu::Sample["assets/track_editor/error.ogg"]
+    @mouse_click = sample("assets/track_editor/click.ogg")
+    @error_sound = sample("assets/track_editor/error.ogg")
 
     @tile_index  = 0
     @tile_type   = "asphalt"
@@ -44,7 +44,7 @@ class Track::Editor::Edit < GameState
 
         if @tiles[_x] && !@tiles[_x][_y].is_a?(Track::Tile)
           _tile = Track::Tile.new(tile["type"],
-                                  Gosu::Image[tile["image"]],
+                                  image(tile["image"]),
                                   _x,
                                   _y,
                                   _z,
@@ -59,8 +59,8 @@ class Track::Editor::Edit < GameState
   def draw
     super
     # Draw background
-    $window.fill(Gosu::Color.rgba(100, 255, 78, 144))
-    $window.fill_rect([0, 0, $window.width, 20], Gosu::Color.rgba(255,255,255,140))
+    fill(Gosu::Color.rgba(100, 255, 78, 144))
+    $window.fill_rect(0, 0, $window.width, 20, Gosu::Color.rgba(255,255,255,140))
 
     # Draw grid
     ($window.width/@tile_size+1).times do |x|
@@ -177,7 +177,7 @@ class Track::Editor::Edit < GameState
         @mouse_click.play
 
         @tiles[_x][_y] = Track::Tile.new(@tile_type,
-                                         Gosu::Image[@mouse.name],
+                                         image(@mouse.name),
                                          _x*@tile_size,
                                          _y*@tile_size,
                                          _z,
@@ -200,13 +200,13 @@ class Track::Editor::Edit < GameState
     when Gosu::MsWheelUp, Gosu::KbJ
       @tile_index+=1
       @tile_index = @track_tiles.index(@track_tiles.first) if @tile_index > @track_tiles.count-1
-      @mouse = Gosu::Image[@track_tiles[@tile_index]]
+      @mouse = image(@track_tiles[@tile_index])
 
     when Gosu::MsWheelDown, Gosu::KbK
       @tile_index-=1
 
       @tile_index = @track_tiles.index(@track_tiles.last) if @tile_index < 0
-      @mouse = Gosu::Image[@track_tiles[@tile_index]]
+      @mouse = image(@track_tiles[@tile_index])
 
     when Gosu::MsMiddle
       _x = normalize($window.mouse_x)
