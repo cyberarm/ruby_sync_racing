@@ -176,8 +176,9 @@ class Track::Editor::Edit < GameState
       if @tiles[_x] && !@tiles[_x][_y].is_a?(Track::Tile)
         @mouse_click.play
 
+        p @mouse
         @tiles[_x][_y] = Track::Tile.new(@tile_type,
-                                         image(@mouse.name),
+                                         @mouse,
                                          _x*@tile_size,
                                          _y*@tile_size,
                                          _z,

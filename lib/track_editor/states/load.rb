@@ -57,7 +57,7 @@ class Track
       def button_up(id)
         case id
         when Gosu::KbEscape
-          push_game_state(previous_game_state, setup: false)
+          push_game_state(Track::Editor::Menu)
 
         when Gosu::MsLeft
           @tracks.detect do |track|
