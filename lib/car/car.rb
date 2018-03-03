@@ -76,10 +76,10 @@ class Car < GameObject
     @tick+=1
 
     unless inside_boundry?
-      puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if DEBUG
+      puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if $debug
       @x = @last_x
       @y = @last_y
-      @speed = 0.5#@last_speed
+      @speed = 0.5 if @speed > 0.5
     end
 
     if @yellow_up
@@ -143,8 +143,8 @@ class Car < GameObject
       end
     end
 
-    @debug.text = "Angle:#{self.angle.round(1)} Speed:#{@speed.round(1)} Pixels Per Frame - FPS:#{Gosu.fps}"
-    @name.x,@name.y = self.x-@name.width/2,self.y-self.height*self.scale-24
+    debug_text("X:#{self.x.round}\nY:#{self.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
+    @name.x,@name.y = self.x-@name.width/2, self.y-self.height
     @physics.update
 
     unless @speed >= @top_speed

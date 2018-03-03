@@ -27,7 +27,7 @@ class Track < GameObject
   def draw
     super
     @tiles.each do |tile|
-      if DEBUG && tile.color
+      if $debug && tile.color
         tile.image.draw_rot(tile.x+@tile_size/2, tile.y+@tile_size/2, tile.z, tile.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)#tile.color)
       else
         tile.image.draw_rot(tile.x+@tile_size/2, tile.y+@tile_size/2, tile.z, tile.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)

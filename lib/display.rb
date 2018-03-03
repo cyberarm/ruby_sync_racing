@@ -14,7 +14,7 @@ class Display < Gosu::Window
     if Config.get(:screen_width).downcase == "max" then dwidth = Gosu.screen_width; else dwidth = Integer(Config.get(:screen_width)); end
     if Config.get(:screen_height).downcase == "max" then dheight = Gosu.screen_height; else dheight = Integer(Config.get(:screen_height)); end
     if Integer(Config.get(:screen_fullscreen)) == 1 then dfullscreen = true; else dfullscreen = false; end
-    p dwidth, dheight, dfullscreen, Config.instance
+    p dwidth, dheight, dfullscreen, Config.instance if $debug
     super(dwidth, dheight, dfullscreen)
 
     @show_cursor = false

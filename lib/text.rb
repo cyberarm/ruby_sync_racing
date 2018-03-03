@@ -1,57 +1,101 @@
 module Game
   class Text
-    attr_accessor :x, :y, :z, :factor_x, :factor_y, :color, :options
-    attr_reader :text, :height, :size, :font, :alpha
+    SIZE = 20
+    FONT = "Arial"
+    COLOR= Gosu::Color::WHITE
+    BORDER_COLOR = Gosu::Color.rgba(255,255,255,75)
+    SHADOW = 1
 
-    def initialize(text, options)
-      @text = text
+    CACHE = {}
+
+    attr_accessor :text, :x, :y, :z, :size, :factor_x, :factor_y, :color, :shadow, :options
+    attr_reader :textobject
+
+    def initialize(text, options={})
+      @text = text || ""
       @options = options
+      @size = options[:size] || SIZE
+      @font = options[:font] || FONT
+      @x = options[:x] || 0
+      @y = options[:y] || 0
+      @z = options[:z] || 1025
+      @factor_x = options[:factor_x]  || 1
+      @factor_y = options[:factor_y]  || 1
+      @color    = options[:color]     || COLOR
+      @alignment= options[:alignment] || nil
+      @shadow   = true  if options[:shadow] == true
+      @shadow   = false if options[:shadow] == false
+      @shadow   = true if options[:shadow] == nil
+      @textobject = check_cache(@size, @font)
 
-      @options[:x] ||= 0
-      @options[:y] ||= 0
-      @options[:z] ||= 11
+      if @alignment
+        case @alignment
+        when :left
+          @x = 0+BUTTON_PADDING
+        when :center
+          @x = ($window.width/2)-(@textobject.text_width(@text)/2)
+        when :right
+          @x = $window.width-BUTTON_PADDING-@textobject.text_width(@text)
+        end
+      end
 
-      @options[:factor_x] ||= 1.0
-      @options[:factor_y] ||= 1.0
-
-      @options[:color] ||= Gosu::Color.rgba(255,255,255,255)
-      @options[:alpha] ||= @options[:color].alpha
-      @options[:size]  ||= 13
-      @options[:font]  ||= Gosu.default_font_name
-
-      @x = @options[:x]
-      @y = @options[:y]
-      @z = @options[:z]
-
-      @factor_x = @options[:factor_x]
-      @factor_y = @options[:factor_y]
-
-      @color = @options[:color]
-      @alpha = @options[:alpha]
-      self.alpha = @options[:alpha]
-      @size  = @options[:size]
-
-      @font = Gosu::Font.new($window, @options[:font], @options[:size])
-
-      @height = @font.height
+      return self
     end
 
-    def draw
-      @font.draw(@text, @x, @y, @z, @factor_x, @factor_y, @color)
-    end
+    def check_cache(size, font_name)
+      available = false
+      font      = nil
 
-    def update
+      if CACHE[size]
+        if CACHE[size][font_name]
+          font = CACHE[size][font_name]
+          available = true
+        else
+          available = false
+        end
+      else
+        available = false
+      end
+
+      unless available
+        font = Gosu::Font.new(@size, name: @font)
+        CACHE[@size] = {}
+        CACHE[@size][@font] = font
+      end
+
+      return font
     end
 
     def width
-      return @font.text_width(@text, @factor_x)
+      textobject.text_width(@text)
     end
 
-    def text=string
-      @width = @font.text_width(string, @factor_x)
-      @text  = string
+    def height
+      textobject.height
     end
 
+    def draw
+      if @shadow && !ARGV.join.include?("--no-shadow")
+        @shadow_alpha = 30 if @color.alpha > 30
+        @shadow_alpha = @color.alpha if @color.alpha <= 30
+        _color = Gosu::Color.rgba(@color.red, @color.green, @color.blue, @shadow_alpha)
+        @textobject.draw(@text, @x-SHADOW, @y, @z, @factor_x, @factor_y, _color)
+        @textobject.draw(@text, @x-SHADOW, @y-SHADOW, @z, @factor_x, @factor_y, _color)
+
+        @textobject.draw(@text, @x, @y-SHADOW, @z, @factor_x, @factor_y, _color)
+        @textobject.draw(@text, @x+SHADOW, @y-SHADOW, @z, @factor_x, @factor_y, _color)
+
+        @textobject.draw(@text, @x, @y+SHADOW, @z, @factor_x, @factor_y, _color)
+        @textobject.draw(@text, @x-SHADOW, @y+SHADOW, @z, @factor_x, @factor_y, _color)
+
+        @textobject.draw(@text, @x+SHADOW, @y, @z, @factor_x, @factor_y, _color)
+        @textobject.draw(@text, @x+SHADOW, @y+SHADOW, @z, @factor_x, @factor_y, _color)
+      end
+
+      @textobject.draw(@text, @x, @y, @z, @factor_x, @factor_y, @color)
+    end
+
+    def update; end
     def alpha=integer
       @color = Gosu::Color.rgba(@color.red, @color.green, @color.blue, integer)
     end

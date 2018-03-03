@@ -25,7 +25,7 @@ module Game
       def draw
         $window.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
           super
-          fill_rect(@car.boundry[0], @car.boundry[1], @car.boundry[2]+@track.tile_size*4, @car.boundry[3]+@track.tile_size*4, Gosu::Color.rgba(255, 0, 0, 150), 100) if DEBUG
+          fill_rect(@car.boundry[0], @car.boundry[1], @car.boundry[2]+@track.tile_size*4, @car.boundry[3]+@track.tile_size*4, Gosu::Color.rgba(255, 0, 0, 150), 100) if $debug
           @car.draw
         end
         fill(@color, -1)

@@ -1,8 +1,8 @@
 if ARGV.join.include?("--debug")
-  DEBUG = true
+  $debug = true
   puts "Debug mode"
 else
-  DEBUG = false
+  $debug = false
 end
 require 'bundler/setup'
 require "pp"

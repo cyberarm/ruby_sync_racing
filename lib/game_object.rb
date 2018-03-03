@@ -34,7 +34,7 @@ class GameObject
     @debug_color = Gosu::Color::GREEN
     @world_center_point = Vertex.new(0,0)
     setup
-    @debug_text = MultiLineText.new("", color: @debug_color, y: self.y-(self.height*self.scale), z: 9999)
+    @debug_text = Game::MultiLineText.new("", color: @debug_color, y: self.y-(self.height*self.scale), z: 9999)
     @debug_text.x = self.x
     if @radius == 0 || @radius == nil
       @radius = options[:radius] ? options[:radius] : defined?(@image.width) ? ((@image.width+@image.height)/4)*scale : 1
@@ -57,6 +57,7 @@ class GameObject
   end
 
   def update
+    update_debug_text if $debug
   end
 
   def debug_text(text)
@@ -65,7 +66,7 @@ class GameObject
 
   def update_debug_text
     @debug_text.x = self.x-(@debug_text.width/2)
-    @debug_text.y = self.y-((self.height)*self.scale)
+    @debug_text.y = self.y-(@debug_text.height+self.radius+self.height)
   end
 
   def scale
@@ -130,12 +131,13 @@ class GameObject
     $window.draw_line(x, y, @debug_color, _heading.x, _heading.y, @debug_color, 9999)
   end
 
+  # ((@image.width+@image.height)/4)*self.scale
   def width
-    @image ? @image.width : 0
+    @image ? @image.width*self.scale : 0
   end
 
   def height
-    @image ? @image.height : 0
+    @image ? @image.height*self.scale : 0
   end
 
   def pause
