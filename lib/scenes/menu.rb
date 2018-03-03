@@ -3,7 +3,7 @@ module Game
   Input  = Struct.new(:text, :rect, :focus, :secret, :value, :text_input)
 
   class Scene
-    class Menu < Chingu::GameState
+    class Menu < GameState
       def setup
         $window.show_cursor = true
 
@@ -34,22 +34,22 @@ module Game
             e.draw
           elsif e.is_a?(Game::Button)
             e.text.draw
-            fill_rect(e.rect, e.background_color)
+            fill_rect(e.rect[0], e.rect[1], e.rect[2], e.rect[3], e.background_color)
             if $window.mouse_x.between?(e.rect[0], e.rect[0]+e.rect[2])
               if $window.mouse_y.between?(e.rect[1], e.rect[1]+e.rect[3])
-                fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212))
+                fill_rect(e.rect[0], e.rect[1], e.rect[2], e.rect[3], Gosu::Color.rgba(56,45,89,212))
               end
             end
           elsif e.is_a?(Game::Input)
             e.text.draw
             if e.focus
-              fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212))
+              fill_rect(e.rect[0], e.rect[1], e.rect[2], e.rect[3], Gosu::Color.rgba(56,45,89,212))
             else
-              fill_rect(e.rect, Gosu::Color::GRAY)
+              fill_rect(e.rect[0], e.rect[1], e.rect[2], e.rect[3], Gosu::Color::GRAY)
             end
             if $window.mouse_x.between?(e.rect[0], e.rect[0]+e.rect[2])
               if $window.mouse_y.between?(e.rect[1], e.rect[1]+e.rect[3])
-                fill_rect(e.rect, Gosu::Color.rgba(56,45,89,212))
+                fill_rect(e.rect[0], e.rect[1], e.rect[2], e.rect[3], Gosu::Color.rgba(56,45,89,212))
               end
             end
           end

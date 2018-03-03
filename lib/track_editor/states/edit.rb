@@ -1,4 +1,4 @@
-class Track::Editor::Edit < Chingu::GameState
+class Track::Editor::Edit < GameState
   attr_accessor :save_file, :messages
 
   def setup

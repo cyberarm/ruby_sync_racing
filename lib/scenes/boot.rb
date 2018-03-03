@@ -1,6 +1,6 @@
 module Game
   class Scene
-    class Boot < Chingu::GameState
+    class Boot < GameState
       def setup
         @up = true
         @render = false

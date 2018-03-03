@@ -1,6 +1,6 @@
 class Track
   class Editor
-    class Menu < Chingu::GameState
+    class Menu < GameState
       def setup
         @title      = Game::Text.new("Track Editor", size: 50, y: 100)
         @sub_title  = Game::Text.new("Ruby Sync Racing", size: 40, y: 150)
@@ -17,9 +17,9 @@ class Track
         @load_track.draw
         @quit.draw
 
-        $window.fill_rect([@new_track.x-20, @new_track.y-20, @new_track.width+40, @new_track.height+40], Gosu::Color::GRAY, 1)
-        $window.fill_rect([@load_track.x-20, @load_track.y-20, @load_track.width+40, @load_track.height+40], Gosu::Color::GRAY, 1)
-        $window.fill_rect([@quit.x-20, @quit.y-20, @quit.width+40, @quit.height+40], Gosu::Color::GRAY, 1)
+        $window.fill_rect(@new_track.x-20, @new_track.y-20, @new_track.width+40, @new_track.height+40, Gosu::Color::GRAY, 1)
+        $window.fill_rect(@load_track.x-20, @load_track.y-20, @load_track.width+40, @load_track.height+40, Gosu::Color::GRAY, 1)
+        $window.fill_rect(@quit.x-20, @quit.y-20, @quit.width+40, @quit.height+40, Gosu::Color::GRAY, 1)
       end
 
       def update

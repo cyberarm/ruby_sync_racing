@@ -1,6 +1,6 @@
 module Game
   class Scene
-    class NetPlay < Chingu::GameState
+    class NetPlay < GameState
       attr_accessor :peer_cars
 
       def setup

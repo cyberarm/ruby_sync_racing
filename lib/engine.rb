@@ -1,8 +1,4 @@
-begin
-  require_all 'lib'
-rescue NameError => e
-  p e
-end
+require_all Dir.glob("lib/**/*.rb").reject { |f| f.include?("server/") }
 
 module Engine
   def self.timestamp

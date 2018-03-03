@@ -1,6 +1,6 @@
 class Track
   class Editor
-    class Save < Chingu::GameState
+    class Save < GameState
       class NameInput < Gosu::TextInput
         def filter(text_in)
           text_in.downcase.gsub(/[^A-z0-9]/, '')

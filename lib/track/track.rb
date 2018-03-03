@@ -1,5 +1,5 @@
  # Contains all the tiles for track.
-class Track < Chingu::GameObject
+class Track < GameObject
   Tile = Struct.new(:type, :image, :x, :y, :z, :angle, :color)
 
   attr_reader :collision, :track, :tiles, :tile_size
@@ -17,7 +17,7 @@ class Track < Chingu::GameObject
 
   def process_tiles
     @track.tiles.each do |tile|
-       _tile = Tile.new(tile["type"], Gosu::Image[tile["image"]], tile["x"], tile["y"], tile["z"], tile["angle"], nil)
+       _tile = Tile.new(tile["type"], image(tile["image"]), tile["x"], tile["y"], tile["z"], tile["angle"], nil)
        unless tile["z"] then _tile["z"] = 0; end
        unless tile["angle"] then _tile["angle"] = 0; end
       @tiles << _tile

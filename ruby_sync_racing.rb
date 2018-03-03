@@ -8,18 +8,21 @@ require 'bundler/setup'
 require "pp"
 require "set"
 
-require "chingu"
+require "gosu"
 require "oj"
 # require "chipmunk"
 require "gameoverseer/version"
 require "gameoverseer/client"
 
+require_relative "lib/require_all"
 require_relative "lib/engine" # require all the things.
 Vector2D = Struct.new(:x, :y)
 Vector3D = Struct.new(:x, :y, :z)
 
 if not defined?(Ocra)
   if ARGV.join.include?("--editor")
+    Config.ensure_config_exists
+    Config.new("./data/config.ini")
     if ARGV.join.include?("--debug")
       Track::Editor::Window.new(1000, 700, false).show
     else
@@ -37,7 +40,7 @@ if not defined?(Ocra)
     Config.ensure_config_exists
     Config.new("./data/config.ini")
 
-    Game::Display.new.show
+    Display.new.show
 
     at_exit do
       @client = Game::Net::Client.instance

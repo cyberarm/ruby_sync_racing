@@ -1,6 +1,6 @@
 class Track
   class Editor
-    class Load < Chingu::GameState
+    class Load < GameState
       def setup
         @title = Game::Text.new("Track Editor", size: 50, y: 30)
         @sub_title = Game::Text.new("Load Track", size: 40, y: 80)

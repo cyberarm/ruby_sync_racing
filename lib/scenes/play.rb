@@ -1,13 +1,13 @@
 module Game
   class Scene
-    class Play < Chingu::GameState
+    class Play < GameState
       def setup
         $window.show_cursor = false
         @screen_vector = Vector2D.new(0, 0)
 
-        @car = Car.new(x: $window.width/2, y: $window.height/2, spec: @options[:carfile])
+        @car = Car.new(x: $window.width/2, y: $window.height/2, spec: @options[:carfile], auto_manage: false)
         @trackfile = @options[:trackfile] || "data/tracks/test_track.json"
-        @track = Track.create(spec: @trackfile)
+        @track = Track.new(spec: @trackfile)
         @last_tile = nil
 
         if @track.track.data["background"]
@@ -25,7 +25,7 @@ module Game
       def draw
         $window.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
           super
-          fill_rect([@car.boundry[0], @car.boundry[1], @car.boundry[2]+@track.tile_size*4, @car.boundry[3]+@track.tile_size*4], Gosu::Color.rgba(255, 0, 0, 150), 100) if DEBUG
+          fill_rect(@car.boundry[0], @car.boundry[1], @car.boundry[2]+@track.tile_size*4, @car.boundry[3]+@track.tile_size*4, Gosu::Color.rgba(255, 0, 0, 150), 100) if DEBUG
           @car.draw
         end
         fill(@color, -1)

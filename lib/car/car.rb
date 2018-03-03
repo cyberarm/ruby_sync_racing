@@ -1,14 +1,14 @@
-class Car < Chingu::GameObject
+class Car < GameObject
   attr_reader :speed, :braking, :changed, :boundry
 
   def setup
-    self.zorder = 5
-    @car_data = Car::Parser.new(@options[:spec]).data
+    self.z = 5
+    @car_data = CarParser.new(@options[:spec]).data
     @last_x, @last_y, @last_speed = 0, 0, 0
 
-    @image = Gosu::Image[@car_data["spec"]["image"]]
-    self.factor = @car_data["spec"]["factor"]
-    @physics = Car::Physics.new(self)
+    @image = image(@car_data["spec"]["image"])
+    self.scale = @car_data["spec"]["factor"]
+    @physics = CarPhysics.new(self)
 
     @debug = Game::Text.new("", size: 50)
     @username = @options[:username] || "#{@car_data["name"]}"
@@ -23,7 +23,7 @@ class Car < Chingu::GameObject
     # @engine = Gosu::Sample["assets/sound/engine.wav"]
     # @engine_instance = nil
 
-    @brake = Gosu::Sample["assets/sound/brakes.ogg"]
+    @brake = sample("assets/sound/brakes.ogg")
     @brake_instance = nil
     @brake_volume   = 0.0
 
@@ -44,10 +44,10 @@ class Car < Chingu::GameObject
       # TODO: fade between 2 colors instead of using Random
       _yellow = Gosu::Color.rgb(@yellow_int, @yellow_int, 0)
       @car_data["spec"]["lights"]["head_lights"].each do |light|
-        $window.fill_rect([(self.x-(self.width/2))+light["left"],
+        $window.fill_rect((self.x-(self.width/2))+light["left"],
                            (self.y-(self.height/2))+light["top"],
                            light["width"],
-                           light["height"]], _yellow, 6)
+                           light["height"], _yellow, 6)
       end
 
       if @braking
@@ -62,10 +62,10 @@ class Car < Chingu::GameObject
       end
 
       @car_data["spec"]["lights"]["tail_lights"].each do |light|
-        $window.fill_rect([(self.x-(self.width/2))+light["left"],
+        $window.fill_rect((self.x-(self.width/2))+light["left"],
                            (self.y-(self.height/2))+light["top"],
                            light["width"],
-                           light["height"]], _red, 6)
+                           light["height"], _red, 6)
       end
     end
   end
@@ -144,13 +144,13 @@ class Car < Chingu::GameObject
     end
 
     @debug.text = "Angle:#{self.angle.round(1)} Speed:#{@speed.round(1)} Pixels Per Frame - FPS:#{Gosu.fps}"
-    @name.x,@name.y = self.x-@name.width/2,self.y-self.height*self.factor-24
+    @name.x,@name.y = self.x-@name.width/2,self.y-self.height*self.scale-24
     @physics.update
 
     unless @speed >= @top_speed
       @braking = false
 
-      if holding?(:up)  or holding?(:w)
+      if button_down?(Gosu::KbUp) or button_down?(Gosu::KbW)
         if @speed <= -0.01
           @braking = true
           @speed+=@break_speed
@@ -162,7 +162,7 @@ class Car < Chingu::GameObject
     end
 
     unless @speed <= -@top_speed
-      if holding?(:down)  or holding?(:s)
+      if button_down?(Gosu::KbDown)  or button_down?(Gosu::KbS)
         if @speed >= 0.01
           @speed-=@break_speed
           @braking = true
@@ -177,11 +177,11 @@ class Car < Chingu::GameObject
     @speed+=@drag if @speed <= -0.00
 
     if @speed > 0.0
-      @angle-=2 if holding?(:left) or holding?(:a)
-      @angle+=2 if holding?(:right) or holding?(:d)
+      @angle-=2 if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
+      @angle+=2 if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
     elsif @speed < 0.0
-      @angle+=2 if holding?(:left) or holding?(:a)
-      @angle-=2 if holding?(:right) or holding?(:d)
+      @angle+=2 if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
+      @angle-=2 if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
     end
 
     @last_x = @x
