@@ -1,11 +1,21 @@
 class Track
   class Editor
     class EditorContainer < GameState
-      Selector = Struct.new(:name, :text, :klass)
+      Selector = Struct.new(:name, :text, :instance, :color, :selected)
 
+      def self.instance
+        @instance
+      end
+
+      def self.instance=(i)
+        @instance = i
+      end
+
+      attr_accessor :active_selector
       def setup
+        EditorContainer.instance = self
+
         @mode_selectors = []
-        @font = Gosu::Font.new(36)
 
         prepare
       end
@@ -13,9 +23,9 @@ class Track
       def prepare
       end
 
-      def selector(name, klass)
+      def selector(name, instance, color = Gosu::Color.rgb(rand(200), rand(200), rand(200)), selected = false)
         text = Game::Text.new(name, size: 36, y: 10)
-        @mode_selectors << Selector.new(name, text, klass)
+        @mode_selectors << Selector.new(name, text, instance, color, selected)
       end
 
       def draw_mode_selectors
@@ -23,36 +33,59 @@ class Track
         width = $window.width.to_f/@mode_selectors.count
         @mode_selectors.each_with_index do |s, i|
           s.text.x = (width*i)-(s.text.width/2)+width/2
-          if mouse_over?(s.text)
-            $window.fill_rect(width*i, 0, width, 50, Gosu::Color.rgb(0,0,50*(i+1)))
+          if mouse_over?(width*i, 0, width, 50)
+            $window.fill_rect(width*i, 0, width, 50, lighten(s.color))
+            $window.fill_rect(width*i, 45, width, 5, darken(s.color), 5) if s == @active_selector
+            $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
           else
-            $window.fill_rect(width*i, 0, width, 50, Gosu::Color.rgb(0,0,25*(i+1)))
+            $window.fill_rect(width*i, 0, width, 50, s.color)
+            $window.fill_rect(width*i, 45, width, 5, darken(s.color), 5) if s == @active_selector
+            $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
           end
+          $window.fill_rect(width*(i+1), 0, 2, 50, Gosu::Color::BLACK, 10)
           s.text.draw
         end
+      end
+
+      def lighten(color, amount = 25)
+        return Gosu::Color.rgb(color.red+amount, color.green+amount, color.blue+amount)
+      end
+
+      def darken(color, amount = 25)
+        return Gosu::Color.rgb(color.red-amount, color.green-amount, color.blue-amount)
       end
 
       def draw
         # Container selection buttons
         draw_mode_selectors
 
-        # Tile selection
-        $window.fill_rect(0, 50, 80, $window.height-50, Gosu::Color.rgb(0,150,0))
-
-        # Undefined? Properies Menu?
-        $window.fill_rect(80, $window.height-100, $window.width-80, 100, Gosu::Color.rgb(50,0,0))
+        @active_selector.instance.draw if @active_selector && @active_selector
       end
 
       def update
+        @active_selector.instance.update if @active_selector && @active_selector
       end
 
       def button_up(id)
         $window.close if id == Gosu::KbEscape
+
+        case id
+        when Gosu::MsLeft
+          width = $window.width.to_f/@mode_selectors.count
+          @mode_selectors.each_with_index do |s, i|
+            if mouse_over?(width*i, 0, width, 50)
+              @active_selector = s
+              @active_selector.selected = true
+            end
+          end
+        end
+
+        @active_selector.instance.button_up(id) if @active_selector && @active_selector.respond_to?(:button_up)
       end
 
-      def mouse_over?(text_object)
-        if $window.mouse_x.between?(text_object.x-20, text_object.x+text_object.width+20)
-          if $window.mouse_y.between?(text_object.y-20, text_object.y+text_object.height+20)
+      def mouse_over?(x, y, width, height)
+        if $window.mouse_x.between?(x+1, x-1+width)
+          if $window.mouse_y.between?(y+1, y-1+height)
             true
           else
             false
