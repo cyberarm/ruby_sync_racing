@@ -9,12 +9,12 @@ GEM
     gameoverseer-client (0.0.1)
       multi_json
       renet (>= 0.2.0)
-    gosu (0.13.2)
-    gosu (0.13.2-x64-mingw32)
-    gosu (0.13.2-x86-mingw32)
+    gosu (0.13.3)
+    gosu (0.13.3-x64-mingw32)
+    gosu (0.13.3-x86-mingw32)
     multi_json (1.13.1)
-    oj (3.4.0)
-    rake (12.3.0)
+    oj (3.5.1)
+    rake (12.3.1)
     renet (0.2.2)
 
 PLATFORMS

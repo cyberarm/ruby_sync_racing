@@ -11,6 +11,7 @@ class Track
         @tick = 0
         @caret= true
 
+        @previous_game_state = @options[:edit_state]
         @tiles = @options[:tiles]
         @decorations = @options[:decorations]
         @checkpoints = @options[:checkpoints]
@@ -23,13 +24,13 @@ class Track
 
       def draw
         super
-        previous_game_state.draw
+        @previous_game_state.draw
         $window.flush
-        $window.fill(Gosu::Color.rgba(0,0,0,180))
+        $window.fill_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0,180))
 
         $window.fill_rect(@save.x-20, @save.y-20, @save.width+40, @save.height+40, Gosu::Color::GRAY, 1)
 
-        pos = @name.font.text_width("track_#{$window.text_input.text[0...$window.text_input.caret_pos]}")
+        pos = @name.textobject.text_width("track_#{$window.text_input.text[0...$window.text_input.caret_pos]}")
         $window.fill_rect(@name.x+pos, @name.y, 3, 25, Gosu::Color::WHITE, 2) if @caret
 
         @title.draw
@@ -42,9 +43,9 @@ class Track
         super
 
         # Auto save and return to Edit if Edit.save_file is set.
-        if previous_game_state && defined?(previous_game_state.save_file) && previous_game_state.save_file
-          save_track(previous_game_state.save_file)
-          push_game_state(previous_game_state, setup: false)
+        if @previous_game_state && defined?(@previous_game_state.save_file) && @previous_game_state.save_file
+          save_track(@previous_game_state.save_file)
+          push_game_state(@previous_game_state)
         end
 
         @tick+=1
@@ -68,17 +69,17 @@ class Track
       def button_up(id)
         case id
         when Gosu::KbEscape
-          push_game_state(previous_game_state, setup: false)
+          push_game_state(@previous_game_state)
 
         when Gosu::KbEnter
           save_track(@name.text)
-          previous_game_state.save_file = @name.text
-          push_game_state(previous_game_state, setup: false)
+          @previous_game_state.save_file = @name.text
+          push_game_state(@previous_game_state)
 
         when Gosu::KbReturn
           save_track(@name.text)
-          previous_game_state.save_file = @name.text
-          push_game_state(previous_game_state, setup: false)
+          @previous_game_state.save_file = @name.text
+          push_game_state(@previous_game_state)
         end
       end
 
@@ -113,7 +114,7 @@ class Track
           File.open("data/tracks/custom/#{name.downcase}", "w").write(data)
         end
 
-        previous_game_state.messages << "Saved track: #{name.downcase}"
+        @previous_game_state.messages << "Saved track: #{name.downcase}"
       end
     end
   end
