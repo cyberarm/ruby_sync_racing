@@ -1,5 +1,8 @@
 class Track
   class Editor
+    Button = Struct.new(:text, :image, :x, :y, :block)
+    Label  = Struct.new(:text, :x, :y)
+
     class EditorContainer < GameState
       Selector = Struct.new(:name, :text, :instance, :color, :selected)
 

@@ -2,6 +2,7 @@ class Track
   class Editor
     class EditorMode
       def initialize
+        @editor = EditorContainer.instance
         @sidebar = Sidebar.new
 
         setup if defined?(setup)
@@ -24,11 +25,11 @@ class Track
       end
 
       def sidebar_button(text_or_image, &block)
-        @sidebar.add_button(object, block)
+        @sidebar.add_button(text_or_image, block)
       end
 
-      def sidebar_label(text_or_image, &block)
-        @sidebar.add_button(object, block)
+      def sidebar_label(text)
+        @sidebar.add_label(text)
       end
 
       def properties
