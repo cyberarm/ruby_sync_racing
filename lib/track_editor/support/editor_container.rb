@@ -4,7 +4,7 @@ class Track
     Label  = Struct.new(:text, :x, :y)
 
     class EditorContainer < GameState
-      Selector = Struct.new(:name, :text, :instance, :color, :selected)
+      Selector = Struct.new(:name, :text, :klass, :color, :selected, :instance)
 
       def self.instance
         @instance
@@ -21,14 +21,18 @@ class Track
         @mode_selectors = []
 
         prepare
+
+        @active_selector = @mode_selectors.first
+        @active_selector.instance = @mode_selectors.first.klass.new
+        @active_selector.selected = true
       end
 
       def prepare
       end
 
-      def selector(name, instance, color = Gosu::Color.rgb(rand(200), rand(200), rand(200)), selected = false)
+      def selector(name, klass, color = Gosu::Color.rgb(rand(200), rand(200), rand(200)), selected = false)
         text = Game::Text.new(name, size: 36, y: 10)
-        @mode_selectors << Selector.new(name, text, instance, color, selected)
+        @mode_selectors << Selector.new(name, text, klass, color, selected)
       end
 
       def draw_mode_selectors
@@ -66,11 +70,11 @@ class Track
         # Container selection buttons
         draw_mode_selectors
 
-        @active_selector.instance.draw if @active_selector && @active_selector
+        @active_selector.instance.draw if @active_selector && @active_selector.instance
       end
 
       def update
-        @active_selector.instance.update if @active_selector && @active_selector
+        @active_selector.instance.update if @active_selector && @active_selector.instance
       end
 
       def button_up(id)
@@ -82,6 +86,7 @@ class Track
           @mode_selectors.each_with_index do |s, i|
             if mouse_over?(width*i, 0, width, 50)
               @active_selector = s
+              @active_selector.instance = s.klass.new unless s.instance.is_a?(s.klass)
               @active_selector.selected = true
             end
           end

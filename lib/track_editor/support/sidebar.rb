@@ -2,31 +2,44 @@ class Track
   class Editor
     class Sidebar
       PADDING = 5
-      BACKGROUND = Gosu::Color.rgb(45,45,76)
-      HOVER_BACKGROUND = Gosu::Color.rgb(56,45,89)
+      # BACKGROUND = Gosu::Color.rgb(45,45,76)
+      # HOVER_BACKGROUND = Gosu::Color.rgb(56,45,89)
 
       def initialize
         @elements = []
         @widest_sidebar_element = 100
         @relative_y = 50
+
+        @editor = EditorContainer.instance
+        @background_color = @editor.darken(@editor.active_selector.color, 50)
+        @hover_background_color = @editor.darken(@background_color)
+        @active_background_color = @editor.darken(@hover_background_color)
       end
 
       def draw
-        $window.fill_rect(0, 50, @widest_sidebar_element, $window.height-50, EditorContainer.instance.darken(EditorContainer.instance.active_selector.color))
+        $window.fill_rect(0, 50, @widest_sidebar_element, $window.height-50, @editor.darken(@editor.active_selector.color))
         @elements.each do |element|
           if element.is_a?(Button)
             if element.text
-              if EditorContainer.instance.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
-                $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), HOVER_BACKGROUND)
+              if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
+                if $window.button_down?(Gosu::MsLeft)
+                  $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @active_background_color)
+                else
+                  $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @hover_background_color)
+                end
               else
-                $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), BACKGROUND)
+                $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @background_color)
               end
               element.text.draw
             elsif element.image
-              if EditorContainer.instance.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
-                $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), HOVER_BACKGROUND)
+              if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
+                if $window.button_down?(Gosu::MsLeft)
+                  $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @active_background_color)
+                else
+                  $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @hover_background_color)
+                end
               else
-                $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), BACKGROUND)
+                $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @background_color)
               end
               element.image.draw(element.x, element.y,10)
             end
@@ -46,11 +59,11 @@ class Track
           @elements.each do |element|
             if element.is_a?(Button)
               if element.text
-                if EditorContainer.instance.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
+                if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
                   element.block.call if element.block
                 end
               elsif element.image
-                if EditorContainer.instance.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
+                if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
                   element.block.call if element.block
                 end
               end
