@@ -1,6 +1,8 @@
 class Track
   class Editor
     class EditorMode
+
+      attr_reader :sidebar
       def initialize
         @editor = EditorContainer.instance
         @sidebar = Sidebar.new
@@ -18,10 +20,6 @@ class Track
 
       def button_up(id)
         @sidebar.button_up(id)
-      end
-
-      def sidebar
-        @sidebar.draw
       end
 
       def sidebar_button(text_or_image, &block)

@@ -2,12 +2,11 @@ class Track
   class Editor
     class Sidebar
       PADDING = 5
-      # BACKGROUND = Gosu::Color.rgb(45,45,76)
-      # HOVER_BACKGROUND = Gosu::Color.rgb(56,45,89)
 
+      attr_reader :widest_element
       def initialize
         @elements = []
-        @widest_sidebar_element = 100
+        @widest_element = 100
         @relative_y = 50
 
         @editor = EditorContainer.instance
@@ -17,7 +16,7 @@ class Track
       end
 
       def draw
-        $window.fill_rect(0, 50, @widest_sidebar_element, $window.height-50, @editor.darken(@editor.active_selector.color))
+        $window.fill_rect(0, 50, @widest_element, $window.height-50, @editor.darken(@editor.active_selector.color))
         @elements.each do |element|
           if element.is_a?(Button)
             if element.text
@@ -44,7 +43,7 @@ class Track
               element.image.draw(element.x, element.y,10)
             end
           elsif element.is_a?(Label)
-              element.text.x = @widest_sidebar_element - (@widest_sidebar_element/2)-(element.text.width/2)
+              element.text.x = @widest_element - (@widest_element/2)-(element.text.width/2)
             element.text.draw
           end
         end
@@ -122,7 +121,7 @@ class Track
             e.x = ((widest/2)-(e.image.width/2)) if e.image
           end
         end
-        @widest_sidebar_element = widest
+        @widest_element = widest
       end
     end
   end

@@ -5,6 +5,7 @@ class Track
 
     class EditorContainer < GameState
       Selector = Struct.new(:name, :text, :klass, :color, :selected, :instance)
+      BoundingBox = Struct.new(:x, :y, :width, :height)
 
       def self.instance
         @instance
@@ -16,7 +17,7 @@ class Track
 
       attr_accessor :active_selector, :use_mouse_image
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
-      attr_reader :mouse, :mouse_position
+      attr_reader :mouse, :mouse_position, :active_area
       def setup
         EditorContainer.instance = self
 
@@ -38,6 +39,8 @@ class Track
         @active_selector = @mode_selectors.first
         @active_selector.instance = @mode_selectors.first.klass.new
         @active_selector.selected = true
+
+        @active_area = BoundingBox.new(0, 50, $window.width, $window.height) # set x position dynamically
       end
 
       def prepare
@@ -71,6 +74,24 @@ class Track
         end
       end
 
+      def draw_map
+        Gosu.clip_to(@active_area.x, @active_area.y, @active_area.width, @active_area.height) do
+          @tiles.each do |tile|
+          end
+
+          @decorations.each do |decoration|
+          end
+
+          @checkpoints.each do |checkpoint|
+          end
+
+          @starting_positions.each do |starting_position|
+          end
+
+          @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 100, @mouse_position[:angle]) if @mouse  && @use_mouse_image
+        end
+      end
+
       def lighten(color, amount = 25)
         return Gosu::Color.rgb(color.red+amount, color.green+amount, color.blue+amount)
       end
@@ -85,11 +106,13 @@ class Track
 
         @active_selector.instance.draw if @active_selector && @active_selector.instance
 
-        @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 0, @mouse_position[:angle]) if @mouse  && @use_mouse_image
+        draw_map
       end
 
       def update
         @mouse_position[:x], @mouse_position[:y] = $window.mouse_x, $window.mouse_y
+
+        @active_area.x = @active_selector.instance.sidebar.widest_element if @active_selector && @active_selector.instance
 
         @active_selector.instance.update if @active_selector && @active_selector.instance
       end
