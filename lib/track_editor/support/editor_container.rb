@@ -21,6 +21,7 @@ class Track
       attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
+        @screen_vector = Vector2D.new(0, 0)
 
         @mode_selectors = []
         @tiles = []
@@ -77,18 +78,20 @@ class Track
 
       def draw_map
         Gosu.clip_to(@active_area.x, @active_area.y, @active_area.width, @active_area.height) do
-          @tiles.each do |tile|
-          end
+          Gosu.translate(@screen_vector.x, @screen_vector.y) do
+            @tiles.each do |tile|
+              image(tile.image).draw_rot(tile.x, tile.y, tile.z, tile.angle)
+            end
 
-          @decorations.each do |decoration|
-          end
+            @decorations.each do |decoration|
+            end
 
-          @checkpoints.each do |checkpoint|
-          end
+            @checkpoints.each do |checkpoint|
+            end
 
-          @starting_positions.each do |starting_position|
+            @starting_positions.each do |starting_position|
+            end
           end
-
           @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 100, @mouse_position[:angle]) if @mouse  && @use_mouse_image
         end
       end
@@ -116,6 +119,8 @@ class Track
         @active_area.x = @active_selector.instance.sidebar.widest_element if @active_selector && @active_selector.instance
 
         @active_selector.instance.update if @active_selector && @active_selector.instance
+
+        update_map_offset
       end
 
       def button_up(id)
@@ -136,13 +141,54 @@ class Track
         @active_selector.instance.button_up(id) if @active_selector
       end
 
+      def update_map_offset(sensitivity = 3, speed = 1)
+        if $window.mouse_x.between?($window.width-sensitivity, $window.width)
+          @screen_vector.x-=speed
+        elsif $window.mouse_x.between?(0, 0+sensitivity)
+          @screen_vector.x+=speed
+        end
+
+        if $window.button_down?(Gosu::KbRight)
+          @screen_vector.x-=speed
+        end
+        if $window.button_down?(Gosu::KbLeft)
+          @screen_vector.x+=speed
+        end
+
+        if $window.mouse_y.between?($window.height-sensitivity, $window.height)
+          @screen_vector.y-=speed
+        end
+        if $window.mouse_y.between?(0, 0+sensitivity)
+          @screen_vector.y+=speed
+        end
+
+        if $window.button_down?(Gosu::KbUp)
+          @screen_vector.y+=speed
+        end
+        if $window.button_down?(Gosu::KbDown)
+          @screen_vector.y-=speed
+        end
+      end
+
       def mouse_image(image)
         @mouse = image
       end
 
+      def mouse_in?(bounding_box)
+        if $window.mouse_x.between?(bounding_box.x, bounding_box.x+bounding_box.width)
+          if $window.mouse_y.between?(bounding_box.y, bounding_box.y+bounding_box.height)
+            true
+          else
+            false
+          end
+        else
+          false
+        end
+      end
+
       def mouse_over?(x, y, width, height)
         if $window.mouse_x.between?(x+1, x-1+width)
-          if $window.mouse_y.between?(y+1, y-1+height)
+          if $window.mouse_y.between?(y, y-1+height)
             true
           else
             false
