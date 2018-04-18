@@ -22,8 +22,8 @@ class Track
         @sidebar.button_up(id)
       end
 
-      def sidebar_button(text_or_image, &block)
-        @sidebar.add_button(text_or_image, block)
+      def sidebar_button(text_or_image, tooltip = nil, &block)
+        @sidebar.add_button(text_or_image, tooltip, block)
       end
 
       def sidebar_label(text)

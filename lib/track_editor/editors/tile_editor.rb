@@ -4,6 +4,24 @@ class Track
       def setup
         @current_tile_image_path = nil
         @grid = {}
+        @tiles_list = {
+          "asphalt": [
+            "assets/tracks/general/road/asphalt.png",
+            "assets/tracks/general/road/asphalt_left.png",
+            "assets/tracks/general/road/asphalt_left_bottom.png"
+          ],
+          "dirt": [
+            "assets/tracks/general/road/clay.png",
+            "assets/tracks/general/road/sandstone.png",
+            "assets/tracks/general/road/grass.png"
+          ],
+          "water": [
+            "assets/tracks/general/road/clay.png"
+          ],
+          "ice": [
+
+          ]
+        }
 
         sidebar_label("Tools")
         sidebar_button("Add Tile") do
@@ -25,48 +43,26 @@ class Track
         end
 
         sidebar_label("Tiles")
-        sidebar_button(@editor.image("assets/tracks/general/road/asphalt.png")) do
-          @current_tile_image_path = "assets/tracks/general/road/asphalt.png"
-          @editor.mouse_image(@editor.image("assets/tracks/general/road/asphalt.png"))
-          @editor.use_mouse_image = true
-        end
-        sidebar_button(@editor.image("assets/tracks/general/road/asphalt_bottom.png")) do
-          @current_tile_image_path = "assets/tracks/general/road/asphalt_bottom.png"
-          @editor.mouse_image(@editor.image("assets/tracks/general/road/asphalt_bottom.png"))
-          @editor.use_mouse_image = true
-        end
-        sidebar_button(@editor.image("assets/tracks/general/road/asphalt_left_bottom.png")) do
-          @current_tile_image_path = "assets/tracks/general/road/asphalt_left_bottom.png"
-          @editor.mouse_image(@editor.image("assets/tracks/general/road/asphalt_left_bottom.png"))
-          @editor.use_mouse_image = true
-        end
-        sidebar_button(@editor.image("assets/tracks/general/road/clay.png")) do
-          @editor.mouse_image(@editor.image("assets/tracks/general/road/clay.png"))
-          @editor.use_mouse_image = true
-        end
-        sidebar_button(@editor.image("assets/tracks/general/road/grass.png")) do
-          @editor.mouse_image(@editor.image("assets/tracks/general/road/grass.png"))
-          @editor.use_mouse_image = true
-        end
-        sidebar_button(@editor.image("assets/tracks/general/road/sandstone.png")) do
-          @editor.mouse_image(@editor.image("assets/tracks/general/road/sandstone.png"))
-          @editor.use_mouse_image = true
-        end
-        sidebar_button(@editor.image("assets/tracks/general/road/water.png")) do
-          @editor.mouse_image(@editor.image("assets/tracks/general/road/water.png"))
-          @editor.use_mouse_image = true
+        @tiles_list.each do |type, list|
+          sidebar_label(type.capitalize)
+          list.each do |tile|
+            sidebar_button(@editor.image(tile), tile.split('/').last.split('.').first) do
+              @current_tile_image_path = tile
+              @editor.mouse_image(@editor.image(tile))
+              @editor.use_mouse_image = true
+            end
+          end
         end
       end
 
       def add_tile(type, image_path, angle)
-        x = @editor.normalize_map_position($window.mouse_x, true)
-        y = @editor.normalize_map_position($window.mouse_y, false)
+        x = @editor.normalize_map_position($window.mouse_x, true)-@editor.mouse.width/2
+        y = @editor.normalize_map_position($window.mouse_y, false)-@editor.mouse.height/2
         z = 0
-        p x, y
         if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
           @editor.error_sound.play
         else
-          tile = Track::Tile.new(type, image_path, x-@editor.mouse.width/2, y-@editor.mouse.height/2, z, angle)
+          tile = Track::Tile.new(type, image_path, x, y, z, angle)
           @grid["#{x}"] = {} unless @grid["#{x}"].is_a?(Hash)
           @grid["#{x}"]["#{y}"] = tile
           @editor.tiles << tile
@@ -88,6 +84,37 @@ class Track
           if @editor.mouse && @editor.mouse_in?(@editor.active_area) && @editor.mouse == @editor.image(@current_tile_image_path)
             add_tile(:asphalt, @current_tile_image_path, @editor.mouse_position[:angle])
           end
+
+        when Gosu::MsMiddle
+          if @editor.mouse && @editor.mouse_in?(@editor.active_area)
+            x = @editor.normalize_map_position($window.mouse_x, true)-@editor.mouse.width/2
+            y = @editor.normalize_map_position($window.mouse_y, false)-@editor.mouse.height/2
+            if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
+              tile = @grid["#{x}"]["#{y}"]
+              @current_tile_image_path = tile.image
+              @editor.mouse_image(@editor.image(tile.image))
+              @editor.use_mouse_image = true
+            end
+          end
+
+        when Gosu::MsRight
+          if @editor.mouse && @editor.mouse_in?(@editor.active_area)
+            x = @editor.normalize_map_position($window.mouse_x, true)-@editor.mouse.width/2
+            y = @editor.normalize_map_position($window.mouse_y, false)-@editor.mouse.height/2
+            if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
+              @editor.tiles.delete(@grid["#{x}"]["#{y}"])
+              @grid["#{x}"]["#{y}"] = nil
+            end
+          end
+
+        when Gosu::Kb0
+          # @editor.add_message "Screen reset to default position"
+          @editor.screen_vector.x=0
+          @editor.screen_vector.y=0
+
+        when Gosu::KbR
+           @editor.mouse_position[:angle]+=90
+           @editor.mouse_position[:angle]%=360
         end
       end
     end

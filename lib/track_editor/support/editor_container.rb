@@ -1,6 +1,6 @@
 class Track
   class Editor
-    Button = Struct.new(:text, :image, :x, :y, :width, :block)
+    Button = Struct.new(:text, :image, :x, :y, :width, :block, :tooltip)
     Label  = Struct.new(:text, :x, :y)
 
     class EditorContainer < GameState
@@ -94,7 +94,7 @@ class Track
 
             @starting_positions.each do |starting_position|
             end
-            @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 100, @mouse_position[:angle]) if @mouse  && @use_mouse_image
+            @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 5, @mouse_position[:angle], 0.5, 0.5, 1.0, 1.0, Gosu::Color.rgba(255,255,255, 200)) if @mouse  && @use_mouse_image
           end
         end
       end
@@ -152,7 +152,7 @@ class Track
         return (Integer((number/@tile_size).to_f.round(1).to_s.split('.').first)+1)*@tile_size
       end
 
-      def update_map_offset(sensitivity = 3, speed = 1)
+      def update_map_offset(sensitivity = 3, speed = Gosu.fps/2)
         if $window.mouse_x.between?($window.width-sensitivity, $window.width)
           @screen_vector.x-=speed
         elsif $window.mouse_x.between?(0, 0+sensitivity)

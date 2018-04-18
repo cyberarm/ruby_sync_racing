@@ -9,6 +9,8 @@ class Track
         @widest_element = 100
         @relative_y = 50
 
+        @tooltip = Game::Text.new("", size: 24)
+
         @editor = EditorContainer.instance
         @background_color = @editor.darken(@editor.active_selector.color, 50)
         @hover_background_color = @editor.darken(@background_color)
@@ -21,6 +23,7 @@ class Track
           if element.is_a?(Button)
             if element.text
               if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
+                show_tooltip(element)
                 if $window.button_down?(Gosu::MsLeft)
                   $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @active_background_color)
                 else
@@ -32,6 +35,7 @@ class Track
               element.text.draw
             elsif element.image
               if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
+                show_tooltip(element)
                 if $window.button_down?(Gosu::MsLeft)
                   $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @active_background_color)
                 else
@@ -49,7 +53,31 @@ class Track
         end
       end
 
+      def show_tooltip(element)
+        if element.tooltip
+          @tooltip.text = element.tooltip.split(/-|_/).map(&:capitalize).join(" ")
+          @tooltip.x = @widest_element+PADDING
+          if element.image
+            @tooltip.y = element.y+(element.image.height/2)-(@tooltip.height/2)
+          else
+            @tooltip.y = element.y+(element.text.height/2)-(@tooltip.height/2)
+          end
+
+          $window.fill_rect(@tooltip.x-PADDING, @tooltip.y-PADDING, @tooltip.width+(PADDING*2), @tooltip.height+(PADDING*2), @editor.darken(@editor.active_selector.color), 10)
+          @tooltip.draw
+        end
+      end
+
       def update
+        # @elements.each do |element|
+        #   if element.is_a?(Button)
+        #     if element.text && @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
+        #       show_tooltip(element.tooltip)
+        #     elsif element.image && @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
+        #       show_tooltip(element.tooltip)
+        #     end
+        #   end
+        # end
       end
 
       def button_up(id)
@@ -79,12 +107,12 @@ class Track
         return @elements.last.y+@elements.last.image.height+(PADDING*4) if defined?(@elements.last.image) && @elements.last.image
       end
 
-      def add_button(text_or_image, block = nil)
+      def add_button(text_or_image, tooltip, block = nil)
         if text_or_image.is_a?(Gosu::Image)
-          @elements << Button.new(nil, text_or_image, 15, relative_y(text_or_image.height), 0, block)
+          @elements << Button.new(nil, text_or_image, 15, relative_y(text_or_image.height), 0, block, tooltip)
         else
           text = Game::Text.new(text_or_image, size: 24, x: 15)
-          @elements << Button.new(text, nil, 15, relative_y(text.height), 0, block)
+          @elements << Button.new(text, nil, 15, relative_y(text.height), 0, block, tooltip)
           text.y = @elements.last.y
         end
 
