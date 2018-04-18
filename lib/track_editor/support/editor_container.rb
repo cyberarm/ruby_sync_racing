@@ -1,6 +1,6 @@
 class Track
   class Editor
-    Button = Struct.new(:text, :image, :x, :y, :block)
+    Button = Struct.new(:text, :image, :x, :y, :width, :block)
     Label  = Struct.new(:text, :x, :y)
 
     class EditorContainer < GameState
@@ -38,14 +38,18 @@ class Track
           s.text.x = (width*i)-(s.text.width/2)+width/2
           if mouse_over?(width*i, 0, width, 50)
             $window.fill_rect(width*i, 0, width, 50, lighten(s.color))
-            $window.fill_rect(width*i, 45, width, 5, darken(s.color), 5) if s == @active_selector
             $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
+
+            $window.fill_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
           else
             $window.fill_rect(width*i, 0, width, 50, s.color)
-            $window.fill_rect(width*i, 45, width, 5, darken(s.color), 5) if s == @active_selector
             $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
+
+            $window.fill_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
           end
-          $window.fill_rect(width*(i+1), 0, 2, 50, Gosu::Color::BLACK, 10)
+
+          $window.fill_rect(width*(i+1), 0, 2, 50, Gosu::Color::BLACK, 4)
+          $window.fill_rect(0, 44, $window.width, 1, Gosu::Color::BLACK, 4)
           s.text.draw
         end
       end

@@ -1,9 +1,13 @@
 class Track
   class Editor
-    class Load < GameState
-      def setup
-        @title = Game::Text.new("Track Editor", size: 50, y: 30)
-        @sub_title = Game::Text.new("Load Track", size: 40, y: 80)
+    class Load < Game::Scene::Menu
+      def prepare
+        title "Track Editor"
+        label("Load Track", size: 40, y: 80)
+
+        button "Back" do
+          push_game_state(Track::Editor::Menu)
+        end
 
         @track_list = Dir.glob("data/tracks/custom/*.json")
         @tracks = []
@@ -27,9 +31,6 @@ class Track
           $window.fill_rect(@current.x-4,@current.y-4, @current.width+8, @current.height+4, Gosu::Color::WHITE, 2)
         end
 
-        @title.draw
-        @sub_title.draw
-
         @tracks.each do |track|
           $window.fill_rect(track.x-4,track.y-4, track.width+8, track.height+4, Gosu::Color::GRAY, 1)
           track.draw
@@ -39,8 +40,7 @@ class Track
       end
 
       def update
-        @title.x = ($window.width/2)-(@title.width/2)
-        @sub_title.x = ($window.width/2)-(@sub_title.width/2)
+        super
 
         boolean = @tracks.detect do |track|
           if $window.mouse_x.between?(track.x-4, track.x+track.width+8)
@@ -55,6 +55,8 @@ class Track
       end
 
       def button_up(id)
+        super
+
         case id
         when Gosu::KbEscape
           push_game_state(Track::Editor::Menu)

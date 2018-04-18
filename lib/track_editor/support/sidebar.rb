@@ -16,21 +16,22 @@ class Track
         @elements.each do |element|
           if element.is_a?(Button)
             if element.text
-              if EditorContainer.instance.mouse_over?(element.x-PADDING, element.y-PADDING, element.text.width+(PADDING*2), element.text.height+(PADDING*2))
-                $window.fill_rect(element.x-PADDING, element.y-PADDING, element.text.width+(PADDING*2), element.text.height+(PADDING*2), HOVER_BACKGROUND)
+              if EditorContainer.instance.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
+                $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), HOVER_BACKGROUND)
               else
-                $window.fill_rect(element.x-PADDING, element.y-PADDING, element.text.width+(PADDING*2), element.text.height+(PADDING*2), BACKGROUND)
+                $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), BACKGROUND)
               end
               element.text.draw
             elsif element.image
-              if EditorContainer.instance.mouse_over?(element.x-PADDING, element.y-PADDING, element.image.width+(PADDING*2), element.image.height+(PADDING*2))
-                $window.fill_rect(element.x-PADDING, element.y-PADDING, element.image.width+(PADDING*2), element.image.height+(PADDING*2), HOVER_BACKGROUND)
+              if EditorContainer.instance.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
+                $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), HOVER_BACKGROUND)
               else
-                $window.fill_rect(element.x-PADDING, element.y-PADDING, element.image.width+(PADDING*2), element.image.height+(PADDING*2), BACKGROUND)
+                $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), BACKGROUND)
               end
-              element.image.draw(element.x,element.y,10)
+              element.image.draw(element.x, element.y,10)
             end
           elsif element.is_a?(Label)
+              element.text.x = @widest_sidebar_element - (@widest_sidebar_element/2)-(element.text.width/2)
             element.text.draw
           end
         end
@@ -50,7 +51,7 @@ class Track
 
       def add_button(text_or_image, block = nil)
         if text_or_image.is_a?(Gosu::Image)
-          @elements << Button.new(nil, text_or_image, 15, relative_y(text_or_image.height), block)
+          @elements << Button.new(nil, text_or_image, 15, relative_y(text_or_image.height), 0, block)
         else
           text = Game::Text.new(text_or_image, size: 24, x: 15)
           @elements << Button.new(text, nil, 15, relative_y(text.height), block)
@@ -72,11 +73,26 @@ class Track
 
       def calculate_widest_element
         widest = 0
+        widest_button = 0
+
         @elements.each do |e|
           widest = e.text.width+e.x+e.x if defined?(e.text) && e.text != nil && e.text.width > widest
           widest = e.image.width+e.x+e.x if defined?(e.image) && e.image != nil && e.image.width > widest
+
+          widest_button = e.text.width+(PADDING+4) if e.is_a?(Button) && defined?(e.text) && e.text != nil && e.text.width > widest_button
+          widest_button = e.image.width+(PADDING+4) if e.is_a?(Button) && defined?(e.image) && e.image != nil && e.image.width > widest_button
         end
 
+        @elements.each do |e|
+          if e.is_a?(Button)
+            raise "widest_button is 0!" if widest_button <= 0 # Only raise if buttons exist.
+
+            e.width = widest_button
+            e.x = ((@widest_sidebar_element/2)-(e.text.width/2)) if e.text
+            e.text.x = ((@widest_sidebar_element/2)-(e.text.width/2)) if e.text
+            e.x = ((@widest_sidebar_element/2)-(e.image.width/2)) if e.image
+          end
+        end
         @widest_sidebar_element = widest
       end
     end

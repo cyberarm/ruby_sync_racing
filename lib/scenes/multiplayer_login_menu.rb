@@ -6,7 +6,7 @@ module Game
         label "Multiplayer Login", size: 50
 
         label "Enter a Username:"
-        username = edit_line "cyberarm"
+        username = edit_line Config.get(:player_username)
 
         button "Login" do
           # Network request for access token
