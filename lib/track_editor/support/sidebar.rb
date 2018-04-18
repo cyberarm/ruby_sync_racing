@@ -41,6 +41,22 @@ class Track
       end
 
       def button_up(id)
+        case id
+        when Gosu::MsLeft
+          @elements.each do |element|
+            if element.is_a?(Button)
+              if element.text
+                if EditorContainer.instance.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
+                  element.block.call if element.block
+                end
+              elsif element.image
+                if EditorContainer.instance.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
+                  element.block.call if element.block
+                end
+              end
+            end
+          end
+        end
       end
 
       def relative_y(height)
@@ -54,7 +70,7 @@ class Track
           @elements << Button.new(nil, text_or_image, 15, relative_y(text_or_image.height), 0, block)
         else
           text = Game::Text.new(text_or_image, size: 24, x: 15)
-          @elements << Button.new(text, nil, 15, relative_y(text.height), block)
+          @elements << Button.new(text, nil, 15, relative_y(text.height), 0, block)
           text.y = @elements.last.y
         end
 
@@ -88,9 +104,9 @@ class Track
             raise "widest_button is 0!" if widest_button <= 0 # Only raise if buttons exist.
 
             e.width = widest_button
-            e.x = ((@widest_sidebar_element/2)-(e.text.width/2)) if e.text
-            e.text.x = ((@widest_sidebar_element/2)-(e.text.width/2)) if e.text
-            e.x = ((@widest_sidebar_element/2)-(e.image.width/2)) if e.image
+            e.x = ((widest/2)-(e.text.width/2)) if e.text
+            e.text.x = ((widest/2)-(e.text.width/2)) if e.text
+            e.x = ((widest/2)-(e.image.width/2)) if e.image
           end
         end
         @widest_sidebar_element = widest

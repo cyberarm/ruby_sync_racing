@@ -87,7 +87,7 @@ class Track
           end
         end
 
-        @active_selector.instance.button_up(id) if @active_selector && @active_selector.respond_to?(:button_up)
+        @active_selector.instance.button_up(id) if @active_selector
       end
 
       def mouse_over?(x, y, width, height)
