@@ -14,11 +14,24 @@ class Track
         @instance = i
       end
 
-      attr_accessor :active_selector
+      attr_accessor :active_selector, :use_mouse_image
+      attr_reader :tiles, :decorations, :checkpoints, :starting_positions
+      attr_reader :mouse, :mouse_position
       def setup
         EditorContainer.instance = self
 
         @mode_selectors = []
+        @tiles = []
+        @decorations = []
+        @checkpoints = []
+        @starting_positions = []
+
+        @use_mouse_image = true
+        @mouse = nil
+        @mouse_position = {x: 0, y: 0, angle: 0}
+
+        @mouse_sound = sample("assets/track_editor/click.ogg")
+        @error_sound = sample("assets/track_editor/error.ogg")
 
         prepare
 
@@ -71,9 +84,13 @@ class Track
         draw_mode_selectors
 
         @active_selector.instance.draw if @active_selector && @active_selector.instance
+
+        @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 0, @mouse_position[:angle]) if @mouse  && @use_mouse_image
       end
 
       def update
+        @mouse_position[:x], @mouse_position[:y] = $window.mouse_x, $window.mouse_y
+
         @active_selector.instance.update if @active_selector && @active_selector.instance
       end
 
@@ -93,6 +110,10 @@ class Track
         end
 
         @active_selector.instance.button_up(id) if @active_selector
+      end
+
+      def mouse_image(image)
+        @mouse = image
       end
 
       def mouse_over?(x, y, width, height)
