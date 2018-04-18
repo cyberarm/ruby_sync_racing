@@ -16,10 +16,12 @@ class Track
           puts "Pressed"
         end
         sidebar_button("Rotate 90") do
-          puts "Pressed"
+          @editor.mouse_position[:angle]+=90
+          @editor.mouse_position[:angle] %= 360
         end
         sidebar_button("Rotate -90") do
-          puts "Pressed"
+          @editor.mouse_position[:angle]-=90
+          @editor.mouse_position[:angle] %= 360
         end
 
         sidebar_label("Tiles")
@@ -43,7 +45,7 @@ class Track
           @editor.use_mouse_image = true
         end
         sidebar_button(@editor.image("assets/tracks/general/road/grass.png")) do
-          @editor.mouse_image(@editor.image("assets/tracks/general/road/clay.png"))
+          @editor.mouse_image(@editor.image("assets/tracks/general/road/grass.png"))
           @editor.use_mouse_image = true
         end
         sidebar_button(@editor.image("assets/tracks/general/road/sandstone.png")) do
