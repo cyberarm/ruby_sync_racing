@@ -16,14 +16,17 @@ class Track
       end
 
       attr_accessor :active_selector, :use_mouse_image
+
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
-      attr_reader :mouse, :mouse_position, :active_area
+      attr_reader :mouse, :mouse_position, :active_area, :screen_vector, :selectors_height, :tile_size
       attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
         @screen_vector = Vector2D.new(0, 0)
+        @selectors_height = 50
 
         @mode_selectors = []
+        @tile_size = 64
         @tiles = []
         @decorations = []
         @checkpoints = []
@@ -42,7 +45,7 @@ class Track
         @active_selector.instance = @mode_selectors.first.klass.new
         @active_selector.selected = true
 
-        @active_area = BoundingBox.new(0, 50, $window.width, $window.height) # set x position dynamically
+        @active_area = BoundingBox.new(0, @selectors_height, $window.width, $window.height) # set x position dynamically
       end
 
       def prepare
@@ -54,23 +57,23 @@ class Track
       end
 
       def draw_mode_selectors
-        $window.fill_rect(0, 0, $window.width, 50, Gosu::Color.rgb(0,0,150))
+        $window.fill_rect(0, 0, $window.width, @selectors_height, Gosu::Color.rgb(0,0,150))
         width = $window.width.to_f/@mode_selectors.count
         @mode_selectors.each_with_index do |s, i|
           s.text.x = (width*i)-(s.text.width/2)+width/2
-          if mouse_over?(width*i, 0, width, 50)
-            $window.fill_rect(width*i, 0, width, 50, lighten(s.color))
+          if mouse_over?(width*i, 0, width, @selectors_height)
+            $window.fill_rect(width*i, 0, width, @selectors_height, lighten(s.color))
             $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
 
             $window.fill_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
           else
-            $window.fill_rect(width*i, 0, width, 50, s.color)
+            $window.fill_rect(width*i, 0, width, @selectors_height, s.color)
             $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
 
             $window.fill_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
           end
 
-          $window.fill_rect(width*(i+1), 0, 2, 50, Gosu::Color::BLACK, 4)
+          $window.fill_rect(width*(i+1), 0, 2, @selectors_height, Gosu::Color::BLACK, 4)
           $window.fill_rect(0, 44, $window.width, 1, Gosu::Color::BLACK, 4)
           s.text.draw
         end
@@ -91,8 +94,8 @@ class Track
 
             @starting_positions.each do |starting_position|
             end
+            @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 100, @mouse_position[:angle]) if @mouse  && @use_mouse_image
           end
-          @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 100, @mouse_position[:angle]) if @mouse  && @use_mouse_image
         end
       end
 
@@ -114,8 +117,6 @@ class Track
       end
 
       def update
-        @mouse_position[:x], @mouse_position[:y] = $window.mouse_x, $window.mouse_y
-
         @active_area.x = @active_selector.instance.sidebar.widest_element if @active_selector && @active_selector.instance
 
         @active_selector.instance.update if @active_selector && @active_selector.instance
@@ -130,7 +131,7 @@ class Track
         when Gosu::MsLeft
           width = $window.width.to_f/@mode_selectors.count
           @mode_selectors.each_with_index do |s, i|
-            if mouse_over?(width*i, 0, width, 50)
+            if mouse_over?(width*i, 0, width, @selectors_height)
               @active_selector = s
               @active_selector.instance = s.klass.new unless s.instance.is_a?(s.klass)
               @active_selector.selected = true
@@ -139,6 +140,16 @@ class Track
         end
 
         @active_selector.instance.button_up(id) if @active_selector
+      end
+
+      def normalize_map_position(number, is_x_axis = true)
+        if is_x_axis
+          number = number-@screen_vector.x
+        else # assume Y axis
+          number = number-@screen_vector.y
+        end
+
+        return (Integer((number/@tile_size).to_f.round(1).to_s.split('.').first)+1)*@tile_size
       end
 
       def update_map_offset(sensitivity = 3, speed = 1)

@@ -3,6 +3,7 @@ class Track
     class TileEditor < EditorMode
       def setup
         @current_tile_image_path = nil
+        @grid = {}
 
         sidebar_label("Tools")
         sidebar_button("Add Tile") do
@@ -55,8 +56,26 @@ class Track
         end
       end
 
-      def add_tile(type, image_path, x, y, z, angle)
-        @editor.tiles << Track::Tile.new(type, image_path, x, y, z, angle)
+      def add_tile(type, image_path, angle)
+        x = @editor.normalize_map_position($window.mouse_x, true)
+        y = @editor.normalize_map_position($window.mouse_y, false)
+        z = 0
+        p x, y
+        if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
+          @editor.error_sound.play
+        else
+          tile = Track::Tile.new(type, image_path, x-@editor.mouse.width/2, y-@editor.mouse.height/2, z, angle)
+          @grid["#{x}"] = {} unless @grid["#{x}"].is_a?(Hash)
+          @grid["#{x}"]["#{y}"] = tile
+          @editor.tiles << tile
+        end
+      end
+
+      def update
+        super
+        return unless @editor.mouse
+        @editor.mouse_position[:x], @editor.mouse_position[:y] =@editor.normalize_map_position($window.mouse_x, true)-@editor.mouse.width/2,
+                                                                @editor.normalize_map_position($window.mouse_y, false)-@editor.mouse.height/2
       end
 
       def button_up(id)
@@ -65,7 +84,7 @@ class Track
         case id
         when Gosu::MsLeft
           if @editor.mouse && @editor.mouse_in?(@editor.active_area) && @editor.mouse == @editor.image(@current_tile_image_path)
-            add_tile(:asphalt, @current_tile_image_path, @editor.mouse_position[:x], @editor.mouse_position[:y], 0, @editor.mouse_position[:angle])
+            add_tile(:asphalt, @current_tile_image_path, @editor.mouse_position[:angle])
           end
         end
       end
