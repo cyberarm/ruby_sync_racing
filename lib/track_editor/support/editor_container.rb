@@ -18,6 +18,7 @@ class Track
       attr_accessor :active_selector, :use_mouse_image
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
       attr_reader :mouse, :mouse_position, :active_area
+      attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
 
@@ -31,7 +32,7 @@ class Track
         @mouse = nil
         @mouse_position = {x: 0, y: 0, angle: 0}
 
-        @mouse_sound = sample("assets/track_editor/click.ogg")
+        @click_sound = sample("assets/track_editor/click.ogg")
         @error_sound = sample("assets/track_editor/error.ogg")
 
         prepare

@@ -59,10 +59,12 @@ class Track
             if element.is_a?(Button)
               if element.text
                 if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
+                  @editor.click_sound.play
                   element.block.call if element.block
                 end
               elsif element.image
                 if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
+                  @editor.click_sound.play
                   element.block.call if element.block
                 end
               end
