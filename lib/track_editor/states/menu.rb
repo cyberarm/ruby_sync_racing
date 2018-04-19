@@ -2,15 +2,6 @@ class Track
   class Editor
     class Menu < Game::Scene::Menu
       def prepare
-        # @title      = Game::Text.new("Track Editor", size: 50, y: 100)
-        # @sub_title  = Game::Text.new("Ruby Sync Racing", size: 40, y: 150)
-        # @new_track  = Game::Text.new("New Track", size: 23, y: 220, z: 2)
-        # @load_track = Game::Text.new("Load Track", size: 23, y: 320, z: 2)
-        # @quit       = Game::Text.new("Quit", size: 23, y: 420, z: 2)
-
-        # @background_color = Gosu::Color.rgb(219, 96, 0)
-        # @background_hover_color = Gosu::Color.rgb(255, 144, 0)
-
         title "Ruby Sync Racing"
         label "Track Editor", size: 48
 
