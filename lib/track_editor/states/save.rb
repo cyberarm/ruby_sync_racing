@@ -85,23 +85,28 @@ class Track
       end
 
       def save_track(name)
-        hash = {"name": "#{name.sub('.json','')}",
-                "background": {
+        hash = {"name" => "#{name.sub('.json','')}",
+                "background" => {
                   "red"=> 100,
                   "green" => 254,
                   "blue"  =>  78,
                   "alpha" => 144
                 },
-                "tiles": [], "decorations": [], "checkpoints": [], "starting_positions": []}
+                "tiles" => [], "decorations" => [], "checkpoints" => [], "starting_positions" => []
+              }
+        p hash["name"]
+        p hash["tiles"]
 
         @tiles.each do |tile|
           if tile.is_a?(Track::Tile)
-            hash["tiles"] << {"type" => "asphalt",
-                              "image"=> tile.image,
+            hash["tiles"] << {
+                              "type" => tile.type,
+                              "image" => tile.image,
                               "x" => tile.x,
                               "y" => tile.y,
                               "z" => tile.z,
-                              "angle" => tile.angle}
+                              "angle" => tile.angle
+                            }
           end
         end
 

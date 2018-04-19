@@ -19,7 +19,7 @@ class Track
       attr_accessor :active_selector, :use_mouse_image
 
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
-      attr_reader :mouse, :mouse_position, :active_area, :screen_vector, :selectors_height, :tile_size
+      attr_reader :mouse, :mouse_position, :active_area, :screen_vector, :selectors_height, :tile_size, :save_file
       attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
@@ -32,6 +32,8 @@ class Track
         @decorations = []
         @checkpoints = []
         @starting_positions = []
+
+        @save_file = nil
 
         @use_mouse_image = true
         @mouse = nil
