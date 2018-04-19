@@ -16,24 +16,19 @@ class Track
             "assets/tracks/general/road/grass.png"
           ],
           "water": [
-            "assets/tracks/general/road/clay.png"
+            "assets/tracks/general/road/water.png"
           ],
           "ice": [
 
           ]
         }
 
-        sidebar_label("Tools")
-        sidebar_button("Add Tile") do
-          puts "Pressed"
+        sidebar_label "Tools"
+        sidebar_button("Jump 0:0", "Press \"0\"") do
+          @editor.screen_vector.x = 0
+          @editor.screen_vector.y = 0
         end
-        sidebar_button("Edit Tile") do
-          puts "Pressed"
-        end
-        sidebar_button("Remove Tile") do
-          puts "Pressed"
-        end
-        sidebar_button("Rotate 90") do
+        sidebar_button("Rotate 90", "Press \"R\"") do
           @editor.mouse_position[:angle]+=90
           @editor.mouse_position[:angle] %= 360
         end
@@ -46,7 +41,7 @@ class Track
         @tiles_list.each do |type, list|
           sidebar_label(type.capitalize)
           list.each do |tile|
-            sidebar_button(@editor.image(tile), tile.split('/').last.split('.').first) do
+            sidebar_button(@editor.image(tile), tile.split('/').last.split('.').first.capitalize) do
               @current_tile_image_path = tile
               @editor.mouse_image(@editor.image(tile))
               @editor.use_mouse_image = true
@@ -56,8 +51,8 @@ class Track
       end
 
       def add_tile(type, image_path, angle)
-        x = @editor.normalize_map_position($window.mouse_x, true)-@editor.mouse.width/2
-        y = @editor.normalize_map_position($window.mouse_y, false)-@editor.mouse.height/2
+        x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.mouse.width/2
+        y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.mouse.height/2
         z = 0
         if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
           @editor.error_sound.play
@@ -72,8 +67,8 @@ class Track
       def update
         super
         return unless @editor.mouse
-        @editor.mouse_position[:x], @editor.mouse_position[:y] =@editor.normalize_map_position($window.mouse_x, true)-@editor.mouse.width/2,
-                                                                @editor.normalize_map_position($window.mouse_y, false)-@editor.mouse.height/2
+        @editor.mouse_position[:x], @editor.mouse_position[:y] =@editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.mouse.width/2,
+                                                                @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.mouse.height/2
       end
 
       def button_up(id)
@@ -87,8 +82,8 @@ class Track
 
         when Gosu::MsMiddle
           if @editor.mouse && @editor.mouse_in?(@editor.active_area)
-            x = @editor.normalize_map_position($window.mouse_x, true)-@editor.mouse.width/2
-            y = @editor.normalize_map_position($window.mouse_y, false)-@editor.mouse.height/2
+            x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.mouse.width/2
+            y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.mouse.height/2
             if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
               tile = @grid["#{x}"]["#{y}"]
               @current_tile_image_path = tile.image
@@ -99,8 +94,8 @@ class Track
 
         when Gosu::MsRight
           if @editor.mouse && @editor.mouse_in?(@editor.active_area)
-            x = @editor.normalize_map_position($window.mouse_x, true)-@editor.mouse.width/2
-            y = @editor.normalize_map_position($window.mouse_y, false)-@editor.mouse.height/2
+            x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.mouse.width/2
+            y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.mouse.height/2
             if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
               @editor.tiles.delete(@grid["#{x}"]["#{y}"])
               @grid["#{x}"]["#{y}"] = nil

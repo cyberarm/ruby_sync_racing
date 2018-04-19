@@ -12,7 +12,7 @@ class Track
 
         sidebar_button("Exit Editor") do
           if @editor.track_save_tainted?
-            @editor.window(:confirm, "Are you sure?", "Unsaved changes will be lost!") do
+            @editor.close_dialog do
               @editor.push_game_state(Track::Editor::Menu)
             end
           else

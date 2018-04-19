@@ -152,7 +152,7 @@ class Track
 
       def confirm()
         @height = 200
-        @base_color = Gosu::Color.rgba(150, 75, 0, 200)
+        @base_color = Gosu::Color.rgba(100, 50, 0, 200)
 
         button("Cancel") do
           close

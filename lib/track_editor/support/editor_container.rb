@@ -16,10 +16,10 @@ class Track
         @instance = i
       end
 
-      attr_accessor :active_selector, :use_mouse_image
+      attr_accessor :active_selector, :use_mouse_image, :background, :save_file
 
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
-      attr_reader :mouse, :mouse_position, :active_area, :screen_vector, :selectors_height, :tile_size, :save_file
+      attr_reader :mouse, :mouse_position, :active_area, :screen_vector, :selectors_height, :tile_size
       attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
@@ -41,6 +41,8 @@ class Track
 
         @click_sound = sample("assets/track_editor/click.ogg")
         @error_sound = sample("assets/track_editor/error.ogg")
+
+        @background = Gosu::Color.rgba(100, 254, 78, 144)
 
         prepare
 
@@ -84,6 +86,8 @@ class Track
 
       def draw_map
         Gosu.clip_to(@active_area.x, @active_area.y, @active_area.width, @active_area.height) do
+          $window.fill_rect(@active_area.x, @active_area.y, @active_area.width, @active_area.height, @background)
+
           Gosu.translate(@screen_vector.x, @screen_vector.y) do
             @tiles.each do |tile|
               image(tile.image).draw_rot(tile.x, tile.y, tile.z, tile.angle)
@@ -97,7 +101,7 @@ class Track
 
             @starting_positions.each do |starting_position|
             end
-            @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 5, @mouse_position[:angle], 0.5, 0.5, 1.0, 1.0, Gosu::Color.rgba(255,255,255, 200)) if @mouse  && @use_mouse_image
+            @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 5, @mouse_position[:angle], 0.5, 0.5, 1.0, 1.0, Gosu::Color.rgba(255,255,255, 150)) if @mouse  && @use_mouse_image
           end
         end
       end
@@ -133,10 +137,13 @@ class Track
         @active_selector.instance.update if @active_selector && @active_selector.instance
 
         update_map_offset
+        @screen_vector.x = 0 if @screen_vector.x > 0
+        @screen_vector.y = 0 if @screen_vector.y > 0
+
       end
 
       def button_up(id)
-        $window.close if id == Gosu::KbEscape
+        close_dialog {push_game_state(Track::Editor::Menu)} if id == Gosu::KbEscape
 
         case id
         when Gosu::MsLeft
@@ -153,14 +160,12 @@ class Track
         @active_selector.instance.button_up(id) if @active_selector
       end
 
-      def normalize_map_position(number, is_x_axis = true)
-        if is_x_axis
-          number = number-@screen_vector.x
-        else # assume Y axis
-          number = number-@screen_vector.y
-        end
+      def close_dialog(&block)
+        window(:confirm, "Are you sure?", "Any unsaved changes will be lost!") { block.call }
+      end
 
-        return (Integer((number/@tile_size).to_f.round(1).to_s.split('.').first)+1)*@tile_size
+      def normalize_map_position(number)
+        return (Integer((number/@tile_size).to_f.round(1).to_s.split('.').first))*@tile_size
       end
 
       def update_map_offset(sensitivity = 3, speed = Gosu.fps/2)

@@ -62,7 +62,11 @@ class Track
 
       def show_tooltip(element)
         if element.tooltip
-          @tooltip.text = element.tooltip.split(/-|_/).map(&:capitalize).join(" ")
+          if element.tooltip =~ /-|_/
+            @tooltip.text = element.tooltip.split(/-|_/).map(&:capitalize).join(" ")
+          else
+            @tooltip.text = element.tooltip
+          end
           @tooltip.x = @widest_element+PADDING
           if element.image
             @tooltip.y = element.y+(element.image.height/2)-(@tooltip.height/2)
