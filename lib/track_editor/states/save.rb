@@ -15,6 +15,7 @@ class Track
         @tiles = @options[:tiles]
         @decorations = @options[:decorations]
         @checkpoints = @options[:checkpoints]
+        @starting_positions = @options[:starting_positions]
         $window.text_input = NameInput.new
 
         @title = Game::Text.new("Enter Track Name:", y: $window.height/4, size: 50)
@@ -84,25 +85,23 @@ class Track
       end
 
       def save_track(name)
-        hash = {"name" => "#{name.sub('.json','')}",
-                "background"  => {"red"=> 100,
-                               "green" => 254,
-                               "blue"  =>  78,
-                               "alpha" => 144},
-                "tiles" => [], "decorations" => [], "checkpoints" => []}
+        hash = {"name": "#{name.sub('.json','')}",
+                "background": {
+                  "red"=> 100,
+                  "green" => 254,
+                  "blue"  =>  78,
+                  "alpha" => 144
+                },
+                "tiles": [], "decorations": [], "checkpoints": [], "starting_positions": []}
 
-        @tiles.each do |x|
-          if x
-            x.each do |tile|
-              if tile.is_a?(Track::Tile)
-                hash["tiles"] << {"type" => "asphalt",
-                                  "image"=> tile.image.name,
-                                  "x" => tile.x,
-                                  "y" => tile.y,
-                                  "z" => tile.z,
-                                  "angle" => tile.angle}
-              end
-            end
+        @tiles.each do |tile|
+          if tile.is_a?(Track::Tile)
+            hash["tiles"] << {"type" => "asphalt",
+                              "image"=> tile.image,
+                              "x" => tile.x,
+                              "y" => tile.y,
+                              "z" => tile.z,
+                              "angle" => tile.angle}
           end
         end
 
@@ -114,7 +113,7 @@ class Track
           File.open("data/tracks/custom/#{name.downcase}", "w").write(data)
         end
 
-        @previous_game_state.messages << "Saved track: #{name.downcase}"
+        @previous_game_state.add_message "Saved track: #{name.downcase}"
       end
     end
   end

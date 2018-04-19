@@ -1,7 +1,8 @@
 class Track
   class Editor
-    Button = Struct.new(:text, :image, :x, :y, :width, :block, :tooltip)
-    Label  = Struct.new(:text, :x, :y)
+    Button  = Struct.new(:text, :image, :x, :y, :width, :block, :tooltip)
+    Label   = Struct.new(:text, :x, :y)
+    EditLine= Struct.new(:text, :password, :x, :y, :input)
 
     class EditorContainer < GameState
       Selector = Struct.new(:name, :text, :klass, :color, :selected, :instance)
@@ -100,11 +101,19 @@ class Track
       end
 
       def lighten(color, amount = 25)
-        return Gosu::Color.rgb(color.red+amount, color.green+amount, color.blue+amount)
+        if defined?(color.alpha)
+          return Gosu::Color.rgba(color.red+amount, color.green+amount, color.blue+amount, color.alpha)
+        else
+          return Gosu::Color.rgb(color.red+amount, color.green+amount, color.blue+amount)
+        end
       end
 
       def darken(color, amount = 25)
-        return Gosu::Color.rgb(color.red-amount, color.green-amount, color.blue-amount)
+        if defined?(color.alpha)
+          return Gosu::Color.rgba(color.red-amount, color.green-amount, color.blue-amount, color.alpha)
+        else
+          return Gosu::Color.rgb(color.red-amount, color.green-amount, color.blue-amount)
+        end
       end
 
       def draw
@@ -180,6 +189,22 @@ class Track
           @screen_vector.y-=speed
         end
       end
+
+      def save_track
+        push_game_state(Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints, starting_positions: @starting_positions)
+      end
+
+      # Has the track been changed since last save?
+      def track_save_tainted?
+        true
+      end
+
+      def window(type, title, caption, callback = nil, &block)
+        _window = EditorWindow.new(type: type, title: title, caption: caption, callback: callback, block: block, editor: self)
+        push_game_state(_window)
+      end
+
+      def add_message(string);end
 
       def mouse_image(image)
         @mouse = image

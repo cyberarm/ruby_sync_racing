@@ -2,10 +2,10 @@ class Track
   class Editor
     class EditorMode
 
-      attr_reader :sidebar
+      attr_reader :sidebar, :editor
       def initialize
         @editor = EditorContainer.instance
-        @sidebar = Sidebar.new
+        @sidebar = Sidebar.new(self)
 
         setup if defined?(setup)
       end

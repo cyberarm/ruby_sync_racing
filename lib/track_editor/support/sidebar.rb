@@ -4,17 +4,24 @@ class Track
       PADDING = 5
 
       attr_reader :widest_element
-      def initialize
+      def initialize(parent)
+        @editor = EditorContainer.instance
+        @parent = parent
         @elements = []
         @widest_element = 100
-        @relative_y = 50
+        @relative_y = @editor.selectors_height+PADDING
 
         @tooltip = Game::Text.new("", size: 24)
 
-        @editor = EditorContainer.instance
-        @background_color = @editor.darken(@editor.active_selector.color, 50)
-        @hover_background_color = @editor.darken(@background_color)
-        @active_background_color = @editor.darken(@hover_background_color)
+        if @editor.active_selector.color.value < 0.3
+          @background_color = @editor.lighten(@editor.active_selector.color, 50)
+          @hover_background_color = @editor.lighten(@background_color)
+          @active_background_color = @editor.lighten(@hover_background_color)
+        else
+          @background_color = @editor.darken(@editor.active_selector.color, 50)
+          @hover_background_color = @editor.darken(@background_color)
+          @active_background_color = @editor.darken(@hover_background_color)
+        end
       end
 
       def draw
