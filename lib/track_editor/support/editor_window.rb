@@ -18,6 +18,7 @@ class Track
         @elements = []
         @widest_element = 100
         @relative_x = $window.width/2-@width/2+(Sidebar::PADDING*2)
+        @button_relative_x = $window.width/2+@width/2+(Sidebar::PADDING*2)
         @relative_y = $window.height/2-@height/2
 
         @base_color = Gosu::Color.rgba(100,100,100, 200)
@@ -58,7 +59,15 @@ class Track
 
         @elements.each do |element|
           if element.is_a?(Button)
-            $window.fill_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), Gosu::Color::GREEN, 10)
+            if @editor.mouse_over?(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2))
+              if $window.button_down?(Gosu::MsLeft)
+                $window.fill_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color, 50), 10)
+              else
+                $window.fill_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color, 40), 10)
+              end
+            else
+              $window.fill_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color), 10)
+            end
             element.text.draw
           elsif element.is_a?(Label)
             element.text.draw
@@ -75,11 +84,19 @@ class Track
       def button_up(id)
         case id
         when Gosu::KbEscape
-          push_game_state(@previous_game_state)
+          close
+        when Gosu::MsLeft
+          @elements.each do |element|
+            if element.is_a?(Button)
+              if @editor.mouse_over?(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2))
+                element.block.call(self) if element.block
+              end
+            end
+          end
         end
       end
 
-      def recalculate_element_y_positions
+      def recalculate_element_y_positions # and button x positions
         @title_text.x+=@width/2-@title_text.width/2
         @title_text.y = ($window.height/2-@height/2)+Sidebar::PADDING
 
@@ -87,18 +104,24 @@ class Track
 
         @elements.each_with_index do |element, index|
           if index > 0 && @elements[index-1].is_a?(Button) && !element.is_a?(Button)
-            @relative_x = $window.width/2-@width/2+(Sidebar::PADDING*2)
+            @button_relative_x = $window.width/2+@width/2+(Sidebar::PADDING*2)
+
             @relative_y+=@elements[index-1].text.height+(Sidebar::PADDING*3)
           end
           if element.is_a?(Button)
-            element.text.x, element.x = @relative_x, @relative_x
+            if @button_relative_x+element.width > @relative_x+@width
+              @button_relative_x-=element.width+(Sidebar::PADDING*4)
+              element.text.x = @button_relative_x
+            end
+
+            element.text.x, element.x = @button_relative_x, @button_relative_x
             element.text.y, element.y = @relative_y, @relative_y
 
-            @relative_x+=element.width+(Sidebar::PADDING*3)
+            @button_relative_x-=element.width+(Sidebar::PADDING*3)
           elsif element.is_a?(Label)
             element.text.y = @relative_y
 
-            @relative_y+=element.text.y+element.text.height+Sidebar::PADDING
+            @relative_y+=element.text.height+Sidebar::PADDING
           elsif element.is_a?(EditLine)
           elsif element.is_a?(Game::Text)
             element.y = @relative_y
@@ -106,6 +129,10 @@ class Track
             @relative_y+=element.height
           end
         end
+      end
+
+      def close
+        push_game_state(@previous_game_state)
       end
 
       # WINDOW TYPES
@@ -117,10 +144,10 @@ class Track
 
       def prompt
         input = edit_line ""
-        button("Cancel")
         button("Okay") do
           callback(input.text)
         end
+        button("Cancel")
       end
 
       def confirm()
@@ -131,15 +158,14 @@ class Track
           close
         end
         button("Okay") do
-          block.call
-          close
+          @block.call(self) if @block
         end
       end
 
       # Elements
       def button(label, &block)
-        text = Game::Text.new(label, x: @relative_x, y: @relative_y, z: 20, size: 24)
-        @elements << Button.new(text, nil, @relative_x, @relative_y, text.width, block)
+        text = Game::Text.new(label, x: @button_relative_x, y: @relative_y, z: 20, size: 30)
+        @elements << Button.new(text, nil, @relative_x, @button_relative_y, text.width, block)
       end
 
       def label(string, size = 24)
