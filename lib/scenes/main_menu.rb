@@ -11,6 +11,10 @@ module Game
           push_game_state(MultiplayerMenu)
         end
 
+        button "Track Editor" do
+          push_game_state(Track::Editor::Menu)
+        end
+
         button "Exit" do
           exit
         end

@@ -22,6 +22,10 @@ class Track
           push_game_state(Load)
         end
 
+        button "Main Menu" do
+          push_game_state(Game::Scene::MainMenu)
+        end
+
         button "Exit" do
           $window.close
           exit
