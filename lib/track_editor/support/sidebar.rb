@@ -11,6 +11,8 @@ class Track
         @widest_element = 100
         @relative_y = @editor.selectors_height+PADDING
 
+        @y_offset = 0
+
         @tooltip = Game::Text.new("", size: 24)
 
         if @editor.active_selector.color.value < 0.3
@@ -26,36 +28,42 @@ class Track
 
       def draw
         $window.fill_rect(0, 50, @widest_element, $window.height-50, @editor.darken(@editor.active_selector.color))
-        @elements.each do |element|
-          if element.is_a?(Button)
-            if element.text
-              if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
-                show_tooltip(element)
-                if $window.button_down?(Gosu::MsLeft)
-                  $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @active_background_color)
-                else
-                  $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @hover_background_color)
+        Gosu.clip_to(0, @editor.selectors_height, $window.width, $window.height) do
+          Gosu.translate(0, @y_offset) do
+            @elements.each do |element|
+              if element.is_a?(Button)
+                if element.text
+                  if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), (element.y-PADDING)+@y_offset, element.width, element.text.height+(PADDING*2))
+                    show_tooltip(element)
+                    if $window.button_down?(Gosu::MsLeft)
+                      $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @active_background_color)
+                    else
+                      $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @hover_background_color)
+                    end
+                  else
+                    $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @background_color)
+                  end
+                  element.text.draw
+
+                elsif element.image
+                  if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), (element.y-PADDING)+@y_offset, element.width, element.image.height+(PADDING*2))
+                    show_tooltip(element)
+                    if $window.button_down?(Gosu::MsLeft)
+                      $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @active_background_color)
+                    else
+                      $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @hover_background_color)
+                    end
+                  else
+                    $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @background_color)
+                  end
+                  element.image.draw(element.x, element.y,10)
                 end
-              else
-                $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @background_color)
+
+              elsif element.is_a?(Label)
+                  element.text.x = @widest_element - (@widest_element/2)-(element.text.width/2)
+                element.text.draw
               end
-              element.text.draw
-            elsif element.image
-              if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
-                show_tooltip(element)
-                if $window.button_down?(Gosu::MsLeft)
-                  $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @active_background_color)
-                else
-                  $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @hover_background_color)
-                end
-              else
-                $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @background_color)
-              end
-              element.image.draw(element.x, element.y,10)
             end
-          elsif element.is_a?(Label)
-              element.text.x = @widest_element - (@widest_element/2)-(element.text.width/2)
-            element.text.draw
           end
         end
       end
@@ -69,9 +77,9 @@ class Track
           end
           @tooltip.x = @widest_element+PADDING
           if element.image
-            @tooltip.y = element.y+(element.image.height/2)-(@tooltip.height/2)
+            @tooltip.y = (element.y+(element.image.height/2)-(@tooltip.height/2))#+@y_offset
           else
-            @tooltip.y = element.y+(element.text.height/2)-(@tooltip.height/2)
+            @tooltip.y = (element.y+(element.text.height/2)-(@tooltip.height/2))#+@y_offset
           end
 
           $window.fill_rect(@tooltip.x-PADDING, @tooltip.y-PADDING, @tooltip.width+(PADDING*2), @tooltip.height+(PADDING*2), @editor.darken(@editor.active_selector.color), 10)
@@ -80,15 +88,6 @@ class Track
       end
 
       def update
-        # @elements.each do |element|
-        #   if element.is_a?(Button)
-        #     if element.text && @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
-        #       show_tooltip(element.tooltip)
-        #     elsif element.image && @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
-        #       show_tooltip(element.tooltip)
-        #     end
-        #   end
-        # end
       end
 
       def button_up(id)
@@ -97,18 +96,33 @@ class Track
           @elements.each do |element|
             if element.is_a?(Button)
               if element.text
-                if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2))
+                if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), (element.y-PADDING)+@y_offset, element.width, element.text.height+(PADDING*2))
                   @editor.click_sound.play
                   element.block.call if element.block
                 end
               elsif element.image
-                if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2))
+                if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), (element.y-PADDING)+@y_offset, element.width, element.image.height+(PADDING*2))
                   @editor.click_sound.play
                   element.block.call if element.block
                 end
               end
             end
           end
+        when Gosu::MsWheelUp
+          scrollable = false
+          scrollable = true if @y_offset < 0
+          @y_offset+=10 if scrollable && @editor.mouse_over?(-1, @editor.selectors_height, @widest_element, $window.height)
+
+        when Gosu::MsWheelDown
+          scrollable = false
+          if defined?(@elements.last.text.height)
+            # puts "#{(@elements.last.y+@y_offset)+@elements.last.text.height+(PADDING*2)}-#{$window.height}"
+            scrollable = true if (@elements.last.y+@y_offset)+@elements.last.text.height+(PADDING*2)  > $window.height
+          elsif defined?(@elements.last.image.height)
+            # puts "#{(@elements.last.y+@y_offset)+@elements.last.image.height+(PADDING*2)}-#{$window.height}"
+            scrollable = true if (@elements.last.y+@y_offset)+@elements.last.image.height+(PADDING*2) > $window.height
+          end
+          @y_offset-=10 if scrollable && @editor.mouse_over?(-1, @editor.selectors_height, @widest_element, $window.height)
         end
       end
 
