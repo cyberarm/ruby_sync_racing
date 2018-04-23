@@ -5,7 +5,7 @@
     "top_speed":5.0,
     "break_speed":0.08,
     "image":"assets/cars/CAR.png",
-    "factor":1.0,
+    "scale":1.0,
     "lights":{
       "head_lights":[
         {

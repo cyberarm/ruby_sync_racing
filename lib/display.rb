@@ -49,6 +49,7 @@ class Display < Gosu::Window
   end
 
   def button_up(id)
+    $debug = !$debug if id == Gosu::KB_BACKTICK && ARGV.join.include?("--debug")
     @current_game_state.button_up(id)
   end
 

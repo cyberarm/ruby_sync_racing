@@ -7,7 +7,7 @@ class Car < GameObject
     @last_x, @last_y, @last_speed = 0, 0, 0
 
     @image = image(@car_data["spec"]["image"])
-    self.scale = @car_data["spec"]["factor"]
+    self.scale = @car_data["spec"]["scale"]
     @physics = CarPhysics.new(self)
 
     @debug = Game::Text.new("", size: 50)
@@ -32,6 +32,10 @@ class Car < GameObject
     @tick = 0
     @yellow_up = false
     @yellow_int = 255
+
+    @beam_origin_color = Gosu::Color.rgba(190, 190, 0, 100)
+    @beam_edge_color   = Gosu::Color.rgba(190, 190, 0, 0)
+
     @tile_size = 64
   end
 
@@ -44,8 +48,6 @@ class Car < GameObject
     $window.rotate(self.angle, self.x, self.y) do
       # TODO: fade between 2 colors instead of using Random
       _yellow = Gosu::Color.rgb(@yellow_int, @yellow_int, 0)
-      beam_origin = Gosu::Color.rgba(190, 190, 0, 100)
-      beam_edge   = Gosu::Color.rgba(190, 190, 0, 0)
       @car_data["spec"]["lights"]["head_lights"].each do |light|
         $window.fill_rect((self.x-(self.width/2))+light["left"],
                            (self.y-(self.height/2))+light["top"],
@@ -54,16 +56,16 @@ class Car < GameObject
         # Light Beams
         if @headlights_on
           $window.draw_quad(self.x-(self.width/2)+light["left"],
-                            self.y-((self.height/2)), beam_origin,
+                            self.y-((self.height/2)), @beam_origin_color,
 
                             self.x-(self.width/2)+light["left"],
-                            self.y-((self.height/2)), beam_origin,
+                            self.y-((self.height/2)), @beam_origin_color,
 
                             self.x-(self.width/2)+light["left"]+50,
-                            self.y-((self.height/2)+150), beam_edge,
+                            self.y-((self.height/2)+150), @beam_edge_color,
 
                             self.x-(self.width/2)+light["left"]-50,
-                            self.y-((self.height/2)+150), beam_edge,
+                            self.y-((self.height/2)+150), @beam_edge_color,
                             6
           )
         end

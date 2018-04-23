@@ -66,8 +66,8 @@ class Track
       def update
         super
         return unless @mouse
-        @mouse_position[:x], @mouse_position[:y] =@editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2,
-                                                                @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
+        @mouse_position[:x] = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
+        @mouse_position[:y] = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
       end
 
       def button_up(id)
