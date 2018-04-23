@@ -16,10 +16,10 @@ class Track
         @instance = i
       end
 
-      attr_accessor :active_selector, :use_mouse_image, :background, :save_file
+      attr_accessor :active_selector, :background, :save_file
 
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
-      attr_reader :mouse, :mouse_position, :active_area, :screen_vector, :selectors_height, :tile_size
+      attr_reader :active_area, :screen_vector, :selectors_height, :tile_size
       attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
@@ -34,10 +34,6 @@ class Track
         @starting_positions = []
 
         @save_file = nil
-
-        @use_mouse_image = true
-        @mouse = nil
-        @mouse_position = {x: 0, y: 0, angle: 0}
 
         @click_sound = sample("assets/track_editor/click.ogg")
         @error_sound = sample("assets/track_editor/error.ogg")
@@ -94,6 +90,7 @@ class Track
             end
 
             @decorations.each do |decoration|
+              decoration.draw
             end
 
             @checkpoints.each do |checkpoint|
@@ -101,7 +98,6 @@ class Track
 
             @starting_positions.each do |starting_position|
             end
-            @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 5, @mouse_position[:angle], 0.5, 0.5, 1.0, 1.0, Gosu::Color.rgba(255,255,255, 150)) if @mouse  && @use_mouse_image
           end
         end
       end
@@ -153,6 +149,7 @@ class Track
               @active_selector = s
               @active_selector.instance = s.klass.new unless s.instance.is_a?(s.klass)
               @active_selector.selected = true
+              @active_selector.instance.focused
             end
           end
         end
@@ -212,10 +209,6 @@ class Track
       end
 
       def add_message(string);end
-
-      def mouse_image(image)
-        @mouse = image
-      end
 
       def mouse_in?(bounding_box)
         if $window.mouse_x.between?(bounding_box.x, bounding_box.x+bounding_box.width)

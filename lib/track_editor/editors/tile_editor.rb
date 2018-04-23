@@ -2,7 +2,6 @@ class Track
   class Editor
     class TileEditor < EditorMode
       def setup
-        @current_tile_image_path = nil
         @grid = {}
         @tiles_list = {
           "asphalt": [
@@ -29,12 +28,12 @@ class Track
           @editor.screen_vector.y = 0
         end
         sidebar_button("Rotate 90", "Press \"R\"") do
-          @editor.mouse_position[:angle]+=90
-          @editor.mouse_position[:angle] %= 360
+          @mouse_position[:angle]+=90
+          @mouse_position[:angle] %= 360
         end
         sidebar_button("Rotate -90") do
-          @editor.mouse_position[:angle]-=90
-          @editor.mouse_position[:angle] %= 360
+          @mouse_position[:angle]-=90
+          @mouse_position[:angle] %= 360
         end
 
         sidebar_label("Tiles")
@@ -43,16 +42,16 @@ class Track
           list.each do |tile|
             sidebar_button(@editor.image(tile), tile.split('/').last.split('.').first.capitalize) do
               @current_tile_image_path = tile
-              @editor.mouse_image(@editor.image(tile))
-              @editor.use_mouse_image = true
+              mouse_image(@editor.image(tile))
+              @use_mouse_image = true
             end
           end
         end
       end
 
       def add_tile(type, image_path, angle)
-        x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.mouse.width/2
-        y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.mouse.height/2
+        x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
+        y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
         z = 0
         if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
           @editor.error_sound.play
@@ -66,9 +65,9 @@ class Track
 
       def update
         super
-        return unless @editor.mouse
-        @editor.mouse_position[:x], @editor.mouse_position[:y] =@editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.mouse.width/2,
-                                                                @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.mouse.height/2
+        return unless @mouse
+        @mouse_position[:x], @mouse_position[:y] =@editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2,
+                                                                @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
       end
 
       def button_up(id)
@@ -76,26 +75,26 @@ class Track
 
         case id
         when Gosu::MsLeft
-          if @editor.mouse && @editor.mouse_in?(@editor.active_area) && @editor.mouse == @editor.image(@current_tile_image_path)
-            add_tile(:asphalt, @current_tile_image_path, @editor.mouse_position[:angle])
+          if @mouse && @editor.mouse_in?(@editor.active_area) && @mouse == @editor.image(@current_tile_image_path)
+            add_tile(:asphalt, @current_tile_image_path, @mouse_position[:angle])
           end
 
         when Gosu::MsMiddle
-          if @editor.mouse && @editor.mouse_in?(@editor.active_area)
-            x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.mouse.width/2
-            y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.mouse.height/2
+          if @mouse && @editor.mouse_in?(@editor.active_area)
+            x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
+            y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@edito.mouse.height/2
             if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
               tile = @grid["#{x}"]["#{y}"]
               @current_tile_image_path = tile.image
-              @editor.mouse_image(@editor.image(tile.image))
-              @editor.use_mouse_image = true
+              mouse_image(@editor.image(tile.image))
+              @use_mouse_image = true
             end
           end
 
         when Gosu::MsRight
-          if @editor.mouse && @editor.mouse_in?(@editor.active_area)
-            x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.mouse.width/2
-            y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.mouse.height/2
+          if @mouse && @editor.mouse_in?(@editor.active_area)
+            x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
+            y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
             if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
               @editor.tiles.delete(@grid["#{x}"]["#{y}"])
               @grid["#{x}"]["#{y}"] = nil
@@ -108,8 +107,8 @@ class Track
           @editor.screen_vector.y=0
 
         when Gosu::KbR
-           @editor.mouse_position[:angle]+=90
-           @editor.mouse_position[:angle]%=360
+           @mouse_position[:angle]+=90
+           @mouse_position[:angle]%=360
         end
       end
     end

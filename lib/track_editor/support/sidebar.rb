@@ -98,12 +98,12 @@ class Track
               if element.text
                 if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), (element.y-PADDING)+@y_offset, element.width, element.text.height+(PADDING*2))
                   @editor.click_sound.play
-                  element.block.call if element.block
+                  element.block.call(element) if element.block
                 end
               elsif element.image
                 if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), (element.y-PADDING)+@y_offset, element.width, element.image.height+(PADDING*2))
                   @editor.click_sound.play
-                  element.block.call if element.block
+                  element.block.call(element) if element.block
                 end
               end
             end

@@ -7,7 +7,7 @@ module Game
         # push_game_state(Game)
         title("Ruby Sync Racing")
         label("Choose Car", size: 50)
-        button("← Track Selection") {push_game_state(previous_game_state)}
+        button("← Track Selection") {push_game_state(LevelSelection)}
         label("", size: 25)
 
         @cars = Dir.glob("data/cars/*.json")

@@ -15,7 +15,7 @@ class GameObject
     end
 
     @options = options
-    @image = options[:image] ? AssetManager.get_image(options[:image]) : nil
+    @image = options[:image] ? image(options[:image]) : nil
     @x = options[:x] ? options[:x] : 0
     @y = options[:y] ? options[:y] : 0
     @z = options[:z] ? options[:z] : 0

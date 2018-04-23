@@ -84,13 +84,13 @@ class Track
         end
       end
 
-      def save_track(name)
+      def save_track(name, color = Gosu::Color.rgba(100, 254, 78, 144))
         hash = {"name" => "#{name.sub('.json','')}",
                 "background" => {
-                  "red"=> 100,
-                  "green" => 254,
-                  "blue"  =>  78,
-                  "alpha" => 144
+                  "red"   => color.red,
+                  "green" => color.green,
+                  "blue"  => color.blue,
+                  "alpha" => color.alpha
                 },
                 "tiles" => [], "decorations" => [], "checkpoints" => [], "starting_positions" => []
               }
