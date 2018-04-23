@@ -28,6 +28,7 @@ class Car < GameObject
     @brake_volume   = 0.0
 
     @braking = false
+    @headlights_on = false
     @tick = 0
     @yellow_up = false
     @yellow_int = 255
@@ -43,11 +44,29 @@ class Car < GameObject
     $window.rotate(self.angle, self.x, self.y) do
       # TODO: fade between 2 colors instead of using Random
       _yellow = Gosu::Color.rgb(@yellow_int, @yellow_int, 0)
+      beam_origin = Gosu::Color.rgba(190, 190, 0, 100)
+      beam_edge   = Gosu::Color.rgba(190, 190, 0, 0)
       @car_data["spec"]["lights"]["head_lights"].each do |light|
         $window.fill_rect((self.x-(self.width/2))+light["left"],
                            (self.y-(self.height/2))+light["top"],
                            light["width"],
                            light["height"], _yellow, 6)
+        # Light Beams
+        if @headlights_on
+          $window.draw_quad(self.x-(self.width/2)+light["left"],
+                            self.y-((self.height/2)), beam_origin,
+
+                            self.x-(self.width/2)+light["left"],
+                            self.y-((self.height/2)), beam_origin,
+
+                            self.x-(self.width/2)+light["left"]+50,
+                            self.y-((self.height/2)+150), beam_edge,
+
+                            self.x-(self.width/2)+light["left"]-50,
+                            self.y-((self.height/2)+150), beam_edge,
+                            6
+          )
+        end
       end
 
       if @braking
@@ -189,6 +208,14 @@ class Car < GameObject
     @last_speed = @speed
     if @speed.abs <= 0.008 then @speed = 0.0; end
     if @speed == 0.0 then @braking = true; end
+  end
+
+  def button_up(id)
+    super
+    case id
+    when Gosu::KbL
+      @headlights_on = !@headlights_on
+    end
   end
 
   def calc_boundry(track_tiles)
