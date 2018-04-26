@@ -25,9 +25,12 @@ class Track
           @current_tile_image_path = "assets/cars/sport.png"
           @use_mouse_image = true
         end
+
+        puts @editor
       end
 
       def update
+        super
         return unless @mouse
         if @use_grid_placement
           @mouse_position[:x] = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2

@@ -2,10 +2,12 @@ class Track
   class Editor
     class Load < Game::Scene::Menu
       def prepare
+        background(Gosu::Color.rgba(100,100,75, 100))
+
         title "Track Editor"
         label("Load Track", size: 40)
 
-        button "← Back" do
+        button "← Back", Gosu::Color.rgba(50, 150, 50, 200), Gosu::Color.rgba(100, 150, 100, 200) do
           push_game_state(Track::Editor::Menu)
         end
 
@@ -17,7 +19,7 @@ class Track
 
       def process_tracks
         @track_list.each do |track|
-          button track do
+          button track, Gosu::Color.rgba(25, 200, 25, 200), Gosu::Color.rgba(100, 200, 100, 200) do
             push_game_state(Track::Editor::Edit.new(track_file: track))
           end
         end

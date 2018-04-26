@@ -5,7 +5,7 @@ class Track
     EditLine= Struct.new(:text, :password, :x, :y, :input)
 
     class EditorContainer < GameState
-      Selector = Struct.new(:name, :text, :klass, :color, :selected, :instance)
+      Selector = Struct.new(:name, :text, :instance, :color, :selected)
       BoundingBox = Struct.new(:x, :y, :width, :height)
 
       def self.instance
@@ -39,22 +39,22 @@ class Track
         @error_sound = sample("assets/track_editor/error.ogg")
 
         @background = Gosu::Color.rgba(100, 254, 78, 144)
+        @active_area = BoundingBox.new(0, @selectors_height, $window.width, $window.height) # set x position dynamically
 
         prepare
 
         @active_selector = @mode_selectors.first
-        @active_selector.instance = @mode_selectors.first.klass.new
+        @active_selector.instance = @mode_selectors.first.instance
         @active_selector.selected = true
 
-        @active_area = BoundingBox.new(0, @selectors_height, $window.width, $window.height) # set x position dynamically
       end
 
       def prepare
       end
 
-      def selector(name, klass, color = Gosu::Color.rgb(rand(200), rand(200), rand(200)), selected = false)
+      def selector(name, instance, color = Gosu::Color.rgb(rand(200), rand(200), rand(200)), selected = false)
         text = Game::Text.new(name, size: 36, y: 10)
-        @mode_selectors << Selector.new(name, text, klass, color, selected)
+        @mode_selectors << Selector.new(name, text, instance, color, selected)
       end
 
       def draw_mode_selectors
@@ -147,7 +147,7 @@ class Track
           @mode_selectors.each_with_index do |s, i|
             if mouse_over?(width*i, 0, width, @selectors_height)
               @active_selector = s
-              @active_selector.instance = s.klass.new unless s.instance.is_a?(s.klass)
+              # @active_selector.instance = s.klass.new unless s.instance.is_a?(s.klass)
               @active_selector.selected = true
               @active_selector.instance.focused
             end

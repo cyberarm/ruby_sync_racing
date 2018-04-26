@@ -3,6 +3,7 @@ class Track
     class TileEditor < EditorMode
       def setup
         @grid = {}
+
         @tiles_list = {
           "asphalt": [
             "assets/tracks/general/road/asphalt.png",
@@ -70,6 +71,30 @@ class Track
         @mouse_position[:y] = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
       end
 
+      def load_track(track_data)
+        track_data["tiles"].each do |tile|
+          _x = tile["x"]
+          _y = tile["y"]
+          _z = tile["z"]
+          _angle = tile["angle"]
+          # Correct for old maps that don't have z and angle stored.
+          _z     ||= 0
+          _angle ||= 0
+
+          _tile = Track::Tile.new(tile["type"],
+                                  tile["image"],
+                                  _x,
+                                  _y,
+                                  _z,
+                                  _angle)
+          @grid["#{_x}"] = {} unless @grid["#{_x}"].is_a?(Hash)
+          @grid["#{_x}"]["#{_y}"] = _tile
+          @editor.tiles << _tile
+          puts "TILE == ? #{@editor.tiles.last == @grid["#{_x}"]["#{_y}"]}"
+          puts "Grid point: #{_x} #{_y}"
+        end
+      end
+
       def button_up(id)
         super
 
@@ -82,7 +107,7 @@ class Track
         when Gosu::MsMiddle
           if @mouse && @editor.mouse_in?(@editor.active_area)
             x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
-            y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@edito.mouse.height/2
+            y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
             if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
               tile = @grid["#{x}"]["#{y}"]
               @current_tile_image_path = tile.image

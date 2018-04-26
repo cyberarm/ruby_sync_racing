@@ -11,7 +11,7 @@ module Game
           push_game_state(MultiplayerMenu)
         end
 
-        button "Track Editor" do
+        button "Track Editor", Gosu::Color.rgba(50, 150, 50, 200), Gosu::Color.rgba(100, 150, 100, 200) do
           push_game_state(Track::Editor::Menu)
         end
 

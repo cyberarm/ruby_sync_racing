@@ -15,18 +15,16 @@ class Track
 
         @tooltip = Game::Text.new("", size: 24)
 
-        if @editor.active_selector.color.value < 0.3
-          @background_color = @editor.lighten(@editor.active_selector.color, 50)
-          @hover_background_color = @editor.lighten(@background_color)
-          @active_background_color = @editor.lighten(@hover_background_color)
-        else
-          @background_color = @editor.darken(@editor.active_selector.color, 50)
-          @hover_background_color = @editor.darken(@background_color)
-          @active_background_color = @editor.darken(@hover_background_color)
-        end
+        @set_colors = false
       end
 
       def draw
+        if @set_colors
+          render
+        end
+      end
+
+      def render
         $window.fill_rect(0, 50, @widest_element, $window.height-50, @editor.darken(@editor.active_selector.color))
         Gosu.clip_to(0, @editor.selectors_height, $window.width, $window.height) do
           Gosu.translate(0, @y_offset) do
@@ -88,6 +86,19 @@ class Track
       end
 
       def update
+        unless @set_colors
+          if @editor.active_selector.color.value < 0.3
+            @background_color = @editor.lighten(@editor.active_selector.color, 50)
+            @hover_background_color = @editor.lighten(@background_color)
+            @active_background_color = @editor.lighten(@hover_background_color)
+            @set_colors = true
+          else
+            @background_color = @editor.darken(@editor.active_selector.color, 50)
+            @hover_background_color = @editor.darken(@background_color)
+            @active_background_color = @editor.darken(@hover_background_color)
+            @set_colors = true
+          end
+        end
       end
 
       def button_up(id)

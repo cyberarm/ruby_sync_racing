@@ -34,6 +34,9 @@ class Track
       def focused
       end
 
+      def load_track(track_data)
+      end
+
       def mouse_image(image)
         @mouse = image
       end
