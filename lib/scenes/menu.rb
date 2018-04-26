@@ -1,5 +1,5 @@
 module Game
-  Button = Struct.new(:text, :rect, :background_color, :proc)
+  Button = Struct.new(:text, :rect, :background_color, :background_hover_color, :proc)
   Input  = Struct.new(:text, :rect, :focus, :secret, :value, :text_input)
 
   class Scene
@@ -37,7 +37,7 @@ module Game
             fill_rect(e.rect[0], e.rect[1], e.rect[2], e.rect[3], e.background_color)
             if $window.mouse_x.between?(e.rect[0], e.rect[0]+e.rect[2])
               if $window.mouse_y.between?(e.rect[1], e.rect[1]+e.rect[3])
-                fill_rect(e.rect[0], e.rect[1], e.rect[2], e.rect[3], Gosu::Color.rgba(56,45,89,212))
+                fill_rect(e.rect[0], e.rect[1], e.rect[2], e.rect[3], e.background_hover_color)
               end
             end
           elsif e.is_a?(Game::Input)
@@ -135,7 +135,7 @@ module Game
         return input
       end
 
-      def button(string, &block)
+      def button(string, color = Gosu::Color.rgba(0,45,89,212), hover_color = Gosu::Color.rgba(56,45,89,212), &block)
         text   = Game::Text.new(string, y: @y, size: 26)
         text.x = $window.width/2-text.width/2
         x = text.x-10
@@ -146,7 +146,8 @@ module Game
         button = Game::Button.new
         button.text = text
         button.rect = [x,y, width,height]
-        button.background_color = Gosu::Color.rgba(0,45,89,212)
+        button.background_color = color
+        button.background_hover_color = hover_color
         button.proc = block
 
         @elements.push(button)

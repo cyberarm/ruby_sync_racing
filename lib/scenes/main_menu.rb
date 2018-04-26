@@ -15,7 +15,7 @@ module Game
           push_game_state(Track::Editor::Menu)
         end
 
-        button "Exit" do
+        button "Exit", Gosu::Color.rgba(200, 50, 50, 200), Gosu::Color.rgba(200, 100, 100, 200) do
           exit
         end
       end
