@@ -62,7 +62,7 @@ class Track
         width = $window.width.to_f/@mode_selectors.count
         @mode_selectors.each_with_index do |s, i|
           s.text.x = (width*i)-(s.text.width/2)+width/2
-          if mouse_over?(width*i, 0, width, @selectors_height)
+          if mouse_over?(width*i, 0, width, @selectors_height) && s.instance
             $window.fill_rect(width*i, 0, width, @selectors_height, lighten(s.color))
             $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
 
@@ -146,10 +146,12 @@ class Track
           width = $window.width.to_f/@mode_selectors.count
           @mode_selectors.each_with_index do |s, i|
             if mouse_over?(width*i, 0, width, @selectors_height)
-              @active_selector = s
-              # @active_selector.instance = s.klass.new unless s.instance.is_a?(s.klass)
-              @active_selector.selected = true
-              @active_selector.instance.focused
+              if s.instance
+                @active_selector = s
+                # @active_selector.instance = s.klass.new unless s.instance.is_a?(s.klass)
+                @active_selector.selected = true
+                @active_selector.instance.focused
+              end
             end
           end
         end
