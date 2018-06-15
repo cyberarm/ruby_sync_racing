@@ -12,7 +12,7 @@ class Track
 
         @use_mouse_image = true
         @mouse = nil
-        @mouse_position = {x: 0, y: 0, angle: 0}
+        @mouse_position = {x: 0, y: 0, angle: 0, scale: 1}
 
         setup if defined?(setup)
       end
@@ -21,7 +21,7 @@ class Track
         @sidebar.draw
         Gosu.clip_to(@editor.active_area.x, @editor.active_area.y, @editor.active_area.width, @editor.active_area.height) do
           Gosu.translate(@editor.screen_vector.x, @editor.screen_vector.y) do
-            @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 50, @mouse_position[:angle], 0.5, 0.5, 1.0, 1.0, Gosu::Color.rgba(255,255,255, 150)) if @mouse  && @use_mouse_image
+            @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 50, @mouse_position[:angle], 0.5, 0.5, @mouse_position[:scale], @mouse_position[:scale], Gosu::Color.rgba(255,255,255, 150)) if @mouse  && @use_mouse_image
           end
         end
       end
