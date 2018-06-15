@@ -19,7 +19,9 @@ class Track
           p self.save_file
           @track_data = AbstractJSON.load(File.open(@track_file).read)
 
-          @mode_selectors.each {|s| s.instance.load_track(@track_data)}
+          @mode_selectors.each do |s|
+            s.instance.load_track(@track_data) if s.instance
+          end
         end
       end
     end

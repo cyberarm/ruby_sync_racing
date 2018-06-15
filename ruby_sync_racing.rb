@@ -4,12 +4,10 @@ if ARGV.join.include?("--debug")
 else
   $debug = false
 end
-require 'bundler/setup'
 require "pp"
 require "set"
 
 require "gosu"
-require "oj"
 # require "chipmunk"
 require "gameoverseer/version"
 require "gameoverseer/client"
