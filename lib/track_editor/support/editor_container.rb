@@ -82,7 +82,7 @@ class Track
 
       def draw_map
         Gosu.clip_to(@active_area.x, @active_area.y, @active_area.width, @active_area.height) do
-          $window.fill_rect(@active_area.x, @active_area.y, @active_area.width, @active_area.height, @background)
+          $window.fill_rect(@active_area.x, @active_area.y, @active_area.width, @active_area.height, @background, -10)
 
           Gosu.translate(@screen_vector.x, @screen_vector.y) do
             @tiles.each do |tile|
