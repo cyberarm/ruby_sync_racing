@@ -119,12 +119,13 @@ class Track
 
         @decorations.each do |decoration|
           hash["decorations"] << {
-            "type" => decoration.type,
+            "collidable" => decoration.collidable,
             "image"=> decoration.image,
             "x"    => decoration.x,
             "y"    => decoration.y,
             "z"    => decoration.z,
-            "angle"=> decoration.angle
+            "angle"=> decoration.angle,
+            "scale"=> decoration.scale
           }
         end
 

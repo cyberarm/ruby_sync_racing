@@ -12,9 +12,15 @@ class Track
     end
 
     def decorations
+      @data["decorations"]
     end
 
     def checkpoints
+      @data["checkpoints"]
+    end
+
+    def starting_positions
+      @data["starting_positions"]
     end
   end
 end

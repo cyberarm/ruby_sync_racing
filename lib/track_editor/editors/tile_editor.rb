@@ -90,8 +90,6 @@ class Track
           @grid["#{_x}"] = {} unless @grid["#{_x}"].is_a?(Hash)
           @grid["#{_x}"]["#{_y}"] = _tile
           @editor.tiles << _tile
-          puts "TILE == ? #{@editor.tiles.last == @grid["#{_x}"]["#{_y}"]}"
-          puts "Grid point: #{_x} #{_y}"
         end
       end
 

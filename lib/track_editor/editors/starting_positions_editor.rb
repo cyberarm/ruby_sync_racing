@@ -3,28 +3,21 @@ class Track
     class StartingPositionsEditor < EditorMode
       def setup
         # sidebar_label "Options"
-        @angle = 0
-        @font = Gosu::Font.new(24, name: Gosu.default_font_name)
 
-        sidebar_button "Rotate" do
+        sidebar_button("Jump 0:0", "Press \"0\"") do
+          @editor.screen_vector.x = 0
+          @editor.screen_vector.y = 0
+        end
+        sidebar_button("Rotate", "Press \"R\"") do
           @angle+=45
           @angle%=360
+          @mouse_position[:angle] = @angle
         end
-      end
 
-      def tile
-        @tile ||= Gosu.record(@editor.tile_size, @editor.tile_size) do
-          Gosu.draw_rect(0, 0, @editor.tile_size, @editor.tile_size, Gosu::Color.rgba(100,100,100,100), 3)
-          # Gosu.draw_triangle(
-          #   0, @editor.tile_size/2, Gosu::Color.rgb(100,50,50),
-          #   @editor.tile_size/2, 0, Gosu::Color.rgb(100,50,50),
-          #   @editor.tile_size, @editor.tile_size/2, Gosu::Color.rgb(100,50,50), 3
-          # )
-          (@editor.tile_size/2).times do |n|
-            Gosu.draw_rect(@editor.tile_size/2-n, n, n+n, 1, Gosu::Color.rgb(100,50,50), 3)
-          end
-          Gosu.draw_rect(@editor.tile_size/4, @editor.tile_size/2, @editor.tile_size/2, @editor.tile_size/2, Gosu::Color.rgb(100,50,50), 3)
-        end
+        @angle = 0
+
+        @mouse = @editor.starting_position_tile
+        @mouse_from_gosu_record = true
       end
 
       def load_track(track_data)
@@ -35,22 +28,6 @@ class Track
 
           @editor.starting_positions << Track::StartingPosition.new(_x, _y, _angle)
         end
-      end
-
-      def draw
-        Gosu.clip_to(@editor.active_area.x, @editor.active_area.y, @editor.active_area.width, @editor.active_area.height) do
-          Gosu.rotate(@angle, @mouse_position[:x], @mouse_position[:y]) do
-            tile.draw(@mouse_position[:x]-@editor.tile_size/2, @mouse_position[:y]-@editor.tile_size/2, 3)
-          end
-
-          @editor.starting_positions.each_with_index do |position, i|
-            Gosu.rotate(position.angle, position.x, position.y) do
-              tile.draw(position.x-@editor.tile_size/2, position.y-@editor.tile_size/2, 3)
-            end
-            @font.draw("#{i}", position.x-(@font.text_width("#{i}")/2), position.y-(@font.height/2), 3)
-          end
-        end
-        super
       end
 
       def update
@@ -67,6 +44,7 @@ class Track
         when Gosu::KbR
           @angle+=45
           @angle%=360
+          @mouse_position[:angle] = @angle
         when Gosu::MsLeft
           unless over_position?
             place_starting_position

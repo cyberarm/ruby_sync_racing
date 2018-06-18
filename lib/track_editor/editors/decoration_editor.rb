@@ -4,6 +4,7 @@ class Track
       def setup
         @angle = 0
         @scale = 1
+        @collidable = false
         @use_grid_placement = true
         sidebar_label("Decorations")
         sidebar_button("Disable Grid", "Toggle grid placement") do |button|
@@ -38,8 +39,13 @@ class Track
         super
 
         if @mouse
-          over_decorations.each do |decoration|
-            $window.draw_circle(decoration.x, decoration.y, decoration.radius, 9999, decoration.debug_color)
+          Gosu.clip_to(@editor.active_area.x, @editor.active_area.y, @editor.active_area.width, @editor.active_area.height) do
+            over_decorations.each do |decoration|
+              $window.draw_circle(decoration.x, decoration.y, decoration.radius, 9999, Gosu::Color.rgb(255,144,0))
+            end
+            # Render current decorations radius
+            radius = ((@editor.image(@current_tile_image_path).width+@editor.image(@current_tile_image_path).height)/4)*@scale
+            $window.draw_circle(@mouse_position[:x], @mouse_position[:y], radius, 9999, Gosu::Color.rgb(255,144,0))
           end
         end
       end
@@ -59,10 +65,27 @@ class Track
         end
       end
 
+      def load_track(track_data)
+        track_data["decorations"].each do |decoration|
+          _collidable = decoration["collidable"]
+          _image_path = decoration["image"]
+          _x = decoration["x"]
+          _y = decoration["y"]
+          _z = decoration["z"]
+          _angle = decoration["angle"]
+          _scale = decoration["scale"]
+
+        _radius = ((@editor.image(_image_path).width+@editor.image(_image_path).height)/4)*@scale
+
+          @editor.decorations << Track::Decoration.new(_collidable, _image_path, _x, _y, _z, _angle, _scale, _radius)
+        end
+      end
+
       def place(image)
         x = @mouse_position[:x]
         y = @mouse_position[:y]
-        @editor.decorations << Decoration.new(image: image, x: x, y: y, z: 0, angle: @angle, scale: @scale)
+        radius = ((@editor.image(@current_tile_image_path).width+@editor.image(@current_tile_image_path).height)/4)*@scale
+        @editor.decorations << Decoration.new(@collidable, @current_tile_image_path, x, y, 0, @angle, @scale, radius)
       end
 
       def over_decoration?

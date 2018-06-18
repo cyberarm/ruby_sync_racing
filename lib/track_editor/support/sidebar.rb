@@ -187,6 +187,7 @@ class Track
             e.x = ((widest/2)-(e.image.width/2)) if e.image
           end
         end
+
         @widest_element = widest
       end
     end

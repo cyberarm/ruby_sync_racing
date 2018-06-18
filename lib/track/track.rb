@@ -1,9 +1,10 @@
  # Contains all the tiles for track.
 class Track < GameObject
   Tile = Struct.new(:type, :image, :x, :y, :z, :angle, :color)
+  Decoration = Struct.new(:collidable, :image, :x, :y, :z, :angle, :scale, :radius)
   StartingPosition = Struct.new(:x, :y, :angle)
 
-  attr_reader :collision, :track, :tiles, :tile_size
+  attr_reader :collision, :track, :tiles, :decorations, :tile_size
 
   def setup
     @tile_size = 64
@@ -11,6 +12,9 @@ class Track < GameObject
 
     @tiles = []
     process_tiles
+
+    @decorations = []
+    process_decorations
 
     @collision = Track::Collision.new(@tiles)
     @tile_size = @tiles.first.image.width
@@ -25,6 +29,12 @@ class Track < GameObject
     end
   end
 
+  def process_decorations
+    @track.decorations.each do |decoration|
+      @decorations << Decoration.new(decoration["collidable"], decoration["x"], decoration["y"], decoration["z"], decoration["angle"], nil)
+    end
+  end
+
   def draw
     super
     @tiles.each do |tile|
@@ -33,6 +43,10 @@ class Track < GameObject
       else
         tile.image.draw_rot(tile.x+@tile_size/2, tile.y+@tile_size/2, tile.z, tile.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)
       end
+    end
+
+    @decorations.each do |decoration|
+      decoration.image.draw_rot(decoration.x, decoration.y, decoration.z, decoration.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)
     end
   end
 end

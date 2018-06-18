@@ -33,6 +33,8 @@ class Track
         @checkpoints = []
         @starting_positions = []
 
+        @font = Gosu::Font.new(24, name: Gosu.default_font_name)
+
         @save_file = nil
 
         @click_sound = sample("assets/track_editor/click.ogg")
@@ -63,6 +65,16 @@ class Track
       end
 
       def prepare
+      end
+
+      def starting_position_tile
+        @_starting_position_tile ||= Gosu.record(@tile_size, @tile_size) do
+          Gosu.draw_rect(0, 0, @tile_size, @tile_size, Gosu::Color.rgba(100,100,100,150), 3)
+          (@tile_size/2).times do |n|
+            Gosu.draw_rect(@tile_size/2-n, n, n+n, 1, Gosu::Color.rgba(200,50,50, 100), 3)
+          end
+          Gosu.draw_rect(@tile_size/4, @tile_size/2, @tile_size/2, @tile_size/2, Gosu::Color.rgba(200,50,50, 100), 3)
+        end
       end
 
       def selector(name, instance, color = Gosu::Color.rgb(rand(200), rand(200), rand(200)), selected = false)
@@ -102,13 +114,15 @@ class Track
             end
 
             @decorations.each do |decoration|
-              decoration.draw
+              image(decoration.image).draw_rot(decoration.x, decoration.y, decoration.z, decoration.angle, 0.5, 0.5, decoration.scale, decoration.scale)
             end
 
             @checkpoints.each do |checkpoint|
             end
 
-            @starting_positions.each do |starting_position|
+            @starting_positions.each_with_index do |starting_position, i|
+              starting_position_tile.draw_rot(starting_position.x, starting_position.y, 3, 0.5, 0.5, starting_position.angle, starting_position.angle)
+              @font.draw("#{i}", starting_position.x-(@font.text_width("#{i}")/2), starting_position.y-(@font.height/2), 3)
             end
           end
         end
