@@ -8,7 +8,7 @@ class Car < GameObject
 
     @image      = image(AssetManager.image_from_id(@car_data["spec"]["image"]))
     @body_image = image(AssetManager.image_from_id(@car_data["spec"]["body_image"]))
-    @body_color = @options[:body_color] ? @options[:body_color] : Gosu::Color::WHITE
+    @body_color = @options[:body_color] ? @options[:body_color] : Gosu::Color.rgb(rand(0..150), rand(0..150),rand(0..150)) # Gosu::Color::WHITE
     self.scale = @car_data["spec"]["scale"]
     @physics = CarPhysics.new(self)
 
