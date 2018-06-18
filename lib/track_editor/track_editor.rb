@@ -7,15 +7,13 @@ class Track
 
         self.caption = "Track Editor - Ruby Sync Racing"
 
+        @show_cursor = true
+
         if ARGV.join.include?("--new")
           push_game_state(Edit)
         else
           push_game_state(Menu)
         end
-      end
-
-      def needs_cursor?
-        true
       end
     end
   end

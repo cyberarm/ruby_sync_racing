@@ -6,7 +6,8 @@ class Car < GameObject
     @car_data = CarParser.new(@options[:spec]).data
     @last_x, @last_y, @last_speed = 0, 0, 0
 
-    @image = image(@car_data["spec"]["image"])
+    @image      = image(AssetManager.image_from_id(@car_data["spec"]["image"]))
+    @body_image = image(AssetManager.image_from_id(@car_data["spec"]["body_image"]))
     self.scale = @car_data["spec"]["scale"]
     @physics = CarPhysics.new(self)
 
@@ -23,7 +24,7 @@ class Car < GameObject
     # @engine = Gosu::Sample["assets/sound/engine.wav"]
     # @engine_instance = nil
 
-    @brake = sample("assets/sound/brakes.ogg")
+    @brake = sample(AssetManager.sound_from_id(100))
     @brake_instance = nil
     @brake_volume   = 0.0
 
@@ -41,6 +42,7 @@ class Car < GameObject
 
   def draw
     super
+    @body_image.draw_rot(@x, @y, @z, @angle, @center_x, @center_y, @scale_x, @scale_y, @color, @mode)
     @debug.draw
     @name.draw
 

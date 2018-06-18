@@ -171,6 +171,15 @@ class GameObject
     $window.button_down?(id)
   end
 
+  def image_missing
+    @_image_missing ||= Gosu.record(64, 64) do
+      font = Gosu::Font.new(24, name: Gosu.default_font_name)
+      Gosu.draw_rect(0, 0, 64, 64, Gosu::Color.rgba(127,64,0, 150), 1000)
+      font.draw("NO", 10, 0, 1001)
+      font.draw("IMAGE", 2, 30, 1001)
+    end
+  end
+
   def image(image_path)
     image = nil
     IMAGES.detect do |img, instance|
@@ -181,7 +190,13 @@ class GameObject
     end
 
     unless image
-      instance = Gosu::Image.new(image_path)
+      instance = nil
+      begin
+        instance = Gosu::Image.new(image_path)
+      rescue RuntimeError
+        puts "Image: #{image} is missing"
+        instance = image_missing
+      end
       IMAGES[image_path] = instance
       image = instance
     end

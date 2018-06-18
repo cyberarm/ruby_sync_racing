@@ -19,7 +19,7 @@ class Track
       attr_accessor :active_selector, :background, :save_file
 
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
-      attr_reader :active_area, :screen_vector, :selectors_height, :tile_size
+      attr_reader :active_area, :screen_vector, :selectors_height, :tab_width, :tile_size
       attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
