@@ -682,14 +682,20 @@
     {
       "type":"solid",
       "image":"assets/tracks/general/decor/tree.png",
-      "x":64,
-      "y":64
+      "x":320,
+      "y":400,
+      "z":0,
+      "angle":0,
+      "scale":1
     },
     {
       "type":"non_solid",
       "image":"assets/tracks/general/decor/bush.png",
-      "x":64,
-      "y":64
+      "x":600,
+      "y":400,
+      "z":0,
+      "angle":0,
+      "scale":1
     }
   ]
 }

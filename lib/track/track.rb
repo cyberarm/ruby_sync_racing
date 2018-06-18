@@ -31,7 +31,7 @@ class Track < GameObject
 
   def process_decorations
     @track.decorations.each do |decoration|
-      @decorations << Decoration.new(decoration["collidable"], decoration["x"], decoration["y"], decoration["z"], decoration["angle"], nil)
+      @decorations << Decoration.new(decoration["collidable"], image(decoration["image"]), decoration["x"], decoration["y"], decoration["z"], decoration["angle"], decoration["scale"], nil)
     end
   end
 
