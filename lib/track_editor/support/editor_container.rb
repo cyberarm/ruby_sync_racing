@@ -121,7 +121,7 @@ class Track
             end
 
             @starting_positions.each_with_index do |starting_position, i|
-              starting_position_tile.draw_rot(starting_position.x, starting_position.y, 3, 0.5, 0.5, starting_position.angle, starting_position.angle)
+              starting_position_tile.draw_rot(starting_position.x, starting_position.y, 3, starting_position.angle, 0.5, 0.5)
               @font.draw("#{i}", starting_position.x-(@font.text_width("#{i}")/2), starting_position.y-(@font.height/2), 3)
             end
           end
