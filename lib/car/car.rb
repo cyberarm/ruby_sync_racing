@@ -8,6 +8,7 @@ class Car < GameObject
 
     @image      = image(AssetManager.image_from_id(@car_data["spec"]["image"]))
     @body_image = image(AssetManager.image_from_id(@car_data["spec"]["body_image"]))
+    @body_color = @options[:body_color] ? @options[:body_color] : Gosu::Color::WHITE
     self.scale = @car_data["spec"]["scale"]
     @physics = CarPhysics.new(self)
 
@@ -42,7 +43,7 @@ class Car < GameObject
 
   def draw
     super
-    @body_image.draw_rot(@x, @y, @z, @angle, @center_x, @center_y, @scale_x, @scale_y, @color, @mode)
+    @body_image.draw_rot(@x, @y, @z, @angle, @center_x, @center_y, @scale_x, @scale_y, @body_color, @mode)
     @debug.draw
     @name.draw
 
