@@ -47,6 +47,19 @@ class Track
         @active_selector.instance = @mode_selectors.first.instance
         @active_selector.selected = true
 
+        @tab_width = $window.width.to_f/@mode_selectors.count
+
+        @mode_selectors.each do |s|
+          if s.text.width > @tab_width
+            until(s.text.width <= @tab_width)
+              text = s.text.text.gsub(".", "")
+              text = text[0...text.length-1]
+              s.text.text = text+"..."
+              puts s.text.text
+            end
+          end
+        end
+
       end
 
       def prepare
@@ -59,22 +72,21 @@ class Track
 
       def draw_mode_selectors
         $window.fill_rect(0, 0, $window.width, @selectors_height, Gosu::Color.rgb(0,0,150))
-        width = $window.width.to_f/@mode_selectors.count
         @mode_selectors.each_with_index do |s, i|
-          s.text.x = (width*i)-(s.text.width/2)+width/2
-          if mouse_over?(width*i, 0, width, @selectors_height) && s.instance
-            $window.fill_rect(width*i, 0, width, @selectors_height, lighten(s.color))
-            $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
+          s.text.x = (@tab_width*i)-(s.text.width/2)+@tab_width/2
+          if mouse_over?(@tab_width*i, 0, @tab_width, @selectors_height) && s.instance
+            $window.fill_rect(@tab_width*i, 0, @tab_width, @selectors_height, lighten(s.color))
+            $window.fill_rect(@tab_width*i, 45, @tab_width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
 
             $window.fill_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
           else
-            $window.fill_rect(width*i, 0, width, @selectors_height, s.color)
-            $window.fill_rect(width*i, 45, width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
+            $window.fill_rect(@tab_width*i, 0, @tab_width, @selectors_height, s.color)
+            $window.fill_rect(@tab_width*i, 45, @tab_width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
 
             $window.fill_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
           end
 
-          $window.fill_rect(width*(i+1), 0, 2, @selectors_height, Gosu::Color::BLACK, 4)
+          $window.fill_rect(@tab_width*(i+1), 0, 2, @selectors_height, Gosu::Color::BLACK, 4)
           $window.fill_rect(0, 44, $window.width, 1, Gosu::Color::BLACK, 4)
           s.text.draw
         end
