@@ -1,6 +1,7 @@
  # Contains all the tiles for track.
 class Track < GameObject
   Tile = Struct.new(:type, :image, :x, :y, :z, :angle, :color)
+  StartingPosition = Struct.new(:x, :y, :angle)
 
   attr_reader :collision, :track, :tiles, :tile_size
 

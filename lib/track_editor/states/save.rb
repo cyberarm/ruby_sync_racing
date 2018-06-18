@@ -72,16 +72,23 @@ class Track
         when Gosu::KbEscape
           push_game_state(@previous_game_state)
 
+        when Gosu::MsLeft
+          if $window.mouse_x.between?(@save.x-20, @save.x+@save.width+40)
+            if $window.mouse_x.between?(@save.y-20, @save.y+@save.height+40)
+              save
+            end
+          end
         when Gosu::KbEnter
-          save_track(@name.text)
-          @previous_game_state.save_file = @name.text
-          push_game_state(@previous_game_state)
-
+          save
         when Gosu::KbReturn
-          save_track(@name.text)
-          @previous_game_state.save_file = @name.text
-          push_game_state(@previous_game_state)
+          save
         end
+      end
+
+      def save
+        save_track(@name.text)
+        @previous_game_state.save_file = @name.text
+        push_game_state(@previous_game_state)
       end
 
       def save_track(name, color = Gosu::Color.rgba(100, 254, 78, 144))
@@ -108,6 +115,25 @@ class Track
                               "angle" => tile.angle
                             }
           end
+        end
+
+        @decorations.each do |decoration|
+          hash["decorations"] << {
+            "type" => decoration.type,
+            "image"=> decoration.image,
+            "x"    => decoration.x,
+            "y"    => decoration.y,
+            "z"    => decoration.z,
+            "angle"=> decoration.angle
+          }
+        end
+
+        @starting_positions.each do |starting_position|
+          hash["starting_positions"] << {
+            "x"    => starting_position.x,
+            "y"    => starting_position.y,
+            "angle"=> starting_position.angle
+          }
         end
 
         data = AbstractJSON.dump(hash)
