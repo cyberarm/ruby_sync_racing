@@ -15,11 +15,14 @@ class Track
       def tile
         @tile ||= Gosu.record(@editor.tile_size, @editor.tile_size) do
           Gosu.draw_rect(0, 0, @editor.tile_size, @editor.tile_size, Gosu::Color.rgba(100,100,100,100), 3)
-          Gosu.draw_triangle(
-            0, @editor.tile_size/2, Gosu::Color.rgb(100,50,50),
-            @editor.tile_size/2, 0, Gosu::Color.rgb(100,50,50),
-            @editor.tile_size, @editor.tile_size/2, Gosu::Color.rgb(100,50,50), 3
-          )
+          # Gosu.draw_triangle(
+          #   0, @editor.tile_size/2, Gosu::Color.rgb(100,50,50),
+          #   @editor.tile_size/2, 0, Gosu::Color.rgb(100,50,50),
+          #   @editor.tile_size, @editor.tile_size/2, Gosu::Color.rgb(100,50,50), 3
+          # )
+          (@editor.tile_size/2).times do |n|
+            Gosu.draw_rect(@editor.tile_size/2-n, n, n+n, 1, Gosu::Color.rgb(100,50,50), 3)
+          end
           Gosu.draw_rect(@editor.tile_size/4, @editor.tile_size/2, @editor.tile_size/2, @editor.tile_size/2, Gosu::Color.rgb(100,50,50), 3)
         end
       end
@@ -44,7 +47,7 @@ class Track
             Gosu.rotate(position.angle, position.x, position.y) do
               tile.draw(position.x-@editor.tile_size/2, position.y-@editor.tile_size/2, 3)
             end
-            @font.draw("#{i}", position.x-(@font.text_width("#{i}")/2), position.y, 3)
+            @font.draw("#{i}", position.x-(@font.text_width("#{i}")/2), position.y-(@font.height/2), 3)
           end
         end
         super

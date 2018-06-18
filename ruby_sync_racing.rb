@@ -21,8 +21,8 @@ if not defined?(Ocra)
   if ARGV.join.include?("--editor")
     Config.ensure_config_exists
     Config.new("./data/config.ini")
-    if ARGV.join.include?("--debug")
-      Track::Editor::Window.new(1000, 700, false).show
+    if ARGV.join.include?("--small")
+      Track::Editor::Window.new(720, 480, false).show
     else
       Track::Editor::Window.new.show
     end
