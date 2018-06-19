@@ -12,7 +12,13 @@ module Game
         @list_index = 0
         process_cars
 
-        @color_options = [Gosu::Color::RED, Gosu::Color::GREEN, Gosu::Color::BLUE, Gosu::Color::BLACK]
+        @color_options = [
+          Gosu::Color::WHITE,
+          Gosu::Color::RED,
+          Gosu::Color::GREEN,
+          Gosu::Color::BLUE,
+          Gosu::Color::BLACK
+        ]
         @multiline_text = MultiLineText.new("0\n1\n2\n", x: $window.width/2, y: 280, size: 18)
       end
 
@@ -35,14 +41,26 @@ module Game
 
       def draw
         super
-        Gosu.draw_rect($window.width/2-100, 280, 200, 64+15, Gosu::Color.rgb(50,50,100))
+        if mouse_over_card?
+          Gosu.draw_rect($window.width/2-100, 280, 200, 64+15, Gosu::Color.rgba(56,45,89,212))
+        else
+          Gosu.draw_rect($window.width/2-100, 280, 200, 64+15, Gosu::Color.rgba(0,45,89,212))
+        end
         list = @car_list[@list_index]
         list[:image].draw($window.width/2-85, 290, 3, list[:scale], list[:scale])
         list[:body_image].draw($window.width/2-85, 290, 3, list[:scale], list[:scale], list[:color])
         @multiline_text.draw
 
         @color_options.each_with_index do |color, i|
-          Gosu.draw_rect($window.width/2-100+(i*20), 280+64+15, 20, 20, color)
+          if mouse_over_color?(i)
+            if color.value > 0.5
+              Gosu.draw_rect($window.width/2-100+(i*20), 280+64+15, 20, 20, darken(color, 50))
+            else
+              Gosu.draw_rect($window.width/2-100+(i*20), 280+64+15, 20, 20, lighten(color, 50))
+            end
+          else
+            Gosu.draw_rect($window.width/2-100+(i*20), 280+64+15, 20, 20, color)
+          end
         end
       end
 
@@ -53,7 +71,7 @@ module Game
         @multiline_text.text = "Speed: #{list[:top_speed]}\nBrake: #{list[:break_speed]}\nDrag: #{list[:drag]}\n"
       end
 
-      def mouse_over?
+      def mouse_over_card?
         if $window.mouse_x.between?($window.width/2-100, $window.width/2-100+200)
           if $window.mouse_y.between?(280, 280+64+15)
             true
@@ -61,17 +79,32 @@ module Game
         end
       end
 
+      def mouse_over_color?(i)
+        if $window.mouse_x.between?($window.width/2-100+(i*20), $window.width/2-100+(i*20)+20)
+          if $window.mouse_y.between?(280+64+15, 280+64+15+20)
+            true
+          end
+        end
+      end
+
       def continue_to_game
         list = @car_list[@list_index]
-        push_game_state(Play.new(trackfile: @options[:trackfile], carfile: list[:json]))
+        push_game_state(Play.new(trackfile: @options[:trackfile], carfile: list[:json], body_color: list[:color]))
       end
 
       def button_up(id)
         super
         case id
         when Gosu::MsLeft
-          if mouse_over?
+          if mouse_over_card?
             continue_to_game
+          else
+            @color_options.each_with_index do |color, i|
+              if mouse_over_color?(i)
+                @car_list[@list_index][:color] = color
+                break
+              end
+            end
           end
         when Gosu::KbReturn
           continue_to_game

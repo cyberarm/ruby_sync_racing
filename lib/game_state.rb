@@ -39,6 +39,22 @@ class GameState
     end
   end
 
+  def lighten(color, amount = 25)
+    if defined?(color.alpha)
+      return Gosu::Color.rgba(color.red+amount, color.green+amount, color.blue+amount, color.alpha)
+    else
+      return Gosu::Color.rgb(color.red+amount, color.green+amount, color.blue+amount)
+    end
+  end
+
+  def darken(color, amount = 25)
+    if defined?(color.alpha)
+      return Gosu::Color.rgba(color.red-amount, color.green-amount, color.blue-amount, color.alpha)
+    else
+      return Gosu::Color.rgb(color.red-amount, color.green-amount, color.blue-amount)
+    end
+  end
+
   def image(image_path)
     image = nil
     GameObject::IMAGES.detect do |img, instance|

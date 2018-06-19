@@ -30,16 +30,16 @@
       ],
       "tail_lights":[
         {
-          "top":62,
+          "top":60,
           "left":7,
           "width":3,
-          "height":1
+          "height":2
         },
         {
-          "top":62,
+          "top":60,
           "left":22,
           "width":3,
-          "height":1
+          "height":2
         }
       ]
     }

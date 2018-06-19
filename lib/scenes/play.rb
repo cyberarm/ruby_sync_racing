@@ -5,7 +5,7 @@ module Game
         $window.show_cursor = false
         @screen_vector = Vector2D.new(0, 0)
 
-        @car = Car.new(x: $window.width/2, y: $window.height/2, spec: @options[:carfile])
+        @car = Car.new(x: $window.width/2, y: $window.height/2, spec: @options[:carfile], body_color: @options[:body_color])
         @trackfile = @options[:trackfile] || "data/tracks/test_track.json"
         @track = Track.new(spec: @trackfile)
         @last_tile = nil
