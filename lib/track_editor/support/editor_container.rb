@@ -7,6 +7,7 @@ class Track
     class EditorContainer < GameState
       Selector = Struct.new(:name, :text, :instance, :color, :selected)
       BoundingBox = Struct.new(:x, :y, :width, :height)
+      EditorMessage=Struct.new(:text, :born, :time_to_live, :alpha)
 
       def self.instance
         @instance
@@ -23,6 +24,7 @@ class Track
       attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
+        @editor_messages = []
         @screen_vector = Vector2D.new(0, 0)
         @selectors_height = 50
 
@@ -128,6 +130,23 @@ class Track
         end
       end
 
+      def draw_messages
+        _height = (Sidebar::PADDING*1.5)
+        @editor_messages.each_with_index do |message, i|
+          message.text.y = @selectors_height+_height
+          _height+=message.text.height
+          message.text.x = (Sidebar::PADDING*2)+@active_selector.instance.sidebar.widest_element
+          if Time.now >= message.time_to_live
+            message.alpha-=1
+            message.text.alpha = message.alpha
+            if message.alpha <= 0
+              @editor_messages.shift
+            end
+          end
+          message.text.draw
+        end
+      end
+
       def draw
         # Container selection buttons
         draw_mode_selectors
@@ -135,6 +154,8 @@ class Track
         @active_selector.instance.draw if @active_selector && @active_selector.instance
 
         draw_map
+
+        draw_messages
       end
 
       def update
@@ -220,7 +241,11 @@ class Track
         push_game_state(_window)
       end
 
-      def add_message(string);end
+      def add_message(string, time_to_live = 5)
+        text    = Game::Text.new(string, y: -100, z: 255, size: 26)
+        message = EditorMessage.new(text, Time.now, Time.now+time_to_live, 255)
+        @editor_messages << message
+      end
 
       def mouse_in?(bounding_box)
         if $window.mouse_x.between?(bounding_box.x, bounding_box.x+bounding_box.width)

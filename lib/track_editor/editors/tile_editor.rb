@@ -125,7 +125,7 @@ class Track
           end
 
         when Gosu::Kb0
-          # @editor.add_message "Screen reset to default position"
+          @editor.add_message "Screen reset to default position"
           @editor.screen_vector.x=0
           @editor.screen_vector.y=0
 
