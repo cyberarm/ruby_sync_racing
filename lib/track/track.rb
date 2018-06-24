@@ -4,7 +4,7 @@ class Track < GameObject
   Decoration = Struct.new(:collidable, :image, :x, :y, :z, :angle, :scale, :radius)
   StartingPosition = Struct.new(:x, :y, :angle)
 
-  attr_reader :collision, :track, :tiles, :decorations, :tile_size
+  attr_reader :collision, :track, :tiles, :decorations, :starting_positions, :tile_size
 
   def setup
     @tile_size = 64
@@ -14,7 +14,16 @@ class Track < GameObject
     process_tiles
 
     @decorations = []
-    process_decorations
+    begin
+      process_decorations
+    rescue NoMemoryError
+    end
+
+    @starting_positions = []
+    begin
+      process_starting_positions
+    rescue NoMethodError
+    end
 
     @collision = Track::Collision.new(@tiles)
     @tile_size = @tiles.first.image.width
@@ -32,6 +41,12 @@ class Track < GameObject
   def process_decorations
     @track.decorations.each do |decoration|
       @decorations << Decoration.new(decoration["collidable"], image(decoration["image"]), decoration["x"], decoration["y"], decoration["z"], decoration["angle"], decoration["scale"], nil)
+    end
+  end
+
+  def process_starting_positions
+    @track.starting_positions.each do |starting_position|
+      @starting_positions << StartingPosition.new(starting_position["x"], starting_position["y"], starting_position["angle"])
     end
   end
 
