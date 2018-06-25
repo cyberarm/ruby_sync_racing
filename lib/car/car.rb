@@ -102,7 +102,7 @@ class Car < GameObject
       puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if $debug
       @x = @last_x
       @y = @last_y
-      @speed = 0.5 if @speed > 0.5
+      @speed = 30.0 if @speed > 30.0
     end
 
     if @yellow_up
@@ -166,8 +166,8 @@ class Car < GameObject
     end
 
     debug_text("X:#{self.x.round}\nY:#{self.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
-    @name.x,@name.y = self.x-@name.width/2, self.y-self.height
     @physics.update
+    @name.x,@name.y = self.x-@name.width/2, self.y-self.height
 
     unless @speed >= @top_speed
       @braking = false
@@ -203,14 +203,6 @@ class Car < GameObject
       @speed+=(@drag*Display.dt)
     end
 
-    if @speed > 0.0
-      @angle-=(120*Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
-      @angle+=(120*Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
-    elsif @speed < 0.0
-      @angle+=(120*Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
-      @angle-=(120*Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
-    end
-
     @last_x = @x
     @last_y = @y
     @last_speed = @speed
@@ -218,6 +210,13 @@ class Car < GameObject
       if @speed.abs <= (@brake_speed*Display.dt) then @speed = 0.0; end
     end
     if @speed == 0.0 then @braking = true; end
+    if @speed > 0.0
+      @angle-=(120*Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
+      @angle+=(120*Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
+    elsif @speed < 0.0
+      @angle+=(120*Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
+      @angle-=(120*Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
+    end
   end
 
   def button_up(id)
