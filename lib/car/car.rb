@@ -20,7 +20,8 @@ class Car < GameObject
 
     @drag        = @car_data["spec"]["drag"]
     @top_speed   = @car_data["spec"]["top_speed"]
-    @break_speed = @car_data["spec"]["break_speed"]
+    @acceleration= @car_data["spec"]["acceleration"]
+    @brake_speed = @car_data["spec"]["brake_speed"]
 
     # @engine = Gosu::Sample["assets/sound/engine.wav"]
     # @engine_instance = nil
@@ -31,7 +32,6 @@ class Car < GameObject
 
     @braking = false
     @headlights_on = false
-    @tick = 0
     @yellow_up = false
     @yellow_int = 255
 
@@ -97,7 +97,6 @@ class Car < GameObject
   def update
     super
     @angle = (@angle % 360)
-    @tick+=1
 
     unless inside_boundry?
       puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if $debug
@@ -144,8 +143,7 @@ class Car < GameObject
         if @brake_instance && @brake_instance.playing?
         else
           # Make sure that @speed is a positive number
-          _speed = @speed*-1 if @speed < -0.01
-          _speed = @speed if @speed > 0.0
+          _speed = @speed.abs
 
           volume = _speed.to_f/@top_speed.to_f
           volume.round(2)
@@ -177,10 +175,10 @@ class Car < GameObject
       if button_down?(Gosu::KbUp) or button_down?(Gosu::KbW)
         if @speed <= -0.01
           @braking = true
-          @speed+=@break_speed
+          @speed+=(@brake_speed*Display.dt)
         else
           @braking = false
-          @speed+=@top_speed/100.0
+          @speed+=(@acceleration*Display.dt)
         end
       end
     end
@@ -188,30 +186,37 @@ class Car < GameObject
     unless @speed <= -@top_speed
       if button_down?(Gosu::KbDown)  or button_down?(Gosu::KbS)
         if @speed >= 0.01
-          @speed-=@break_speed
+          @speed-=(@brake_speed*Display.dt)
           @braking = true
         else
           @braking = false
-          @speed-=@top_speed/100.0
+          @speed-=(@acceleration*Display.dt)
         end
       end
     end
 
-    @speed-=@drag if @speed >= 0.00
-    @speed+=@drag if @speed <= -0.00
+    if @speed >= 0.00
+      @speed = -@top_speed if @speed < -@top_speed
+      @speed-=(@drag*Display.dt)
+    elsif @speed <= -0.00
+      @speed = @top_speed if @speed > @top_speed
+      @speed+=(@drag*Display.dt)
+    end
 
     if @speed > 0.0
-      @angle-=2 if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
-      @angle+=2 if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
+      @angle-=(120*Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
+      @angle+=(120*Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
     elsif @speed < 0.0
-      @angle+=2 if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
-      @angle-=2 if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
+      @angle+=(120*Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
+      @angle-=(120*Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
     end
 
     @last_x = @x
     @last_y = @y
     @last_speed = @speed
-    if @speed.abs <= 0.008 then @speed = 0.0; end
+    unless ($window.button_down?(Gosu::KbUp) || $window.button_down?(Gosu::KbW) || $window.button_down?(Gosu::KbDown) || $window.button_down?(Gosu::KbS))
+      if @speed.abs <= (@brake_speed*Display.dt) then @speed = 0.0; end
+    end
     if @speed == 0.0 then @braking = true; end
   end
 

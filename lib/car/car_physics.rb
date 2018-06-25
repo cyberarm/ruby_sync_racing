@@ -11,8 +11,8 @@ class CarPhysics
   end
 
   def calculate
-    _x = @car_object.speed * Math.cos((90.0 + @car_object.angle) * Math::PI / 180)
-    _y = @car_object.speed * Math.sin((90.0 + @car_object.angle) * Math::PI / 180)
+    _x = (@car_object.speed*Display.dt) * Math.cos((90.0 + @car_object.angle) * Math::PI / 180)
+    _y = (@car_object.speed*Display.dt) * Math.sin((90.0 + @car_object.angle) * Math::PI / 180)
     @car_object.x -= _x
     @car_object.y -= _y
   end

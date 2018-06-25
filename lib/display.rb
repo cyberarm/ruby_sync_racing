@@ -15,7 +15,11 @@ class Display < Gosu::Window
     if Config.get(:screen_height).downcase == "max" then dheight = Gosu.screen_height; else dheight = Integer(Config.get(:screen_height)); end
     if Integer(Config.get(:screen_fullscreen)) == 1 then dfullscreen = true; else dfullscreen = false; end
     p dwidth, dheight, dfullscreen, Config.instance if $debug
-    super(dwidth, dheight, dfullscreen)
+    if ARGV.join.include?("--slow")
+      super(dwidth, dheight, fullscreen: dfullscreen, update_interval: 1000.0/20)
+    else
+      super(dwidth, dheight, fullscreen: dfullscreen, update_interval: update_interval)
+    end
 
     @show_cursor = false
     $window = self
@@ -23,7 +27,11 @@ class Display < Gosu::Window
     @current_frame_time = Gosu.milliseconds
     $window.caption = "Ruby Sync Racing"
 
-    push_game_state(Game::Scene::Boot)
+    if ARGV.join.include?("--quick")
+      push_game_state(Game::Scene::MainMenu)
+    else
+      push_game_state(Game::Scene::Boot)
+    end
   end
 
   def draw

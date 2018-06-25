@@ -42,7 +42,7 @@ module Game
         super
         @screen_vector.x, @screen_vector.y = (@car.x - $window.width / 2), (@car.y - $window.height / 2)
 
-        @car_text.text = "Car x: #{@car.x.round}, y: #{@car.y.round}, angle: #{@car.angle}"
+        @car_text.text = "Car speed: #{@car.speed.round} x: #{@car.x.round}, y: #{@car.y.round}, angle: #{@car.angle.round}"
 
         tile = @track.collision.find(@car.x, @car.y)
         if tile
