@@ -3,7 +3,7 @@
   "spec":{
     "drag":10.0,
     "top_speed":400.0,
-    "brake_speed":100.0,
+    "brake_speed":200.0,
     "acceleration":100.0,
 
     "image":2,

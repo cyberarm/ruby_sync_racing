@@ -7,6 +7,7 @@ module Game
         button("← Track Selection") {push_game_state(LevelSelection)}
         label("", size: 25)
 
+        @card_box = Track::Editor::EditorContainer::BoundingBox.new($window.width/2-100, 280, 200, 64+15)
         @cars = Dir.glob("data/cars/*.json")
         @car_list = []
         @list_index = 0
@@ -14,12 +15,29 @@ module Game
 
         @color_options = [
           Gosu::Color::WHITE,
+          darken(Gosu::Color::WHITE),
+          lighten(Gosu::Color::RED),
           Gosu::Color::RED,
+          darken(Gosu::Color::RED),
+          lighten(Gosu::Color.rgb(255,144,0)), # ORANGE
+          Gosu::Color.rgb(255,144,0), # ORANGE
+          darken(Gosu::Color.rgb(255,144,0)), # ORANGE
+          lighten(Gosu::Color::GREEN),
           Gosu::Color::GREEN,
+          darken(Gosu::Color::GREEN),
+          lighten(Gosu::Color::BLUE),
           Gosu::Color::BLUE,
+          darken(Gosu::Color::BLUE),
+          lighten(Gosu::Color::GRAY),
+          Gosu::Color::GRAY,
+          darken(Gosu::Color::GRAY),
+          lighten(Gosu::Color::BLACK),
           Gosu::Color::BLACK
         ]
-        @multiline_text = MultiLineText.new("0\n1\n2\n", x: $window.width/2, y: 280, size: 18)
+
+        @active_color = @color_options.first
+        @hover_color = nil
+        @multiline_text = MultiLineText.new("0\n1\n2\n3\n", x: @card_box.x+(@card_box.width/2)-24, y: @card_box.y-10, size: 18)
       end
 
       def process_cars
@@ -30,9 +48,9 @@ module Game
           hash[:json]        = car
           hash[:image]       = image(AssetManager.image_from_id(data["spec"]["image"]))
           hash[:body_image]  = image(AssetManager.image_from_id(data["spec"]["body_image"]))
-          hash[:color]       = Gosu::Color::WHITE
           hash[:top_speed]   = data["spec"]["top_speed"]
-          hash[:break_speed] = data["spec"]["break_speed"]
+          hash[:brake_speed] = data["spec"]["brake_speed"]
+          hash[:acceleration]= data["spec"]["acceleration"]
           hash[:drag]        = data["spec"]["drag"]
           hash[:scale]       = data["spec"]["scale"]
           @car_list << hash
@@ -42,24 +60,28 @@ module Game
       def draw
         super
         if mouse_over_card?
-          Gosu.draw_rect($window.width/2-100, 280, 200, 64+15, Gosu::Color.rgba(56,45,89,212))
+          Gosu.draw_rect(@card_box.x, @card_box.y, @card_box.width, @card_box.height, Gosu::Color.rgba(56,45,89,212))
         else
-          Gosu.draw_rect($window.width/2-100, 280, 200, 64+15, Gosu::Color.rgba(0,45,89,212))
+          Gosu.draw_rect(@card_box.x, @card_box.y, @card_box.width, @card_box.height, Gosu::Color.rgba(0,45,89,212))
         end
         list = @car_list[@list_index]
-        list[:image].draw($window.width/2-85, 290, 3, list[:scale], list[:scale])
-        list[:body_image].draw($window.width/2-85, 290, 3, list[:scale], list[:scale], list[:color])
+        list[:image].draw(@card_box.x+15, @card_box.y+10, 3, list[:scale], list[:scale])
+        if @hover_color
+          list[:body_image].draw(@card_box.x+15, @card_box.y+10, 3, list[:scale], list[:scale], @hover_color)
+        else
+          list[:body_image].draw(@card_box.x+15, @card_box.y+10, 3, list[:scale], list[:scale], @active_color)
+        end
         @multiline_text.draw
 
         @color_options.each_with_index do |color, i|
           if mouse_over_color?(i)
             if color.value > 0.5
-              Gosu.draw_rect($window.width/2-100+(i*20), 280+64+15, 20, 20, darken(color, 50))
+              Gosu.draw_rect(@card_box.x+(i*20), @card_box.y+@card_box.height, 20, 20, darken(color, 50))
             else
-              Gosu.draw_rect($window.width/2-100+(i*20), 280+64+15, 20, 20, lighten(color, 50))
+              Gosu.draw_rect(@card_box.x+(i*20), @card_box.y+@card_box.height, 20, 20, lighten(color, 50))
             end
           else
-            Gosu.draw_rect($window.width/2-100+(i*20), 280+64+15, 20, 20, color)
+            Gosu.draw_rect(@card_box.x+(i*20), @card_box.y+@card_box.height, 20, 20, color)
           end
         end
       end
@@ -68,20 +90,31 @@ module Game
         super
         list = @car_list[@list_index]
 
-        @multiline_text.text = "Speed: #{list[:top_speed]}\nBrake: #{list[:break_speed]}\nDrag: #{list[:drag]}\n"
+        found_color = false
+        @color_options.each_with_index do |color, i|
+          if mouse_over_color?(i)
+            puts "Found: #{i}"
+            found_color = true
+            @hover_color = color
+            break
+          end
+        end
+        @hover_color = nil unless found_color
+
+        @multiline_text.text = "Speed: #{list[:top_speed]}\nBrake: #{list[:brake_speed]}\nAcceleration: #{list[:acceleration]}\nDrag: #{list[:drag]}\n"
       end
 
       def mouse_over_card?
-        if $window.mouse_x.between?($window.width/2-100, $window.width/2-100+200)
-          if $window.mouse_y.between?(280, 280+64+15)
+        if $window.mouse_x.between?(@card_box.x, @card_box.x+@card_box.width)
+          if $window.mouse_y.between?(@card_box.y, @card_box.y+@card_box.height)
             true
           end
         end
       end
 
       def mouse_over_color?(i)
-        if $window.mouse_x.between?($window.width/2-100+(i*20), $window.width/2-100+(i*20)+20)
-          if $window.mouse_y.between?(280+64+15, 280+64+15+20)
+        if $window.mouse_x.between?(@card_box.x+(i*20), @card_box.x+(i*20)+20)
+          if $window.mouse_y.between?(@card_box.y+@card_box.height, @card_box.y+@card_box.height+20)
             true
           end
         end
@@ -89,7 +122,7 @@ module Game
 
       def continue_to_game
         list = @car_list[@list_index]
-        push_game_state(Play.new(trackfile: @options[:trackfile], carfile: list[:json], body_color: list[:color]))
+        push_game_state(Play.new(trackfile: @options[:trackfile], carfile: list[:json], body_color: @active_color))
       end
 
       def button_up(id)
@@ -101,7 +134,7 @@ module Game
           else
             @color_options.each_with_index do |color, i|
               if mouse_over_color?(i)
-                @car_list[@list_index][:color] = color
+                @active_color = color
                 break
               end
             end
