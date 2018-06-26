@@ -7,37 +7,49 @@ module Game
         button("← Track Selection") {push_game_state(LevelSelection)}
         label("", size: 25)
 
-        @card_box = Track::Editor::EditorContainer::BoundingBox.new($window.width/2-100, 280, 200, 64+15)
+        @card_box = Track::Editor::EditorContainer::BoundingBox.new($window.width/2-150, 280, 300, 128+15)
+        @left_arrow_box  = Track::Editor::EditorContainer::BoundingBox.new(@card_box.x-64, @card_box.y, 32, @card_box.height)
+        @right_arrow_box = Track::Editor::EditorContainer::BoundingBox.new(@card_box.x+@card_box.width+32, @card_box.y, 32, @card_box.height)
+
+        @left_arrow  = Text.new("◄", y: @left_arrow_box.y+@left_arrow_box.height/2, size: 32)
+        @left_arrow.x = (@left_arrow_box.x-(@left_arrow_box.width/2)+(@left_arrow.width))
+        @right_arrow = Text.new("►", y: @right_arrow_box.y+@right_arrow_box.height/2, size: 32)
+        @right_arrow.x = (@right_arrow_box.x+(@right_arrow_box.width/2)-(@right_arrow.width/2))
+
+        @button_hover_color = Gosu::Color.rgba(56,45,89,212)
+        @button_color       = Gosu::Color.rgba(0,45,89,212)
+
+        @boxes = [@card_box, @left_arrow_box, @right_arrow_box]
+
         @cars = Dir.glob("data/cars/*.json")
         @car_list = []
         @list_index = 0
         process_cars
 
-        @color_options = [
-          Gosu::Color::WHITE,
-          darken(Gosu::Color::WHITE),
-          lighten(Gosu::Color::RED),
-          Gosu::Color::RED,
-          darken(Gosu::Color::RED),
-          lighten(Gosu::Color.rgb(255,144,0)), # ORANGE
-          Gosu::Color.rgb(255,144,0), # ORANGE
-          darken(Gosu::Color.rgb(255,144,0)), # ORANGE
-          lighten(Gosu::Color::GREEN),
-          Gosu::Color::GREEN,
-          darken(Gosu::Color::GREEN),
-          lighten(Gosu::Color::BLUE),
-          Gosu::Color::BLUE,
-          darken(Gosu::Color::BLUE),
-          lighten(Gosu::Color::GRAY),
-          Gosu::Color::GRAY,
-          darken(Gosu::Color::GRAY),
-          lighten(Gosu::Color::BLACK),
-          Gosu::Color::BLACK
+        colors = [
+          Gosu::Color.rgb(230,230,230), # WHITE
+          Gosu::Color.rgb(230,0,0),     # RED
+          Gosu::Color.rgb(230,144,0),   # ORANGE
+          Gosu::Color.rgb(0,230,0),     # GREEN
+          Gosu::Color.rgb(175, 0, 175), # PURPLE
+          Gosu::Color.rgb(0, 0, 230),   # BLUE
+          Gosu::Color.rgb(25, 25, 25)   # BLACK
         ]
+        @color_options = []
+        populate_color_options(colors)
+        @colors_width = @color_options.size*20
 
         @active_color = @color_options.first
         @hover_color = nil
         @multiline_text = MultiLineText.new("0\n1\n2\n3\n", x: @card_box.x+(@card_box.width/2)-24, y: @card_box.y-10, size: 18)
+      end
+
+      def populate_color_options(colors)
+        colors.each do |color|
+          @color_options << lighten(color)
+          @color_options << color
+          @color_options << darken(color)
+        end
       end
 
       def process_cars
@@ -59,11 +71,16 @@ module Game
 
       def draw
         super
-        if mouse_over_card?
-          Gosu.draw_rect(@card_box.x, @card_box.y, @card_box.width, @card_box.height, Gosu::Color.rgba(56,45,89,212))
-        else
-          Gosu.draw_rect(@card_box.x, @card_box.y, @card_box.width, @card_box.height, Gosu::Color.rgba(0,45,89,212))
+        @boxes.each do |box|
+          if mouse_in?(box)
+            Gosu.draw_rect(box.x, box.y, box.width, box.height, @button_hover_color)
+          else
+            Gosu.draw_rect(box.x, box.y, box.width, box.height, @button_color)
+          end
         end
+        @left_arrow.draw
+        @right_arrow.draw
+
         list = @car_list[@list_index]
         list[:image].draw(@card_box.x+15, @card_box.y+10, 3, list[:scale], list[:scale])
         if @hover_color
@@ -76,12 +93,12 @@ module Game
         @color_options.each_with_index do |color, i|
           if mouse_over_color?(i)
             if color.value > 0.5
-              Gosu.draw_rect(@card_box.x+(i*20), @card_box.y+@card_box.height, 20, 20, darken(color, 50))
+              Gosu.draw_rect(@card_box.x+(@card_box.width/2)+(i*20)-(@colors_width/2), @card_box.y+@card_box.height+32, 20, 20, darken(color, 50))
             else
-              Gosu.draw_rect(@card_box.x+(i*20), @card_box.y+@card_box.height, 20, 20, lighten(color, 50))
+              Gosu.draw_rect(@card_box.x+(@card_box.width/2)+(i*20)-(@colors_width/2), @card_box.y+@card_box.height+32, 20, 20, lighten(color, 50))
             end
           else
-            Gosu.draw_rect(@card_box.x+(i*20), @card_box.y+@card_box.height, 20, 20, color)
+            Gosu.draw_rect(@card_box.x+(@card_box.width/2)+(i*20)-(@colors_width/2), @card_box.y+@card_box.height+32, 20, 20, color)
           end
         end
       end
@@ -93,7 +110,6 @@ module Game
         found_color = false
         @color_options.each_with_index do |color, i|
           if mouse_over_color?(i)
-            puts "Found: #{i}"
             found_color = true
             @hover_color = color
             break
@@ -104,17 +120,17 @@ module Game
         @multiline_text.text = "Speed: #{list[:top_speed]}\nBrake: #{list[:brake_speed]}\nAcceleration: #{list[:acceleration]}\nDrag: #{list[:drag]}\n"
       end
 
-      def mouse_over_card?
-        if $window.mouse_x.between?(@card_box.x, @card_box.x+@card_box.width)
-          if $window.mouse_y.between?(@card_box.y, @card_box.y+@card_box.height)
+      def mouse_in?(bounding_box)
+        if $window.mouse_x.between?(bounding_box.x, bounding_box.x+bounding_box.width)
+          if $window.mouse_y.between?(bounding_box.y, bounding_box.y+bounding_box.height)
             true
           end
         end
       end
 
       def mouse_over_color?(i)
-        if $window.mouse_x.between?(@card_box.x+(i*20), @card_box.x+(i*20)+20)
-          if $window.mouse_y.between?(@card_box.y+@card_box.height, @card_box.y+@card_box.height+20)
+        if $window.mouse_x.between?(@card_box.x+(@card_box.width/2)+(i*20)-(@colors_width/2), @card_box.x+(@card_box.width/2)+(i*20)-(@colors_width/2)+20)
+          if $window.mouse_y.between?(@card_box.y+@card_box.height+32, @card_box.y+@card_box.height+32+20)
             true
           end
         end
@@ -129,8 +145,18 @@ module Game
         super
         case id
         when Gosu::MsLeft
-          if mouse_over_card?
+          if mouse_in?(@card_box)
             continue_to_game
+          elsif mouse_in?(@left_arrow_box)
+            @list_index-=1
+            if @list_index < 0
+              @list_index = @car_list.count-1
+            end
+          elsif mouse_in?(@right_arrow_box)
+            @list_index+=1
+            if @list_index > @car_list.count-1
+              @list_index = 0
+            end
           else
             @color_options.each_with_index do |color, i|
               if mouse_over_color?(i)
