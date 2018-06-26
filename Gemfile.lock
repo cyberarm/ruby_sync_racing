@@ -2,11 +2,11 @@ GEM
   remote: http://rubygems.org/
   specs:
     concurrent-ruby (1.0.5)
-    gameoverseer (0.1.7)
+    gameoverseer (0.1.8)
       concurrent-ruby
       multi_json
       renet (~> 0.2, >= 0.2.2)
-    gameoverseer-client (0.0.1)
+    gameoverseer-client (0.0.2)
       multi_json
       renet (>= 0.2.0)
     gosu (0.13.3)

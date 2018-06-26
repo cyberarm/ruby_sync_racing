@@ -2,6 +2,7 @@ module AbstractJSON
   begin
     OJ_AVAILABLE = true
     require "oj"
+    Oj.default_options = {mode: :strict}
   rescue LoadError => exception
     OJ_AVAILABLE = false
     require "json"
@@ -14,7 +15,7 @@ module AbstractJSON
       JSON.dump(object)
     end
   end
-  
+
   def self.load(string)
     if OJ_AVAILABLE
       Oj.load(string)
