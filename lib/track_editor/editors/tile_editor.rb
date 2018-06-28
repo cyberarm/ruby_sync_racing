@@ -6,17 +6,17 @@ class Track
 
         @tiles_list = {
           "asphalt": [
-            "assets/tracks/general/road/asphalt.png",
-            "assets/tracks/general/road/asphalt_left.png",
-            "assets/tracks/general/road/asphalt_left_bottom.png"
+            AssetManager.image_from_id(100),
+            AssetManager.image_from_id(101),
+            AssetManager.image_from_id(102)
           ],
           "dirt": [
-            "assets/tracks/general/road/clay.png",
-            "assets/tracks/general/road/sandstone.png",
-            "assets/tracks/general/road/grass.png"
+            AssetManager.image_from_id(115),
+            AssetManager.image_from_id(116),
+            AssetManager.image_from_id(117)
           ],
           "water": [
-            "assets/tracks/general/road/water.png"
+            AssetManager.image_from_id(118)
           ],
           "ice": [
 

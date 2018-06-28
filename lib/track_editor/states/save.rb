@@ -108,7 +108,7 @@ class Track
           if tile.is_a?(Track::Tile)
             hash["tiles"] << {
                               "type" => tile.type,
-                              "image" => tile.image,
+                              "image" => AssetManager.id_from_image(tile.image),
                               "x" => tile.x,
                               "y" => tile.y,
                               "z" => tile.z,
@@ -120,7 +120,7 @@ class Track
         @decorations.each do |decoration|
           hash["decorations"] << {
             "collidable" => decoration.collidable,
-            "image"=> decoration.image,
+            "image"=> AssetManager.id_from_image(decoration.image),
             "x"    => decoration.x,
             "y"    => decoration.y,
             "z"    => decoration.z,

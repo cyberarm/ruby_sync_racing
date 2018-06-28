@@ -6,7 +6,14 @@ class AssetManager
     2 => "assets/cars/sport.png",
     3 => "assets/cars/sport_body.png",
 
-    100 => "", # Tile images 100.999
+    100 => "assets/tracks/general/road/asphalt.png", # Tile images 100.999
+    101 => "assets/tracks/general/road/asphalt_left.png",
+    102 => "assets/tracks/general/road/asphalt_left_bottom.png",
+
+    115 => "assets/tracks/general/road/clay.png",
+    116 => "assets/tracks/general/road/sandstone.png",
+    117 => "assets/tracks/general/road/grass.png",
+    118 => "assets/tracks/general/road/water.png",
 
     1000 => "" # Decoration images 1000..infinity
   }
@@ -18,6 +25,21 @@ class AssetManager
 
   def self.image_from_id(id)
     if found = IMAGES[id]
+      return found
+    else
+      false
+    end
+  end
+
+  def self.id_from_image(image_path)
+    found = false
+    IMAGES.each do |key, value|
+      if (image_path == value)
+        found = key
+        break
+      end
+    end
+    if found
       return found
     else
       false

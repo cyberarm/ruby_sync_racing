@@ -26,10 +26,11 @@ class GameObject
     @center_y = options[:center_y] ? options[:center_y] : 0.5
     @scale_x  = options[:scale_x] ? options[:scale_x] : 1
     @scale_y  = options[:scale_y] ? options[:scale_y] : 1
-    self.scale = options[:scale] if options[:scale]
+    self.scale= options[:scale] if options[:scale]
     @color    = options[:color] ? options[:color] : Gosu::Color.argb(0xff_ffffff)
     @alpha    = options[:alpha] ? options[:alpha] : 255
-    @mode = options[:mode] ? options[:mode] : :default
+    @mode     = options[:mode] ? options[:mode] : :default
+
     @paused = false
     @speed = 0
     @debug_color = Gosu::Color::GREEN
@@ -116,7 +117,7 @@ class GameObject
   def _y_visible
     self.y.between?(($window.height/2)-(@world_center_point.y), ($window.height/2)+@world_center_point.y) ||
        self.y.between?((@world_center_point.y)-($window.height/2), ($window.height/2)+@world_center_point.y)
-     end
+  end
 
   def heading(ahead_by = 100, object = nil, angle_only = false)
     direction = ((Gosu.angle(@last_x, @last_y, self.x, self.y)) - 90.0) * (Math::PI / 180.0)
@@ -193,7 +194,7 @@ class GameObject
       instance = nil
       begin
         instance = Gosu::Image.new(image_path)
-      rescue RuntimeError
+      rescue RuntimeError, NoMethodError
         puts "Image: #{image} is missing"
         instance = image_missing
       end
@@ -230,6 +231,7 @@ class GameObject
     best_distance = 100_000_000_000 # Huge default number
 
     game_object_class.all.each do |object|
+      next if object == self
       distance = Gosu::distance(self.x, self.y, object.x, object.y)
       if distance <= best_distance
         best_object = object
