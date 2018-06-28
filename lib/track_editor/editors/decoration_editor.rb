@@ -68,7 +68,7 @@ class Track
       def load_track(track_data)
         track_data["decorations"].each do |decoration|
           _collidable = decoration["collidable"]
-          _image_path = decoration["image"]
+          _image_path = AssetManager.image_from_id(decoration["image"])
           _x = decoration["x"]
           _y = decoration["y"]
           _z = decoration["z"]

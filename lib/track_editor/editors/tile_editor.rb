@@ -3,6 +3,9 @@ class Track
     class TileEditor < EditorMode
       def setup
         @grid = {}
+        @painting = false
+        @left_mouse_down_at = Gosu.milliseconds
+        @left_mouse_down_paint = 150
 
         @tiles_list = {
           "asphalt": [
@@ -55,7 +58,8 @@ class Track
         y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
         z = 0
         if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
-          @editor.error_sound.play
+          @editor.add_message("#{@grid["#{x}"]["#{y}"].image} is already placed there.") unless @painting
+          @editor.error_sound.play unless @painting
         else
           tile = Track::Tile.new(type, image_path, x, y, z, angle)
           @grid["#{x}"] = {} unless @grid["#{x}"].is_a?(Hash)
@@ -69,6 +73,26 @@ class Track
         return unless @mouse
         @mouse_position[:x] = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
         @mouse_position[:y] = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
+
+        if $window.button_down?(Gosu::MsLeft) or $window.button_down?(Gosu::MsRight)
+          @painting = Gosu.milliseconds-@left_mouse_down_at >= @left_mouse_down_paint
+          if @painting
+            if @mouse && @editor.mouse_in?(@editor.active_area) && @mouse == @editor.image(@current_tile_image_path) && $window.button_down?(Gosu::MsLeft)
+              add_tile(:asphalt, @current_tile_image_path, @mouse_position[:angle])
+            end
+
+            if @mouse && @editor.mouse_in?(@editor.active_area) && $window.button_down?(Gosu::MsRight)
+              x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
+              y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
+              if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
+                @editor.tiles.delete(@grid["#{x}"]["#{y}"])
+                @grid["#{x}"]["#{y}"] = nil
+              end
+            end
+          end
+        else
+          @left_mouse_down_at = Gosu.milliseconds
+        end
       end
 
       def load_track(track_data)
@@ -82,7 +106,7 @@ class Track
           _angle ||= 0
 
           _tile = Track::Tile.new(tile["type"],
-                                  tile["image"],
+                                  AssetManager.image_from_id(tile["image"]),
                                   _x,
                                   _y,
                                   _z,
