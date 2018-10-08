@@ -20,5 +20,11 @@ class Track
         end
       end
     end
+
+    def load_track(track_data)
+      track_data["checkpoints"].each do |checkpoint|
+        @editor.decorations << Track::CheckPoint.new(checkpoint["x"], checkpoint["y"], checkpoint["width"], checkpoint["height"])
+      end
+    end
   end
 end
