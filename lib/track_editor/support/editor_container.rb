@@ -88,6 +88,7 @@ class Track
         $window.fill_rect(0, 0, $window.width, @selectors_height, Gosu::Color.rgb(0,0,150))
         @mode_selectors.each_with_index do |s, i|
           s.text.x = (@tab_width*i)-(s.text.width/2)+@tab_width/2
+          s.text.y = (@selectors_height/2)-s.text.height/2
           if mouse_over?(@tab_width*i, 0, @tab_width, @selectors_height) && s.instance
             $window.fill_rect(@tab_width*i, 0, @tab_width, @selectors_height, lighten(s.color))
             $window.fill_rect(@tab_width*i, 45, @tab_width, 1, Gosu::Color::BLACK, 5) if s == @active_selector

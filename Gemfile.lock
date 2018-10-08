@@ -9,11 +9,11 @@ GEM
     gameoverseer-client (0.0.2)
       multi_json
       renet (>= 0.2.0)
-    gosu (0.13.3)
-    gosu (0.13.3-x64-mingw32)
-    gosu (0.13.3-x86-mingw32)
+    gosu (0.14.3)
+    gosu (0.14.3-x64-mingw32)
+    gosu (0.14.3-x86-mingw32)
     multi_json (1.13.1)
-    oj (3.6.3)
+    oj (3.6.11)
     rake (12.3.1)
     renet (0.2.2)
 
@@ -31,4 +31,4 @@ DEPENDENCIES
   renet
 
 BUNDLED WITH
-   1.16.2
+   1.16.3
