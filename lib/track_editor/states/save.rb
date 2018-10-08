@@ -16,6 +16,7 @@ class Track
         @decorations = @options[:decorations]
         @checkpoints = @options[:checkpoints]
         @starting_positions = @options[:starting_positions]
+        @background_color = @options[:background_color]
         $window.text_input = NameInput.new
 
         @title = Game::Text.new("Enter Track Name:", y: $window.height/4, size: 50)
@@ -45,7 +46,7 @@ class Track
 
         # Auto save and return to Edit if Edit.save_file is set.
         if @previous_game_state && defined?(@previous_game_state.save_file) && @previous_game_state.save_file
-          save_track(@previous_game_state.save_file)
+          save_track(@previous_game_state.save_file, @background_color)
           push_game_state(@previous_game_state)
         end
 
@@ -86,12 +87,12 @@ class Track
       end
 
       def save
-        save_track(@name.text)
+        save_track(@name.text, @background_color)
         @previous_game_state.save_file = @name.text
         push_game_state(@previous_game_state)
       end
 
-      def save_track(name, color = Gosu::Color.rgba(100, 254, 78, 144))
+      def save_track(name, color)
         hash = {"name" => "#{name.sub('.json','')}",
                 "background" => {
                   "red"   => color.red,
@@ -102,7 +103,6 @@ class Track
                 "tiles" => [], "decorations" => [], "checkpoints" => [], "starting_positions" => []
               }
         p hash["name"]
-        p hash["tiles"]
 
         @tiles.each do |tile|
           if tile.is_a?(Track::Tile)
@@ -126,6 +126,15 @@ class Track
             "z"    => decoration.z,
             "angle"=> decoration.angle,
             "scale"=> decoration.scale
+          }
+        end
+
+        @checkpoints.each do |checkpoint|
+          hash["checkpoint"] << {
+            "x"     => checkpoint.x,
+            "y"     => checkpoint.y,
+            "width" => checkpoint.width,
+            "height"=> checkpoint.height
           }
         end
 

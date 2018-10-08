@@ -27,6 +27,20 @@ class Track
             else
               @mouse.draw_rot(@mouse_position[:x], @mouse_position[:y], 50, @mouse_position[:angle], 0.5, 0.5, @mouse_position[:scale], @mouse_position[:scale], Gosu::Color.rgba(255,255,255, 150)) if @mouse  && @use_mouse_image
             end
+
+            if @use_mouse_image && @mouse
+              mouse_image_bounding_box
+            end
+
+            if $debug
+              x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@editor.tile_size/2#+@mouse.width/2
+              y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@editor.tile_size/2#+@mouse.height/2
+
+              x-=@editor.tile_size if x < 0
+              y-=@editor.tile_size if y < 0
+
+              $window.fill_rect(x-1, y-1, 3, 3, Gosu::Color::RED, Float::INFINITY) # Shows the tile placement mid-point as a red dot
+            end
           end
         end
       end
@@ -44,6 +58,39 @@ class Track
 
       def mouse_image(image)
         @mouse = image
+      end
+
+      def mouse_image_bounding_box
+        width = @mouse.width *  @mouse_position[:scale]
+        height= @mouse.height * @mouse_position[:scale]
+        x = @mouse_position[:x] - width / 2
+        y = @mouse_position[:y] - height/ 2
+        color = Gosu::Color.rgba(127, 127, 0, 200)
+
+        # TOP LEFT to BOTTOM LEFT
+        $window.draw_line(
+          x, y, color,
+          x, y+height, color,
+          Float::INFINITY
+        )
+        # BOTTOM LEFT to BOTTOM RIGHT
+        $window.draw_line(
+          x, y+height, color,
+          x+width, y+height, color,
+          Float::INFINITY
+        )
+        # BOTTOM RIGHT to TOP RIGHT
+        $window.draw_line(
+          x+width, y+height, color,
+          x+width, y, color,
+          Float::INFINITY
+        )
+        # TOP RIGHT to TOP LEFT
+        $window.draw_line(
+          x+width, y, color,
+          x, y, color,
+          Float::INFINITY
+        )
       end
 
       def button_up(id)

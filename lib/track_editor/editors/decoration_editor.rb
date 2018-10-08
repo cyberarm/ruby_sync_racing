@@ -4,10 +4,16 @@ class Track
       def setup
         @angle = 0
         @scale = 1
+        @rotate_step = 15
+        @scale_step  = 0.1
         @collidable = false
         @use_grid_placement = true
-        sidebar_label("Decorations")
-        sidebar_button("Disable Grid", "Toggle grid placement") do |button|
+        sidebar_label("Tools")
+        sidebar_button("Jump 0:0", "Press \"0\"") do
+          @editor.screen_vector.x,@editor.screen_vector.y = 0,0
+          @editor.add_message("Reset screen position to 0:0")
+        end
+        @grid_toggle = sidebar_button("Disable Grid", "Toggle grid placement. Press \"T\"") do |button|
           if @use_grid_placement # Turning it off
             button.text.text = "Enable Grid"
           else
@@ -19,6 +25,28 @@ class Track
 
         @angle_label = sidebar_label "Angle: #{@angle}"
         @scale_label = sidebar_label "Scale: #{@scale}"
+
+        sidebar_button("Rotate #{@rotate_step}d", "Press \"R\"") do
+          @angle+=@rotate_step
+          @angle%=360
+          @angle_label.text.text = "Angle: #{@angle}"
+        end
+        sidebar_button("Rotate -#{@rotate_step}d", "Press \"Shift+R\"") do
+          @angle-=@rotate_step
+          @angle%=360
+          @angle_label.text.text = "Angle: #{@angle}"
+        end
+
+        sidebar_button("Scale #{@scale_step}", "\"Scroll+Up\"") do
+          @scale+=@scale_step
+          @scale = @scale.round(2)
+          @scale_label.text.text = "Scale: #{@scale}"
+        end
+        sidebar_button("Scale -#{@scale_step}", "\"Scroll+Down\"") do
+          @scale-=@scale_step
+          @scale = @scale.round(2)
+          @scale_label.text.text = "Scale: #{@scale}"
+        end
 
         sidebar_label("Decorations")
         sidebar_button(@editor.image("assets/cars/CAR.png"), "Car") do
@@ -129,24 +157,40 @@ class Track
         super
 
         case id
+        when Gosu::Kb0
+          @editor.screen_vector.x,@editor.screen_vector.y = 0,0
+          @editor.add_message("Reset screen position to 0:0")
         when Gosu::KbR
-          @angle+=45
+          if $window.button_down?(Gosu::KbLeftShift) || $window.button_down?(Gosu::KbRightShift)
+            @angle-=@rotate_step
+          else
+            @angle+=@rotate_step
+          end
           @angle%=360
 
           @angle_label.text.text = "Angle: #{@angle}"
+        when Gosu::KbT
+          if @use_grid_placement # Turning it off
+            @grid_toggle.text.text = "Enable Grid"
+          else
+            @grid_toggle.text.text = "Disable Grid"
+          end
+
+          @use_grid_placement = !@use_grid_placement
         when Gosu::MsWheelUp
-          @scale+=0.1
+          @scale+=@scale_step
           @scale = @scale.round(2)
           @scale_label.text.text = "Scale: #{@scale}"
         when Gosu::MsWheelDown
-          @scale-=0.1
-          @scale = 0.1 if @scale < 0.1
+          @scale-=@scale_step
+          @scale = @scale_step if @scale < @scale_step
           @scale = @scale.round(2)
           @scale_label.text.text = "Scale: #{@scale}"
         when Gosu::MsLeft
           if @mouse && @editor.mouse_in?(@editor.active_area)
             if !over_decoration?
               place(@current_tile_image_path)
+              @editor.track_changed!
             end
           end
         when Gosu::MsMiddle
@@ -154,6 +198,7 @@ class Track
           if @mouse && @editor.mouse_in?(@editor.active_area)
             if decoration = over_decoration?
               @editor.decorations.delete(decoration)
+              @editor.track_changed!
             end
           end
         end

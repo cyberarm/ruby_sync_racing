@@ -79,20 +79,20 @@ module Game
         @shadow_alpha = 30 if @color.alpha > 30
         @shadow_alpha = @color.alpha if @color.alpha <= 30
         _color = Gosu::Color.rgba(@color.red, @color.green, @color.blue, @shadow_alpha)
-        @textobject.draw(@text, @x-SHADOW, @y, @z, @factor_x, @factor_y, _color)
-        @textobject.draw(@text, @x-SHADOW, @y-SHADOW, @z, @factor_x, @factor_y, _color)
+        @textobject.draw_text(@text, @x-SHADOW, @y, @z, @factor_x, @factor_y, _color)
+        @textobject.draw_text(@text, @x-SHADOW, @y-SHADOW, @z, @factor_x, @factor_y, _color)
 
-        @textobject.draw(@text, @x, @y-SHADOW, @z, @factor_x, @factor_y, _color)
-        @textobject.draw(@text, @x+SHADOW, @y-SHADOW, @z, @factor_x, @factor_y, _color)
+        @textobject.draw_text(@text, @x, @y-SHADOW, @z, @factor_x, @factor_y, _color)
+        @textobject.draw_text(@text, @x+SHADOW, @y-SHADOW, @z, @factor_x, @factor_y, _color)
 
-        @textobject.draw(@text, @x, @y+SHADOW, @z, @factor_x, @factor_y, _color)
-        @textobject.draw(@text, @x-SHADOW, @y+SHADOW, @z, @factor_x, @factor_y, _color)
+        @textobject.draw_text(@text, @x, @y+SHADOW, @z, @factor_x, @factor_y, _color)
+        @textobject.draw_text(@text, @x-SHADOW, @y+SHADOW, @z, @factor_x, @factor_y, _color)
 
-        @textobject.draw(@text, @x+SHADOW, @y, @z, @factor_x, @factor_y, _color)
-        @textobject.draw(@text, @x+SHADOW, @y+SHADOW, @z, @factor_x, @factor_y, _color)
+        @textobject.draw_text(@text, @x+SHADOW, @y, @z, @factor_x, @factor_y, _color)
+        @textobject.draw_text(@text, @x+SHADOW, @y+SHADOW, @z, @factor_x, @factor_y, _color)
       end
 
-      @textobject.draw(@text, @x, @y, @z, @factor_x, @factor_y, @color)
+      @textobject.draw_text(@text, @x, @y, @z, @factor_x, @factor_y, @color)
     end
 
     def update; end

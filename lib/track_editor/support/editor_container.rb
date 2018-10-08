@@ -17,13 +17,14 @@ class Track
         @instance = i
       end
 
-      attr_accessor :active_selector, :background, :save_file
+      attr_accessor :active_selector, :background, :save_file, :track_tainted
 
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
       attr_reader :active_area, :screen_vector, :selectors_height, :tab_width, :tile_size
       attr_reader :click_sound, :error_sound
       def setup
         EditorContainer.instance = self
+        @track_tainted = false
         @editor_messages = []
         @screen_vector = Vector2D.new(0, 0)
         @selectors_height = 50
@@ -42,10 +43,11 @@ class Track
         @click_sound = sample("assets/track_editor/click.ogg")
         @error_sound = sample("assets/track_editor/error.ogg")
 
-        @background = Gosu::Color.rgba(100, 254, 78, 144)
         @active_area = BoundingBox.new(0, @selectors_height, $window.width, $window.height) # set x position dynamically
 
         prepare
+
+        @background = @track_data ? Gosu::Color.rgba(@track_data["background"]["red"], @track_data["background"]["green"], @track_data["background"]["blue"], @track_data["background"]["alpha"]) : Gosu::Color.rgba(100, 254, 78, 144)
 
         @active_selector = @mode_selectors.first
         @active_selector.instance = @mode_selectors.first.instance
@@ -121,6 +123,7 @@ class Track
             end
 
             @checkpoints.each do |checkpoint|
+              $window.fill_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(127, 127, 0, 200))
             end
 
             @starting_positions.each_with_index do |starting_position, i|
@@ -165,13 +168,21 @@ class Track
         @active_selector.instance.update if @active_selector && @active_selector.instance
 
         update_map_offset
-        @screen_vector.x = 0 if @screen_vector.x > 0
-        @screen_vector.y = 0 if @screen_vector.y > 0
 
+        # @screen_vector.x = 0 if @screen_vector.x > 0
+        # @screen_vector.y = 0 if @screen_vector.y > 0
       end
 
       def button_up(id)
-        close_dialog {push_game_state(Track::Editor::Menu)} if id == Gosu::KbEscape
+        if id == Gosu::KbEscape
+          if track_save_tainted?
+            close_dialog { push_game_state(Track::Editor::Menu) }
+            return
+          else
+            push_game_state(Track::Editor::Menu)
+            return
+          end
+        end
 
         case id
         when Gosu::MsLeft
@@ -180,11 +191,14 @@ class Track
             if mouse_over?(width*i, 0, width, @selectors_height)
               if s.instance
                 @active_selector = s
-                # @active_selector.instance = s.klass.new unless s.instance.is_a?(s.klass)
                 @active_selector.selected = true
                 @active_selector.instance.focused
               end
             end
+          end
+        when Gosu::KbS
+          if $window.button_down?(Gosu::KbLeftControl) || $window.button_down?(Gosu::KbRightControl)
+            self.save_track
           end
         end
 
@@ -229,12 +243,19 @@ class Track
       end
 
       def save_track
-        push_game_state(Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints, starting_positions: @starting_positions)
+        p @background
+        push_game_state(Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints, starting_positions: @starting_positions, background_color: @background)
+        @track_tainted = false if @save_file
+      end
+
+      def track_changed!
+        puts "#{@active_selector.class} marked track as changed!"
+        @track_tainted = true
       end
 
       # Has the track been changed since last save?
       def track_save_tainted?
-        true
+        @track_tainted
       end
 
       def window(type, title, caption, callback = nil, &block)

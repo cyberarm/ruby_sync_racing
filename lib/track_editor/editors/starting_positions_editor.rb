@@ -48,10 +48,13 @@ class Track
         when Gosu::MsLeft
           unless over_position?
             place_starting_position
+          else
+            @editor.error_sound.play
           end
         when Gosu::MsRight
           if position = over_position?
             @editor.starting_positions.delete(position)
+            @editor.track_changed!
           end
         end
       end
@@ -72,6 +75,8 @@ class Track
       def place_starting_position
         if @editor.mouse_in?(@editor.active_area)
           @editor.starting_positions << Track::StartingPosition.new(@mouse_position[:x], @mouse_position[:y], @angle)
+
+          @editor.track_changed!
         end
       end
     end

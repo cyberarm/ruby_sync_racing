@@ -65,6 +65,8 @@ class Track
           @grid["#{x}"] = {} unless @grid["#{x}"].is_a?(Hash)
           @grid["#{x}"]["#{y}"] = tile
           @editor.tiles << tile
+
+          @editor.track_changed!
         end
       end
 
@@ -145,6 +147,7 @@ class Track
             if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
               @editor.tiles.delete(@grid["#{x}"]["#{y}"])
               @grid["#{x}"]["#{y}"] = nil
+              @editor.track_changed!
             end
           end
 

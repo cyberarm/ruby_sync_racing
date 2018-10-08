@@ -3,6 +3,7 @@ class Track < GameObject
   Tile = Struct.new(:type, :image, :x, :y, :z, :angle, :color)
   Decoration = Struct.new(:collidable, :image, :x, :y, :z, :angle, :scale, :radius)
   StartingPosition = Struct.new(:x, :y, :angle)
+  CheckPoint = Struct.new(:x, :y, :width, :height)
 
   attr_reader :collision, :track, :tiles, :decorations, :starting_positions, :tile_size
 
