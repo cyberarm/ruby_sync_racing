@@ -5,7 +5,7 @@ class Track < GameObject
   StartingPosition = Struct.new(:x, :y, :angle)
   CheckPoint = Struct.new(:x, :y, :width, :height)
 
-  attr_reader :collision, :track, :tiles, :decorations, :starting_positions, :tile_size
+  attr_reader :collision, :track, :tiles, :decorations, :checkpoints, :starting_positions, :tile_size
 
   def setup
     @tile_size = 64
@@ -18,6 +18,12 @@ class Track < GameObject
     begin
       process_decorations
     rescue NoMemoryError
+    end
+
+    @checkpoints = []
+    begin
+      process_checkpoints
+    rescue NoMethodError
     end
 
     @starting_positions = []
@@ -45,6 +51,12 @@ class Track < GameObject
     end
   end
 
+  def process_checkpoints
+    @track.checkpoints.each do |checkpoint|
+      @checkpoints << CheckPoint.new(checkpoint["x"], checkpoint["y"], checkpoint["width"], checkpoint["height"])
+    end
+  end
+
   def process_starting_positions
     @track.starting_positions.each do |starting_position|
       @starting_positions << StartingPosition.new(starting_position["x"], starting_position["y"], starting_position["angle"])
@@ -63,6 +75,12 @@ class Track < GameObject
 
     @decorations.each do |decoration|
       decoration.image.draw_rot(decoration.x, decoration.y, decoration.z, decoration.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)
+    end
+
+    if $debug
+      @checkpoints.each do |checkpoint|
+        Gosu.draw_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(200,200,200, 200), 5)
+      end
     end
   end
 end
