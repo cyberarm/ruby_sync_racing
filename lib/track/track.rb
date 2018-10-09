@@ -5,9 +5,15 @@ class Track < GameObject
   StartingPosition = Struct.new(:x, :y, :angle)
   CheckPoint = Struct.new(:x, :y, :width, :height)
 
+  Box = Struct.new(:x, :y, :max_x, :max_y)
+
   attr_reader :collision, :track, :tiles, :decorations, :checkpoints, :starting_positions, :tile_size
+  attr_reader :x, :y, :width, :height, :scale, :bounding_box
 
   def setup
+    @x,@y,@width,@height, @scale = 0,0,1,1, 1.0
+    @bounding_box = Box.new(10_000,10_000, -10_000,-10_000)
+
     @tile_size = 64
     @track = Track::Parser.new(@options[:spec])
 
@@ -33,7 +39,9 @@ class Track < GameObject
     end
 
     @collision = Track::Collision.new(@tiles)
-    @tile_size = @tiles.first.image.width
+    @tile_size = @tiles.first.image.width if @tiles.first
+
+    calculate_boundry
   end
 
   def process_tiles
@@ -64,8 +72,34 @@ class Track < GameObject
     end
   end
 
+  def calculate_boundry
+    @tiles.each do |tile|
+      @x = (tile.x) if (tile.x) < @x
+      @y = (tile.y) if (tile.y) < @y
+
+      @width = @x+(tile.x) if @x+(tile.x) > @width
+      @height= @y+(tile.y) if @y+(tile.y) > @height
+
+      @bounding_box.x = (tile.x) if (tile.x) < @bounding_box.x
+      @bounding_box.y = (tile.y) if (tile.y) < @bounding_box.y
+
+      @bounding_box.max_x = (tile.x+@tile_size) if (tile.x+@tile_size) > @bounding_box.max_x
+      @bounding_box.max_y = (tile.y+@tile_size) if (tile.y+@tile_size) > @bounding_box.max_y
+    end
+  end
+
   def draw
     super
+
+    begin
+      draw_with_render # Render to an Image. Is a single image, when scaling there are no apparent artifacts.
+    rescue RuntimeError # Rescue from "Incomplete Framebuffer." Maybe rescues when framebuffer is not supported?
+      draw_with_record # Render with VAO, draw all at once. When scaling in and out floating point errors will be noticable as odd spaces between tiles.
+    end
+  end
+
+  # Renders map
+  def render
     @tiles.each do |tile|
       if $debug && tile.color
         tile.image.draw_rot(tile.x+@tile_size/2, tile.y+@tile_size/2, tile.z, tile.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)#tile.color)
@@ -77,11 +111,25 @@ class Track < GameObject
     @decorations.each do |decoration|
       decoration.image.draw_rot(decoration.x, decoration.y, decoration.z, decoration.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)
     end
+  end
 
-    if $debug
-      @checkpoints.each do |checkpoint|
-        Gosu.draw_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(200,200,200, 200), 5)
+  def draw_with_render
+    @_img ||= Gosu.render(@bounding_box.x.abs + @bounding_box.max_x.abs, @bounding_box.y.abs + @bounding_box.max_y.abs) do
+      Gosu.translate(@x.abs, @y.abs) do
+        render
       end
     end
+
+    @_img.draw(@x, @y, @tiles.first.z) if @tiles.first
+  end
+
+  def draw_with_record
+    @_img ||= Gosu.record(@bounding_box.x.abs + @bounding_box.max_x.abs, @bounding_box.y.abs + @bounding_box.max_y.abs) do
+      Gosu.translate(@x.abs, @y.abs) do
+        render
+      end
+    end
+
+    @_img.draw(@x, @y, @tiles.first.z) if @tiles.first
   end
 end

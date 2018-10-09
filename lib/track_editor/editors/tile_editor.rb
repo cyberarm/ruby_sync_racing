@@ -46,6 +46,7 @@ class Track
           list.each do |tile|
             sidebar_button(@editor.image(tile), tile.split('/').last.split('.').first.capitalize) do
               @current_tile_image_path = tile
+              @current_tile_type = type
               mouse_image(@editor.image(tile))
               @use_mouse_image = true
             end
@@ -80,7 +81,9 @@ class Track
           @painting = Gosu.milliseconds-@left_mouse_down_at >= @left_mouse_down_paint
           if @painting
             if @mouse && @editor.mouse_in?(@editor.active_area) && @mouse == @editor.image(@current_tile_image_path) && $window.button_down?(Gosu::MsLeft)
-              add_tile(:asphalt, @current_tile_image_path, @mouse_position[:angle])
+              add_tile(@current_tile_type, @current_tile_image_path, @mouse_position[:angle])
+
+              @editor.track_changed!
             end
 
             if @mouse && @editor.mouse_in?(@editor.active_area) && $window.button_down?(Gosu::MsRight)
@@ -89,6 +92,8 @@ class Track
               if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
                 @editor.tiles.delete(@grid["#{x}"]["#{y}"])
                 @grid["#{x}"]["#{y}"] = nil
+
+                @editor.track_changed!
               end
             end
           end
@@ -125,7 +130,7 @@ class Track
         case id
         when Gosu::MsLeft
           if @mouse && @editor.mouse_in?(@editor.active_area) && @mouse == @editor.image(@current_tile_image_path)
-            add_tile(:asphalt, @current_tile_image_path, @mouse_position[:angle])
+            add_tile(@current_tile_type, @current_tile_image_path, @mouse_position[:angle])
           end
 
         when Gosu::MsMiddle
@@ -147,6 +152,7 @@ class Track
             if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
               @editor.tiles.delete(@grid["#{x}"]["#{y}"])
               @grid["#{x}"]["#{y}"] = nil
+
               @editor.track_changed!
             end
           end

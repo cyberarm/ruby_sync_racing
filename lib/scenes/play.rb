@@ -4,6 +4,7 @@ module Game
       def setup
         $window.show_cursor = false
         @screen_vector = Vector2D.new(0, 0)
+        @screen_scale  = 1.0
 
         @trackfile = @options[:trackfile] || "data/tracks/test_track.json"
         @track = Track.new(spec: @trackfile)
@@ -23,10 +24,10 @@ module Game
         end
 
         @color = _color
-        @car.calc_boundry(@track.tiles)
+        @car.boundry = @track.bounding_box
         puts "Car boundry: #{@car.boundry}"
 
-        @car_text = Text.new("", x: 10, y: 10, z: 8181, size: 24, color: Gosu::Color::GREEN)
+        @car_text = Text.new("", x: 10, y: 10, z: 8181, size: 28, color: Gosu::Color::BLACK)
 
         @laps = 3
         @completed_laps = 0
@@ -36,9 +37,21 @@ module Game
       end
 
       def draw
-        $window.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
-          super
-          # fill_rect(@car.boundry[0], @car.boundry[1], @car.boundry[2]+@track.tile_size*4, @car.boundry[3]+@track.tile_size*4, Gosu::Color.rgba(255, 0, 0, 150), 100) if $debug
+        $window.scale(@screen_scale, @screen_scale, $window.width/2, $window.height/2) do
+          $window.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
+            super
+            if $debug
+              draw_bounding_box(@track.bounding_box)
+
+              (@track.checkpoints-@checkpoints_list).each do |checkpoint|
+                Gosu.draw_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(200,200,200, 200), 5)
+              end
+
+              @checkpoints_list.each do |checkpoint|
+                Gosu.draw_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(100,200,100, 200), 5)
+              end
+            end
+          end
         end
         fill(@color, -1)
         @car_text.draw
@@ -57,7 +70,7 @@ module Game
           tile.color = Gosu::Color::GRAY
         end
 
-        lap_check
+        lap_check if @track.checkpoints.size > 0
       end
 
       def lap_check
@@ -90,6 +103,13 @@ module Game
         case id
         when Gosu::KbEscape
           push_game_state(Pause.new(last_state: self))
+        when Gosu::Kb0
+          @screen_scale = 1.0 if $debug
+        when Gosu::MsWheelUp
+          @screen_scale+=0.01 if $debug
+        when Gosu::MsWheelDown
+          @screen_scale-=0.01 if $debug
+          @screen_scale = 0.001 if @screen_scale < 0 && $debug
         end
       end
     end

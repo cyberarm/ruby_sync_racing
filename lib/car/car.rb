@@ -99,10 +99,11 @@ class Car < GameObject
     @angle = (@angle % 360)
 
     unless inside_boundry?
-      puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if $debug
+      # puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if $debug
       @x = @last_x
       @y = @last_y
       @speed = 30.0 if @speed > 30.0
+      @speed = -30.0 if @speed < -30.0
     end
 
     if @yellow_up
@@ -227,38 +228,14 @@ class Car < GameObject
     end
   end
 
-  def calc_boundry(track_tiles)
-    low_x, low_y  = 0, 0
-    high_x, high_y  = 0, 0
-
-    track_tiles.each do |tile|
-      if tile.x <= low_x
-        low_x = tile.x
-      end
-      if tile.x >= high_x
-        high_x = tile.x
-      end
-
-      if tile.y <= low_y
-        low_y = tile.y
-      end
-      if tile.y >= high_y
-        high_y = tile.y
-      end
-    end
-
-    low_x-=@tile_size*4
-    low_y-=@tile_size*4
-    high_x+=@tile_size*4
-    high_y+=@tile_size*4
-
-    @boundry = [low_x, low_y, high_x, high_y]
+  def boundry=boundry
+    @boundry = boundry
   end
 
   def inside_boundry?
     b = false
-    if x.between?(@boundry[0], @boundry[2])
-      if y.between?(@boundry[1], @boundry[3])
+    if x.between?(@boundry.x, @boundry.max_x)
+      if y.between?(@boundry.y, @boundry.max_y)
         b = true
       end
     end
