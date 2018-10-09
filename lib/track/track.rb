@@ -53,7 +53,8 @@ class Track < GameObject
 
   def process_checkpoints
     @track.checkpoints.each do |checkpoint|
-      @checkpoints << CheckPoint.new(checkpoint["x"], checkpoint["y"], checkpoint["width"], checkpoint["height"])
+      # Correct for some weirdness by adding half a tile to the X/Y position
+      @checkpoints << CheckPoint.new(checkpoint["x"]+@tile_size/2, checkpoint["y"]+@tile_size/2, checkpoint["width"], checkpoint["height"])
     end
   end
 
