@@ -68,12 +68,14 @@ class Track
 
         if @mouse
           Gosu.clip_to(@editor.active_area.x, @editor.active_area.y, @editor.active_area.width, @editor.active_area.height) do
-            over_decorations.each do |decoration|
-              $window.draw_circle(decoration.x, decoration.y, decoration.radius, 9999, Gosu::Color.rgb(255,144,0))
+            Gosu.translate(@editor.screen_vector.x, @editor.screen_vector.y) do
+              over_decorations.each do |decoration|
+                $window.draw_circle(decoration.x, decoration.y, decoration.radius, 9999, Gosu::Color.rgb(255,144,0))
+              end
+              # Render current decorations radius
+              radius = ((@editor.image(@current_tile_image_path).width+@editor.image(@current_tile_image_path).height)/4)*@scale
+              $window.draw_circle(@mouse_position[:x], @mouse_position[:y], radius, 9999, Gosu::Color.rgb(255,144,0))
             end
-            # Render current decorations radius
-            radius = ((@editor.image(@current_tile_image_path).width+@editor.image(@current_tile_image_path).height)/4)*@scale
-            $window.draw_circle(@mouse_position[:x], @mouse_position[:y], radius, 9999, Gosu::Color.rgb(255,144,0))
           end
         end
       end

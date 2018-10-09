@@ -81,6 +81,12 @@ class Track
         end
       end
 
+      def checkpoint_tile
+        @_checkpoint_tile ||= Gosu.record(4, 4) do
+          Gosu.draw_rect(0, 0, 4, 4, Gosu::Color.rgba(255, 255, 100, 255), 3)
+        end
+      end
+
       def selector(name, instance, color = Gosu::Color.rgb(rand(200), rand(200), rand(200)), selected = false)
         text = Game::Text.new(name, size: 36, y: 10)
         @mode_selectors << Selector.new(name, text, instance, color, selected)
@@ -123,7 +129,7 @@ class Track
             end
 
             @checkpoints.each do |checkpoint|
-              $window.fill_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(127, 127, 0, 200))
+              $window.fill_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(255, 255, 127, 75), 5)
             end
 
             @starting_positions.each_with_index do |starting_position, i|

@@ -130,7 +130,7 @@ class Track
         end
 
         @checkpoints.each do |checkpoint|
-          hash["checkpoint"] << {
+          hash["checkpoints"] << {
             "x"     => checkpoint.x,
             "y"     => checkpoint.y,
             "width" => checkpoint.width,
