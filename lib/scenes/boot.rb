@@ -27,13 +27,13 @@ module Game
         if @up
           @alpha+=1.5 unless @alpha >= 255
         else
-          @alpha-=1.5 unless @alpha <= -20
+          @alpha-=1.5 unless @alpha <= 10
         end
 
         if @alpha >= 255
           @up = false
           @render = true
-        elsif @alpha <= -20
+        elsif @alpha <= 10
           @text.color = Gosu::Color.rgba(rand(100..255), rand(100..255), rand(100..255), @alpha)
           @up = true
         end

@@ -11,7 +11,7 @@ class Track < GameObject
   attr_reader :x, :y, :width, :height, :scale, :bounding_box
 
   def setup
-    @x,@y,@width,@height, @scale = 0,0,1,1, 1.0
+    @x,@y,@width,@height, @scale = 0,0, 1,1, 1.0
     @bounding_box = Box.new(10_000,10_000, -10_000,-10_000)
 
     @tile_size = 64
@@ -92,8 +92,10 @@ class Track < GameObject
     super
 
     begin
+      # raise RuntimeError if @tiles.size <= 0
       draw_with_render # Render to an Image. Is a single image, when scaling there are no apparent artifacts.
-    rescue RuntimeError # Rescue from "Incomplete Framebuffer." Maybe rescues when framebuffer is not supported?
+    rescue NoMethodError
+      puts "Falling back to Gosu.record..."
       draw_with_record # Render with VAO, draw all at once. When scaling in and out floating point errors will be noticable as odd spaces between tiles.
     end
   end
@@ -114,9 +116,18 @@ class Track < GameObject
   end
 
   def draw_with_render
-    @_img ||= Gosu.render(@bounding_box.x.abs + @bounding_box.max_x.abs, @bounding_box.y.abs + @bounding_box.max_y.abs) do
-      Gosu.translate(@x.abs, @y.abs) do
-        render
+    unless @_img
+      width = @bounding_box.x.abs + @bounding_box.max_x.abs
+      height= @bounding_box.y.abs + @bounding_box.max_y.abs
+      width = 1 if width  <= 0
+      height= 1 if height <= 0
+      width = 10_000 if width  > 10_000
+      height= 10_000 if height > 10_000
+
+      @_img = Gosu.render(width, height) do
+        Gosu.translate(@x.abs, @y.abs) do
+          render
+        end
       end
     end
 
@@ -124,9 +135,18 @@ class Track < GameObject
   end
 
   def draw_with_record
-    @_img ||= Gosu.record(@bounding_box.x.abs + @bounding_box.max_x.abs, @bounding_box.y.abs + @bounding_box.max_y.abs) do
-      Gosu.translate(@x.abs, @y.abs) do
-        render
+    unless @_img
+      width = @bounding_box.x.abs + @bounding_box.max_x.abs
+      height= @bounding_box.y.abs + @bounding_box.max_y.abs
+      width = 1 if width  <= 0
+      height= 1 if height <= 0
+      width = 10_000 if width  > 10_000
+      height= 10_000 if height > 10_000
+
+      @_img = Gosu.record(width, height) do
+        Gosu.translate(@x.abs, @y.abs) do
+          render
+        end
       end
     end
 

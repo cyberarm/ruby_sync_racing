@@ -40,6 +40,7 @@ module Game
         $window.scale(@screen_scale, @screen_scale, $window.width/2, $window.height/2) do
           $window.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
             super
+
             if $debug
               draw_bounding_box(@track.bounding_box)
 
@@ -53,6 +54,7 @@ module Game
             end
           end
         end
+
         fill(@color, -1)
         @car_text.draw
       end
