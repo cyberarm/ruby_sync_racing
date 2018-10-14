@@ -21,7 +21,6 @@ module Game
             if e.rect[2] > @max_button_width then @max_button_width = e.rect[2]; end
           end
         end
-        p @max_button_width, @least_button_x
         @elements.each {|e| if e.is_a?(Game::Button); e.rect[0] = @least_button_x-10;end}
         @elements.each {|e| if e.is_a?(Game::Button); e.rect[2] = @max_button_width;end}
       end
@@ -96,14 +95,14 @@ module Game
       end
 
       def label(string, options={}, proc = nil)
-        options[:y] ||= @y
+        options[:y] ||= @y-10
         options[:size] ||= 26
 
         text = Game::Text.new(string, options)
         text.x = $window.width/2-text.width/2
 
         @elements.push(text)
-        @y+=(text.height*2)
+        @y+=text.height#(text.height/2)+text.height+20
 
         return text
       end
@@ -131,7 +130,7 @@ module Game
         input.rect = [x,y, width,height]
 
         @elements.push(input)
-        @y+=(height/2)+height
+        @y+=height+10
         return input
       end
 

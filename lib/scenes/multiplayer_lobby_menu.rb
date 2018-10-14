@@ -5,7 +5,7 @@ module Game
         Game::Scene::MultiplayerLobbyMenu.instance = self
         @players = Game::Net::Lobby.instance.players
         @player_elements = []
-        @_y = 400
+        @_y = 350
 
         @client = Game::Net::Client.instance
         @client.transmit('lobby', 'join', {status: 200, token: Game::Net::Client.token}, GameOverseer::Client::WORLD, true)

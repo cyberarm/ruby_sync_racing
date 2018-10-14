@@ -16,34 +16,35 @@ module Game
         label "Enter a Username:"
         username = edit_line Config.get(:player_username)#"cyberarm"
         label "Host:"
-        @host = edit_line Config.get(:player_last_host)#"localhost"
-        label "Port:"
-        @port = edit_line Config.get(:player_last_port)#"56789"
+        @host = edit_line "#{Config.get(:player_last_host)}:#{Config.get(:player_last_port)}"#"localhost:56789"
 
-        button "Connect" do
-          @tick   = 0
-
-          @client = Game::Net::Client.new(@host.value, Integer(@port.value)) unless @locked
-          Game::Net::Client.instance = @client
-          if @client.connected?
-            Config.set(:player_username, username.text.text)
-            Config.set(:player_last_host, @host.value)
-            Config.set(:player_last_port, @port.value)
-            Config.save
-            data = {username: username.text.text}
-            @client.transmit("auth", "connect", data, GameOverseer::Client::HANDSHAKE)
+        button "Connect" do |b|
+          if @client && @client.connected? && !Game::Net::Client.token
+            Game::Net::Client.instance = nil
+            @client.disconnect
+            @locked = false
           end
 
-          @locked = true
-        end
+          unless @locked
+            @tick   = Gosu.milliseconds
+            host = @host.value.split(":").first
+            port = @host.value.split(":").last
 
-        button "Disconnect" do
-          if @locked
-            @client.disconnect if @client && @client.is_a?(Game::Net::Client)
-            @messages.text = "Disconnected."
-            @locked = false
-          else
-            @messages.text = "Not connected to server."
+            @client = Game::Net::Client.new(host, Integer(port))
+            Game::Net::Client.instance = @client
+            if @client.connected?
+              Config.set(:player_username, username.text.text)
+              Config.set(:player_last_host, host)
+              Config.set(:player_last_port, port)
+              Config.save
+              data = {username: username.text.text}
+              @client.transmit("auth", "connect", data, GameOverseer::Client::HANDSHAKE)
+            end
+
+            @messages.color= Gosu::Color::YELLOW
+            @messages.text = "Connecting..."
+
+            @locked = true
           end
         end
 
@@ -62,15 +63,17 @@ module Game
 
       def update
         super
-        @tick+=1
-
         if defined?(@client) && @client.is_a?(Game::Net::Client)
           @client.update
           push_game_state(MultiplayerLobbyMenu) if @client.connected? && Game::Net::Client.token
 
-          if @tick >= 60*5 && !@client.connected?
+          if Gosu.milliseconds-@tick >= 5_000 && !@client.connected?
             @client.disconnect
-            @messages.text = "Connection to #{@host.value}:#{@port.value} failed."
+            host = @host.value.split(":").first
+            port = @host.value.split(":").last
+
+            @messages.color= Gosu::Color::RED
+            @messages.text = "Connection to #{host}:#{port} failed."
             @locked = false
             @client = nil
           end

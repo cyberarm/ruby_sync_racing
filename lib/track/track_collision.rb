@@ -5,7 +5,7 @@ class Track
     def initialize(tile_list, tile_size = 64)
       @tiles = tile_list
       @tile_size = tile_size
-      @list = Array.new
+      @list = {}
 
       process_tiles
     end
@@ -13,9 +13,6 @@ class Track
     def process_tiles
       @tiles.each do |tile|
         @list[tile.x] = []
-      end
-
-      @tiles.each do |tile|
         @list[tile.x] << tile
       end
     end
