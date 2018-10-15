@@ -12,8 +12,10 @@ class Track
 
     def process_tiles
       @tiles.each do |tile|
-        @list[tile.x] = []
-        @list[tile.x] << tile
+        next unless tile.is_a?(Tile)
+
+        @list[normalize(tile.x)] ||= {}
+        @list[normalize(tile.x)][normalize(tile.y)] = tile
       end
     end
 
@@ -22,14 +24,8 @@ class Track
       _y = normalize(y)
       _tile = nil
 
-      if @list[_x].is_a?(Array)
-        @list[_x].detect do |tile|
-          if tile.y == _y
-            _tile = tile
-            true
-          end
-        end
-      end
+      _tile = @list.dig(_x).dig(_y)
+      # p "#{_tile.type} -> #{_tile.x}:#{_tile.y}" if _tile && $debug
 
       return _tile
     end
