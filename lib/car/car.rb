@@ -1,5 +1,6 @@
 class Car < GameObject
-  attr_reader :speed, :braking, :changed, :boundry,
+  attr_accessor :speed
+  attr_reader :braking, :changed, :boundry,
               :drag, :top_speed, :acceleration, :brake_speed, :turn_speed
 
   def setup
@@ -112,6 +113,7 @@ class Car < GameObject
 
     flutter_headlights
 
+    # Disabled until I can find a decent sound loop
     # play_engine_sound
     play_braking_sound
 
@@ -119,8 +121,10 @@ class Car < GameObject
     @physics.update
     @name.x,@name.y = self.x-@name.width/2, self.y-self.height
 
-    forward if button_down?(Gosu::KbUp) or button_down?(Gosu::KbW)
-    reverse if button_down?(Gosu::KbDown)  or button_down?(Gosu::KbS)
+    forward    if button_down?(Gosu::KbUp)    || button_down?(Gosu::KbW)
+    reverse    if button_down?(Gosu::KbDown)  || button_down?(Gosu::KbS)
+    turn_left  if button_down?(Gosu::KbLeft)  || button_down?(Gosu::KbA)
+    turn_right if button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
 
     @last_x = @x
     @last_y = @y
@@ -130,10 +134,7 @@ class Car < GameObject
       if @speed.abs <= (@brake_speed * Display.dt) then @speed = 0.0; end
     end
 
-    if @speed == 0.0 then @braking = true; end
-
-    turn_left  if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
-    turn_right if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
+    @braking = true if @speed == 0.0
   end
 
   def button_up(id)
@@ -147,24 +148,20 @@ class Car < GameObject
   def forward
     if @speed <= -0.01
       @braking = true
-      @speed+=(@brake_speed * Display.dt)
+      @speed  += (@brake_speed * Display.dt)
     else
       @braking = false
-      @speed = Gosu.distance(@x, @y, @last_x, @last_y)
-      @velocity_x -= Math.cos((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
-      @velocity_y -= Math.sin((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
+      @speed += (@acceleration * Display.dt)
     end
   end
 
   def reverse
     if @speed >= 0.01
-      @speed-=(@brake_speed*Display.dt)
       @braking = true
+      @speed  -= (@brake_speed * Display.dt)
     else
       @braking = false
-      @speed = Gosu.distance(@x, @y, @last_x, @last_y) *-1
-      @velocity_x += Math.cos((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
-      @velocity_y += Math.sin((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
+      @speed -= (@acceleration * Display.dt)
     end
   end
 
@@ -196,10 +193,8 @@ class Car < GameObject
     end
   end
 
+  # Engine Sound stuff.
   def play_engine_sound
-    # Engine Sound stuff.
-    # Disabled until I can find a decent sound loop
-
     if @engine_instance && @engine_instance.playing?
       volume = @speed.to_f/@top_speed.to_f
       volume.round(2)

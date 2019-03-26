@@ -1,7 +1,7 @@
 {
   "name":"Test Sport Car",
   "spec":{
-    "drag":0.8,
+    "drag":10.0,
     "top_speed":400.0,
     "brake_speed":200.0,
     "acceleration":100.0,

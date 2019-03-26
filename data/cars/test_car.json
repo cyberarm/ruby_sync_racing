@@ -1,7 +1,7 @@
 {
   "name":"Test Car",
   "spec":{
-    "drag":0.78, // Value between 0.0 and 1.0, where 1.0 is none and 0.0 is high
+    "drag":10.0,
     "top_speed":240.0,
     "brake_speed":120.0,
     "acceleration":100.0,
