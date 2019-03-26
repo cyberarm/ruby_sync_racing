@@ -16,7 +16,8 @@ class Track
         @decorations = @options[:decorations]
         @checkpoints = @options[:checkpoints]
         @starting_positions = @options[:starting_positions]
-        @background_color = @options[:background_color]
+        @background_color   = @options[:background_color]
+        @time_of_day        = @options[:time_of_day]
         $window.text_input = NameInput.new
 
         @title = Game::Text.new("Enter Track Name:", y: $window.height/4, size: 50)
@@ -104,6 +105,7 @@ class Track
                   "blue"  => color.blue,
                   "alpha" => color.alpha
                 },
+                "time_of_day" => @time_of_day,
                 "tiles" => [], "decorations" => [], "checkpoints" => [], "starting_positions" => []
               }
         p hash["name"]

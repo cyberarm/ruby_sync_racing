@@ -22,5 +22,18 @@ class Track
     def starting_positions
       @data["starting_positions"]
     end
+
+    def background
+      if @data.dig("background")
+        _background = @data["background"]
+        Gosu::Color.rgba(_background["red"], _background["green"], _background["blue"], _background["alpha"])
+      else
+        _color = Gosu::Color.rgba(100,254,78,144) # Soft, forest green.
+      end
+    end
+
+    def time_of_day
+      @data.dig("time_of_day")
+    end
   end
 end

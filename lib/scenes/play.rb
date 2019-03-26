@@ -16,14 +16,7 @@ module Game
         end
         @last_tile = nil
 
-        if @track.track.data["background"]
-          _background = @track.track.data["background"]
-          _color = Gosu::Color.rgba(_background["red"], _background["green"], _background["blue"], _background["alpha"])
-        else
-          _color = Gosu::Color.rgba(100,254,78,144) # Soft, forest green.
-        end
-
-        @color = _color
+        @color = @track.track.background
         @car.boundry = @track.bounding_box
         puts "Car boundry: #{@car.boundry}"
 
@@ -37,6 +30,7 @@ module Game
       end
 
       def draw
+        draw_overlay
         $window.scale(@screen_scale, @screen_scale, $window.width/2, $window.height/2) do
           $window.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
             super
@@ -73,6 +67,20 @@ module Game
         end
 
         lap_check if @track.checkpoints.size > 0
+      end
+
+      def draw_overlay
+        return unless @track.track.time_of_day
+        case @track.track.time_of_day
+        when "morning"
+          $window.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(255,127,0, 50), Float::INFINITY)
+        when "noon"
+        when "evening"
+          $window.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0, 200), Float::INFINITY)
+        when "night"
+          # TODO: Implement some form of lighting
+          $window.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0, 250), Float::INFINITY)
+        end
       end
 
       def lap_check

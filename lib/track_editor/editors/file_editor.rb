@@ -17,10 +17,10 @@ class Track
         sidebar_label ""
 
         sidebar_label "Time"
-        sidebar_button("Morning", "Adds bright orangish hue to everything, headlights optional with no effect")
-        sidebar_button("Noon (Default)", "No lighting effects")
-        sidebar_button("Evening", "Pale light, headlights should be on")
-        sidebar_button("Night", "Can only see with headlights")
+        sidebar_button("Morning", "Adds bright orangish hue to everything, headlights optional with no effect") { @editor.time_of_day = "morning"; @editor.track_changed! }
+        sidebar_button("Noon (Default)", "No lighting effects") { @editor.time_of_day = "noon"; @editor.track_changed! }
+        sidebar_button("Evening", "Pale light, headlights should be on") { @editor.time_of_day = "evening"; @editor.track_changed! }
+        sidebar_button("Night", "Can only see with headlights") { @editor.time_of_day = "night"; @editor.track_changed! }
         sidebar_label ""
 
         sidebar_button("Exit Editor", "Save and exit to main menu") do

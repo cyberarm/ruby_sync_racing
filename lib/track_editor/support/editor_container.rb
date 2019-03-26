@@ -17,7 +17,7 @@ class Track
         @instance = i
       end
 
-      attr_accessor :active_selector, :background, :save_file, :track_tainted
+      attr_accessor :active_selector, :background, :time_of_day, :save_file, :track_tainted
 
       attr_reader :tiles, :decorations, :checkpoints, :starting_positions
       attr_reader :active_area, :screen_vector, :selectors_height, :tab_width, :tile_size
@@ -48,6 +48,7 @@ class Track
         prepare
 
         @background = @track_data ? Gosu::Color.rgba(@track_data["background"]["red"], @track_data["background"]["green"], @track_data["background"]["blue"], @track_data["background"]["alpha"]) : Gosu::Color.rgba(100, 254, 78, 144)
+        @time_of_day = @track_data ? @track_data["time_of_day"] : "noon"
 
         @active_selector = @mode_selectors.first
         @active_selector.instance = @mode_selectors.first.instance
@@ -250,7 +251,7 @@ class Track
 
       def save_track
         p @background
-        push_game_state(Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints, starting_positions: @starting_positions, background_color: @background)
+        push_game_state(Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints, starting_positions: @starting_positions, background_color: @background, time_of_day: @time_of_day)
         @track_tainted = false if @save_file
       end
 
