@@ -1,10 +1,12 @@
 {
   "name":"Test Sport Car",
   "spec":{
-    "drag":10.0,
+    "drag":0.8,
     "top_speed":400.0,
     "brake_speed":200.0,
     "acceleration":100.0,
+    "turn_speed": 16,
+    "angular_drag": 0.9,
 
     "image":2,
     "body_image":3,

@@ -6,7 +6,8 @@ class GameObject
 
   Vertex = Struct.new(:x, :y)
   attr_accessor :image, :x, :y, :z, :angle, :center_x, :center_y, :scale_x, :scale_y,
-                :color, :alpha, :mode, :options, :paused, :radius, :last_x, :last_y
+                :color, :alpha, :mode, :options, :paused, :radius, :last_x, :last_y,
+                :velocity_x, :velocity_y, :angular_velocity, :angular_drag
   attr_reader :world_center_point, :debug_color
   def initialize(options={})
     if options[:auto_manage] || options[:auto_manage] == nil
@@ -30,6 +31,11 @@ class GameObject
     @color    = options[:color] ? options[:color] : Gosu::Color.argb(0xff_ffffff)
     @alpha    = options[:alpha] ? options[:alpha] : 255
     @mode     = options[:mode] ? options[:mode] : :default
+
+    @velocity_x = 0
+    @velocity_y = 0
+    @angular_velocity = 0
+    @angular_drag = 0
 
     @paused = false
     @speed = 0

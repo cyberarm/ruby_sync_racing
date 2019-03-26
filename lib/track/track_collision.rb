@@ -24,7 +24,7 @@ class Track
       _y = normalize(y)
       _tile = nil
 
-      _tile = @list.dig(_x).dig(_y)
+      _tile = @list.dig(_x, _y)
       # p "#{_tile.type} -> #{_tile.x}:#{_tile.y}" if _tile && $debug
 
       return _tile

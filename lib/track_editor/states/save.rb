@@ -47,7 +47,9 @@ class Track
         # Auto save and return to Edit if Edit.save_file is set.
         if @previous_game_state && defined?(@previous_game_state.save_file) && @previous_game_state.save_file
           save_track(@previous_game_state.save_file, @background_color)
+          $window.text_input = nil
           push_game_state(@previous_game_state)
+          return
         end
 
         @tick+=1
@@ -71,6 +73,7 @@ class Track
       def button_up(id)
         case id
         when Gosu::KbEscape
+          $window.text_input = nil
           push_game_state(@previous_game_state)
 
         when Gosu::MsLeft
@@ -89,6 +92,7 @@ class Track
       def save
         save_track(@name.text, @background_color)
         @previous_game_state.save_file = @name.text
+        $window.text_input = nil
         push_game_state(@previous_game_state)
       end
 
@@ -155,6 +159,7 @@ class Track
         end
 
         @previous_game_state.add_message "Saved track: #{name.downcase}"
+        $window.text_input = nil
       end
     end
   end

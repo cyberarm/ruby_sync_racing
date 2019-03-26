@@ -1,7 +1,7 @@
 class CarPhysics
   attr_reader :angle
-  def initialize(car_object)
-    @car_object = car_object
+  def initialize(entity)
+    @entity = entity
 
     @angle = 0.0
   end
@@ -11,9 +11,15 @@ class CarPhysics
   end
 
   def calculate
-    _x = (@car_object.speed*Display.dt) * Math.cos((90.0 + @car_object.angle) * Math::PI / 180)
-    _y = (@car_object.speed*Display.dt) * Math.sin((90.0 + @car_object.angle) * Math::PI / 180)
-    @car_object.x -= _x
-    @car_object.y -= _y
+    # Derived from: https://gamedev.stackexchange.com/a/1900
+
+    @entity.x += @entity.velocity_x
+    @entity.y += @entity.velocity_y
+
+    @entity.velocity_x *= @entity.drag
+    @entity.velocity_y *= @entity.drag
+
+    @entity.angle += @entity.angular_velocity
+    @entity.angular_velocity *= @entity.angular_drag
   end
 end

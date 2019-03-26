@@ -5,7 +5,7 @@ gem "rake"#, "0.9.2.2"
 # gem "chipmunk"
 gem "oj"
 
-gem "renet"
+gem "renet", github: "Dahrkael/rENet"
 
 gem "gameoverseer"
 gem "gameoverseer-client"

@@ -1,5 +1,6 @@
 class Car < GameObject
-  attr_reader :speed, :braking, :changed, :boundry
+  attr_reader :speed, :braking, :changed, :boundry,
+              :drag, :top_speed, :acceleration, :brake_speed, :turn_speed
 
   def setup
     self.z = 5
@@ -22,6 +23,9 @@ class Car < GameObject
     @top_speed   = @car_data["spec"]["top_speed"]
     @acceleration= @car_data["spec"]["acceleration"]
     @brake_speed = @car_data["spec"]["brake_speed"]
+    @turn_speed  = @car_data["spec"]["turn_speed"]
+    @angular_drag= @car_data["spec"]["angular_drag"]
+
 
     # @engine = Gosu::Sample["assets/sound/engine.wav"]
     # @engine_instance = nil
@@ -96,7 +100,7 @@ class Car < GameObject
 
   def update
     super
-    @angle = (@angle % 360)
+    @angle = (@angle % 359)
 
     unless inside_boundry?
       # puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if $debug
@@ -141,8 +145,7 @@ class Car < GameObject
     if @braking
       if @speed <= -0.01 or @speed >= 0.01
         # Play braking sound
-        if @brake_instance && @brake_instance.playing?
-        else
+        unless @brake_instance && @brake_instance.playing?
           # Make sure that @speed is a positive number
           _speed = @speed.abs
 
@@ -166,7 +169,7 @@ class Car < GameObject
       end
     end
 
-    debug_text("X:#{self.x.round}\nY:#{self.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
+    debug_text("Braking: #{@braking}\nX:#{self.x.round}\nY:#{self.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
     @physics.update
     @name.x,@name.y = self.x-@name.width/2, self.y-self.height
 
@@ -176,48 +179,41 @@ class Car < GameObject
       if button_down?(Gosu::KbUp) or button_down?(Gosu::KbW)
         if @speed <= -0.01
           @braking = true
-          @speed+=(@brake_speed*Display.dt)
+          @speed+=(@brake_speed * Display.dt)
         else
           @braking = false
-          @speed+=(@acceleration*Display.dt)
+          @speed = Gosu.distance(@x, @y, @last_x, @last_y)
+          @velocity_x -= Math.cos((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
+          @velocity_y -= Math.sin((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
         end
       end
     end
 
-    unless @speed <= -@top_speed
-      if button_down?(Gosu::KbDown)  or button_down?(Gosu::KbS)
-        if @speed >= 0.01
-          @speed-=(@brake_speed*Display.dt)
-          @braking = true
-        else
-          @braking = false
-          @speed-=(@acceleration*Display.dt)
-        end
+    if button_down?(Gosu::KbDown)  or button_down?(Gosu::KbS)
+      if @speed >= 0.01
+        @speed-=(@brake_speed*Display.dt)
+        @braking = true
+      else
+        @braking = false
+        @speed = Gosu.distance(@x, @y, @last_x, @last_y) *-1
+        @velocity_x += Math.cos((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
+        @velocity_y += Math.sin((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
       end
     end
 
-    if @speed >= 0.00
-      @speed = -@top_speed if @speed < -@top_speed
-      @speed-=(@drag*Display.dt)
-    elsif @speed <= -0.00
-      @speed = @top_speed if @speed > @top_speed
-      @speed+=(@drag*Display.dt)
-    end
 
     @last_x = @x
     @last_y = @y
     @last_speed = @speed
     unless ($window.button_down?(Gosu::KbUp) || $window.button_down?(Gosu::KbW) || $window.button_down?(Gosu::KbDown) || $window.button_down?(Gosu::KbS))
-      if @speed.abs <= (@brake_speed*Display.dt) then @speed = 0.0; end
+      if @speed.abs <= (@brake_speed * Display.dt) then @speed = 0.0; end
     end
+
     if @speed == 0.0 then @braking = true; end
-    if @speed > 0.0
-      @angle-=(120*Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
-      @angle+=(120*Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
-    elsif @speed < 0.0
-      @angle+=(120*Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
-      @angle-=(120*Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
-    end
+
+    @angular_velocity -=(@turn_speed * Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
+    @angular_velocity +=(@turn_speed * Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
+
   end
 
   def button_up(id)
