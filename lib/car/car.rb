@@ -110,6 +110,77 @@ class Car < GameObject
       @speed = -30.0 if @speed < -30.0
     end
 
+    flutter_headlights
+
+    # play_engine_sound
+    play_braking_sound
+
+    debug_text("Braking: #{@braking}\nX:#{self.x.round}\nY:#{self.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
+    @physics.update
+    @name.x,@name.y = self.x-@name.width/2, self.y-self.height
+
+    forward if button_down?(Gosu::KbUp) or button_down?(Gosu::KbW)
+    reverse if button_down?(Gosu::KbDown)  or button_down?(Gosu::KbS)
+
+    @last_x = @x
+    @last_y = @y
+    @last_speed = @speed
+
+    unless ($window.button_down?(Gosu::KbUp) || $window.button_down?(Gosu::KbW) || $window.button_down?(Gosu::KbDown) || $window.button_down?(Gosu::KbS))
+      if @speed.abs <= (@brake_speed * Display.dt) then @speed = 0.0; end
+    end
+
+    if @speed == 0.0 then @braking = true; end
+
+    turn_left  if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
+    turn_right if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
+  end
+
+  def button_up(id)
+    super
+    case id
+    when Gosu::KbL
+      toggle_headlights
+    end
+  end
+
+  def forward
+    if @speed <= -0.01
+      @braking = true
+      @speed+=(@brake_speed * Display.dt)
+    else
+      @braking = false
+      @speed = Gosu.distance(@x, @y, @last_x, @last_y)
+      @velocity_x -= Math.cos((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
+      @velocity_y -= Math.sin((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
+    end
+  end
+
+  def reverse
+    if @speed >= 0.01
+      @speed-=(@brake_speed*Display.dt)
+      @braking = true
+    else
+      @braking = false
+      @speed = Gosu.distance(@x, @y, @last_x, @last_y) *-1
+      @velocity_x += Math.cos((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
+      @velocity_y += Math.sin((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
+    end
+  end
+
+  def turn_left
+    @angular_velocity -=(@turn_speed * Display.dt)
+  end
+
+  def turn_right
+    @angular_velocity +=(@turn_speed * Display.dt)
+  end
+
+  def toggle_headlights
+      @headlights_on = !@headlights_on
+  end
+
+  def flutter_headlights
     if @yellow_up
       if @yellow_int >= 255
         @yellow_up = false
@@ -123,25 +194,29 @@ class Car < GameObject
         @yellow_int-=1
       end
     end
+  end
 
+  def play_engine_sound
     # Engine Sound stuff.
     # Disabled until I can find a decent sound loop
-    #
-    # if @engine_instance && @engine_instance.playing?
-    #   volume = @speed.to_f/@top_speed.to_f
-    #   volume.round(2)
-    #   volume = 0.1 if volume < 0.1
-    #   @engine_instance.volume = volume
-    # end
 
-    # unless @braking
-      # if @speed <= -0.01 or @speed >= 0.01
-      #   if !@engine_instance
-      #     @engine_instance = @engine.play(1,1,true)
-      #   end
-      # end
-    # end
+    if @engine_instance && @engine_instance.playing?
+      volume = @speed.to_f/@top_speed.to_f
+      volume.round(2)
+      volume = 0.1 if volume < 0.1
+      @engine_instance.volume = volume
+    end
 
+    unless @braking
+      if @speed <= -0.01 or @speed >= 0.01
+        if !@engine_instance
+          @engine_instance = @engine.play(1,1,true)
+        end
+      end
+    end
+  end
+
+  def play_braking_sound
     if @braking
       if @speed <= -0.01 or @speed >= 0.01
         # Play braking sound
@@ -168,60 +243,6 @@ class Car < GameObject
         @brake_instance.stop if @brake_volume <= 0.0
       end
     end
-
-    debug_text("Braking: #{@braking}\nX:#{self.x.round}\nY:#{self.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
-    @physics.update
-    @name.x,@name.y = self.x-@name.width/2, self.y-self.height
-
-    unless @speed >= @top_speed
-      @braking = false
-
-      if button_down?(Gosu::KbUp) or button_down?(Gosu::KbW)
-        if @speed <= -0.01
-          @braking = true
-          @speed+=(@brake_speed * Display.dt)
-        else
-          @braking = false
-          @speed = Gosu.distance(@x, @y, @last_x, @last_y)
-          @velocity_x -= Math.cos((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
-          @velocity_y -= Math.sin((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
-        end
-      end
-    end
-
-    if button_down?(Gosu::KbDown)  or button_down?(Gosu::KbS)
-      if @speed >= 0.01
-        @speed-=(@brake_speed*Display.dt)
-        @braking = true
-      else
-        @braking = false
-        @speed = Gosu.distance(@x, @y, @last_x, @last_y) *-1
-        @velocity_x += Math.cos((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
-        @velocity_y += Math.sin((90.0 + @angle) * Math::PI / 180) * (@acceleration * Display.dt)
-      end
-    end
-
-
-    @last_x = @x
-    @last_y = @y
-    @last_speed = @speed
-    unless ($window.button_down?(Gosu::KbUp) || $window.button_down?(Gosu::KbW) || $window.button_down?(Gosu::KbDown) || $window.button_down?(Gosu::KbS))
-      if @speed.abs <= (@brake_speed * Display.dt) then @speed = 0.0; end
-    end
-
-    if @speed == 0.0 then @braking = true; end
-
-    @angular_velocity -=(@turn_speed * Display.dt) if button_down?(Gosu::KbLeft) or button_down?(Gosu::KbA)
-    @angular_velocity +=(@turn_speed * Display.dt) if button_down?(Gosu::KbRight) or button_down?(Gosu::KbD)
-
-  end
-
-  def button_up(id)
-    super
-    case id
-    when Gosu::KbL
-      @headlights_on = !@headlights_on
-    end
   end
 
   def boundry=boundry
@@ -229,12 +250,7 @@ class Car < GameObject
   end
 
   def inside_boundry?
-    b = false
-    if x.between?(@boundry.x, @boundry.max_x)
-      if y.between?(@boundry.y, @boundry.max_y)
-        b = true
-      end
-    end
-    return b
+    x.between?(@boundry.x, @boundry.max_x) &&
+    y.between?(@boundry.y, @boundry.max_y)
   end
 end
