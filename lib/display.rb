@@ -16,9 +16,9 @@ class Display < Gosu::Window
     if Integer(Config.get(:screen_fullscreen)) == 1 then dfullscreen = true; else dfullscreen = false; end
     p dwidth, dheight, dfullscreen, Config.instance if $debug
     if ARGV.join.include?("--slow")
-      super(dwidth, dheight, fullscreen: dfullscreen, update_interval: 1000.0/20)
+      super(dwidth, dheight, fullscreen: dfullscreen, update_interval: 1000.0/20, resizable: true)
     else
-      super(dwidth, dheight, fullscreen: dfullscreen, update_interval: update_interval)
+      super(dwidth, dheight, fullscreen: dfullscreen, update_interval: update_interval, resizable: true)
     end
 
     @show_cursor = false
@@ -56,7 +56,13 @@ class Display < Gosu::Window
     @last_frame_time/1000.0
   end
 
+  def button_down(id)
+    super
+    @current_game_state.button_down(id)
+  end
+
   def button_up(id)
+    super
     $debug = !$debug if id == Gosu::KB_BACKTICK && ARGV.join.include?("--debug")
     @current_game_state.button_up(id)
   end

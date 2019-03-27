@@ -1,5 +1,5 @@
 class Car < GameObject
-  attr_accessor :speed
+  attr_accessor :speed, :braking
   attr_reader :braking, :changed, :boundry,
               :drag, :top_speed, :acceleration, :brake_speed, :turn_speed
 
@@ -44,6 +44,8 @@ class Car < GameObject
     @beam_edge_color   = Gosu::Color.rgba(190, 190, 0, 0)
 
     @tile_size = 64
+    @last_light_toggle = Gosu.milliseconds
+    @last_light_toggle_timeout = 100
   end
 
   def draw
@@ -121,11 +123,6 @@ class Car < GameObject
     @physics.update
     @name.x,@name.y = self.x-@name.width/2, self.y-self.height
 
-    forward    if button_down?(Gosu::KbUp)    || button_down?(Gosu::KbW)
-    reverse    if button_down?(Gosu::KbDown)  || button_down?(Gosu::KbS)
-    turn_left  if button_down?(Gosu::KbLeft)  || button_down?(Gosu::KbA)
-    turn_right if button_down?(Gosu::KbRight) || button_down?(Gosu::KbD)
-
     @last_x = @x
     @last_y = @y
     @last_speed = @speed
@@ -134,47 +131,30 @@ class Car < GameObject
       if @speed.abs <= (@brake_speed * Display.dt) then @speed = 0.0; end
     end
 
-    @braking = true if @speed == 0.0
-  end
-
-  def button_up(id)
-    super
-    case id
-    when Gosu::KbL
-      toggle_headlights
-    end
+    @braking = @speed == 0.0
   end
 
   def forward
-    if @speed <= -0.01
-      @braking = true
-      @speed  += (@brake_speed * Display.dt)
-    else
-      @braking = false
-      @speed += (@acceleration * Display.dt)
-    end
+    @physics.forward
   end
 
   def reverse
-    if @speed >= 0.01
-      @braking = true
-      @speed  -= (@brake_speed * Display.dt)
-    else
-      @braking = false
-      @speed -= (@acceleration * Display.dt)
-    end
+    @physics.reverse
   end
 
   def turn_left
-    @angular_velocity -=(@turn_speed * Display.dt)
+    @physics.turn_left
   end
 
   def turn_right
-    @angular_velocity +=(@turn_speed * Display.dt)
+    @physics.turn_right
   end
 
   def toggle_headlights
-      @headlights_on = !@headlights_on
+    return unless Gosu.milliseconds >= @last_light_toggle + @last_light_toggle_timeout
+
+    @last_light_toggle = Gosu.milliseconds
+    @headlights_on = !@headlights_on
   end
 
   def flutter_headlights

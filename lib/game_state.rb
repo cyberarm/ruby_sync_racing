@@ -1,6 +1,4 @@
 class GameState
-  SCALE_X_BASE = 1920.0
-  SCALE_Y_BASE = 1080.0
   attr_accessor :options, :global_pause
   attr_reader :game_objects
 
@@ -9,9 +7,9 @@ class GameState
     @options = options unless @options
     @game_objects = []
     @global_pause = false
+    @down_keys = {}
 
     setup
-    @_4ship = GameObject::Vertex.new
   end
 
   def setup
@@ -30,9 +28,6 @@ class GameState
   def update
     @game_objects.each do |o|
       unless o.paused || @global_pause
-        o.world_center_point.x = @_4ship.x
-        o.world_center_point.y = @_4ship.y
-
         o.update
         o.update_debug_text if $debug
       end
@@ -135,7 +130,13 @@ class GameState
     @game_objects = nil
   end
 
+  def button_down(id)
+    @down_keys[id] = true
+  end
+
   def button_up(id)
+    @down_keys.delete(id)
+
     @game_objects.each do |o|
       o.button_up(id) unless o.paused
     end

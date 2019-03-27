@@ -27,6 +27,25 @@ module Game
 
         @checkpoints = @track.checkpoints.size
         @checkpoints_list = []
+        @players = []
+
+        player_1_controls = {
+          Gosu.char_to_button_id(Config.get(:player_1_forward)) => :forward,
+          Gosu.char_to_button_id(Config.get(:player_1_reverse)) => :reverse,
+          Gosu.char_to_button_id(Config.get(:player_1_turn_left)) => :turn_left,
+          Gosu.char_to_button_id(Config.get(:player_1_turn_right)) => :turn_right,
+          Gosu.char_to_button_id(Config.get(:player_1_headlights)) => :toggle_headlights
+        }
+        player_2_controls = {
+          Gosu.char_to_button_id(Config.get(:player_2_forward)) => :forward,
+          Gosu.char_to_button_id(Config.get(:player_2_reverse)) => :reverse,
+          Gosu.char_to_button_id(Config.get(:player_2_turn_left)) => :turn_left,
+          Gosu.char_to_button_id(Config.get(:player_2_turn_right)) => :turn_right,
+          Gosu.char_to_button_id(Config.get(:player_2_headlights)) => :toggle_headlights
+        }
+
+        @players << Player.new(actor: @car, controls: player_1_controls)
+        # @players << Player.new(actor: @car, controls: player_2_controls)
       end
 
       def draw
@@ -55,7 +74,10 @@ module Game
 
       def update
         super
-        @screen_vector.x, @screen_vector.y = (@car.x - $window.width / 2), (@car.y - $window.height / 2)
+        center_around(@car)
+        @down_keys.each do |key, value|
+          @players.each { |player| player.handle(key) }
+        end
 
         @car_text.text = "Car speed: #{@car.speed.round} x: #{@car.x.round}, y: #{@car.y.round}, angle: #{@car.angle.round}.\nLaps: #{@completed_laps}/#{@laps}, Checkpoints: #{@checkpoints_list.size}/#{@track.checkpoints.size}"
 
@@ -67,6 +89,10 @@ module Game
         end
 
         lap_check if @track.checkpoints.size > 0
+      end
+
+      def center_around(entity)
+        @screen_vector.x, @screen_vector.y = (entity.x - $window.width / 2), (entity.y - $window.height / 2)
       end
 
       def draw_overlay
