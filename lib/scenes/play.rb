@@ -27,6 +27,11 @@ module Game
 
         @checkpoints = @track.checkpoints.size
         @checkpoints_list = []
+
+        @countdown_text = Text.new("Text", z: 8182, size: 48)
+        @countdown_time_started = Gosu.milliseconds
+        @countdown_time = 3_000
+
         @players = []
 
         player_1_controls = {
@@ -52,6 +57,7 @@ module Game
         draw_overlay
         $window.scale(@screen_scale, @screen_scale, $window.width/2, $window.height/2) do
           $window.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
+            draw_countdown
             super
 
             if $debug
@@ -75,8 +81,10 @@ module Game
       def update
         super
         center_around(@car)
-        @down_keys.each do |key, value|
-          @players.each { |player| player.handle(key) }
+        if ((@countdown_time_started + @countdown_time) - Gosu.milliseconds) / 1000.0 <= 0
+          @down_keys.each do |key, value|
+            @players.each { |player| player.handle(key) }
+          end
         end
 
         @car_text.text = "Car speed: #{@car.speed.round} x: #{@car.x.round}, y: #{@car.y.round}, angle: #{@car.angle.round}.\nLaps: #{@completed_laps}/#{@laps}, Checkpoints: #{@checkpoints_list.size}/#{@track.checkpoints.size}"
@@ -106,6 +114,22 @@ module Game
         when "night"
           # TODO: Implement some form of lighting
           $window.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0, 250), Float::INFINITY)
+        end
+      end
+
+      def draw_countdown
+        time_left = ((@countdown_time_started + @countdown_time) - Gosu.milliseconds)/1000.0
+
+        if time_left > 0
+          @countdown_text.text = "#{time_left.round(1)} seconds"
+          @countdown_text.x = @car.x - @countdown_text.width/2
+          @countdown_text.y = @car.y - @countdown_text.height/2
+          $window.draw_rect(
+            @countdown_text.x - 10, @countdown_text.y - 10,
+            @countdown_text.width + 20, @countdown_text.height + 20,
+            Gosu::Color.rgba(0,0,0, 255.0 * (time_left.to_f / (@countdown_time/1000.0))), 8181
+          )
+          @countdown_text.draw
         end
       end
 
