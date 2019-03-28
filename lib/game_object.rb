@@ -1,5 +1,4 @@
 class GameObject
-  INSTANCES = []
   IMAGES  = {}
   SAMPLES = {}
   SONGS   = {}
@@ -10,8 +9,7 @@ class GameObject
                 :velocity_x, :velocity_y, :angular_velocity, :angular_drag
   attr_reader :world_center_point, :debug_color
   def initialize(options={})
-    if options[:auto_manage] || options[:auto_manage] == nil
-      INSTANCES.push(self)
+    if options[:auto_manage]
       $window.current_game_state.add_game_object(self)
     end
 
@@ -283,7 +281,6 @@ class GameObject
   end
 
   def destroy
-    INSTANCES.delete(self)
     if $window.current_game_state
       $window.current_game_state.game_objects.each do |o|
         if o.is_a?(self.class) && o == self
@@ -293,9 +290,8 @@ class GameObject
     end
   end
 
-  # NOTE: This could be implemented more reliably
   def self.all
-    INSTANCES.select {|i| i.class == self}
+    window.current_game_state.game_objects.select {|i| i.class == self}
   end
 
   def self.each_circle_collision(object, resolve_with = :width, &block)
@@ -320,7 +316,6 @@ class GameObject
   end
 
   def self.destroy_all
-    INSTANCES.clear
     if $window.current_game_state
       $window.current_game_state.game_objects.each do |o|
         if o.is_a?(self.class)
