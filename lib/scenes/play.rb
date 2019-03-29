@@ -11,6 +11,7 @@ module Game
         if @track.starting_positions.count > 0
           start_position = @track.starting_positions.first
           @car = Car.new(x: start_position[:x], y: start_position[:y], angle: start_position[:angle], spec: @options[:carfile], body_color: @options[:body_color])
+          start_position = @track.starting_positions[1]
           @car2 = Car.new(x: start_position[:x], y: start_position[:y], angle: start_position[:angle], spec: @options[:carfile], body_color: @options[:body_color])
         else
           @car = Car.new(x: $window.width/2, y: $window.height/2, spec: @options[:carfile], body_color: @options[:body_color])
@@ -19,13 +20,6 @@ module Game
         @last_tile = nil
 
         @color = @track.track.background
-        @car.boundry = @track.bounding_box
-        @car2.boundry = @track.bounding_box
-        puts "Car boundry: #{@car.boundry}"
-
-        @countdown_text = Text.new("Text", z: 8182, size: 48)
-        @countdown_time_started = Gosu.milliseconds
-        @countdown_time = 3_000
 
         @players = []
 
@@ -50,9 +44,12 @@ module Game
         @players << Player.new(actor: @car2, controls: player_2_controls, viewport: player_2_viewport)
       end
 
+      def players
+        @players
+      end
+
       def draw
         draw_overlay
-        draw_countdown
 
         @players.each do |player|
           player.draw
@@ -63,12 +60,8 @@ module Game
 
       def update
         super
-        if ((@countdown_time_started + @countdown_time) - Gosu.milliseconds) / 1000.0 <= 0
-          @down_keys.each do |key, value|
-            @players.each { |player|player.handle(key) }
-          end
-        end
-        @players.each { |player| player.update }
+
+        @players.each { |player| player.update(@down_keys) }
       end
 
       def draw_overlay
@@ -82,22 +75,6 @@ module Game
         when "night"
           # TODO: Implement some form of lighting
           $window.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0, 250), Float::INFINITY)
-        end
-      end
-
-      def draw_countdown
-        time_left = ((@countdown_time_started + @countdown_time) - Gosu.milliseconds)/1000.0
-
-        if time_left > 0
-          @countdown_text.text = "#{time_left.round(1)} seconds"
-          @countdown_text.x = @car.x - @countdown_text.width/2
-          @countdown_text.y = @car.y - @countdown_text.height/2
-          $window.draw_rect(
-            @countdown_text.x - 10, @countdown_text.y - 10,
-            @countdown_text.width + 20, @countdown_text.height + 20,
-            Gosu::Color.rgba(0,0,0, 255.0 * (time_left.to_f / (@countdown_time/1000.0))), 8181
-          )
-          @countdown_text.draw
         end
       end
 

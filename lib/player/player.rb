@@ -22,8 +22,8 @@ module Game
       @viewport.draw
     end
 
-    def update
-      @viewport.update
+    def update(keys)
+      @viewport.update(keys)
       @actor.update
     end
   end
