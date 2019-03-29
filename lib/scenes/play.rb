@@ -41,8 +41,8 @@ module Game
 
         @players << Player.new(actor: @car, controls: player_1_controls, track: @track)
         @players << Player.new(actor: @car2, controls: player_2_controls, track: @track)
-        @viewports << Viewport.new(player: @players[0], track: @track, x: 0, y: 0, width: $window.width, height: $window.height/2)
-        @viewports << Viewport.new(player: @players[1], track: @track, x: 0, y: $window.height/2, width: $window.width, height: $window.height/2)
+        @viewports << Viewport.new(player: @players[0], track: @track, position: :top)
+        @viewports << Viewport.new(player: @players[1], track: @track, position: :bottom)
       end
 
       def players

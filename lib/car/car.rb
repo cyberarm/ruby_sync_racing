@@ -126,12 +126,6 @@ class Car < GameObject
     @last_x = @x
     @last_y = @y
     @last_speed = @speed
-
-    unless ($window.button_down?(Gosu::KbUp) || $window.button_down?(Gosu::KbW) || $window.button_down?(Gosu::KbDown) || $window.button_down?(Gosu::KbS))
-      if @speed.abs <= (@brake_speed * Display.dt) then @speed = 0.0; end
-    end
-
-    @braking = @speed == 0.0
   end
 
   def forward
@@ -165,7 +159,7 @@ class Car < GameObject
         @yellow_int+=1
       end
     else
-      if @yellow_int <= 190
+      if @yellow_int <= 225
         @yellow_up = true
       else
         @yellow_int-=1

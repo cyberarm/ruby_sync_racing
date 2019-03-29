@@ -1,11 +1,13 @@
 module Game
   class Viewport
-    def initialize(player:, track:, x:, y:, width:, height:)
+    attr_reader :x, :y, :width, :height
+    def initialize(player:, track:, position:)
       @player = player
       @track  = track
-      @x, @y  = x, y
-      @width, @height = width, height
+      @position = position
 
+      @x, @y  = 0, 0
+      @width, @height = 0, 0
 
       @screen_vector = Vector2D.new(0.0, 0.0)
       @scale = 1.0
@@ -18,18 +20,17 @@ module Game
 
       @car_text = Text.new("", x: @x + 10, y: @y + 10, z: 8181, size: 28, color: Gosu::Color::BLACK)
 
-      @countdown_text = Text.new("", z: 8182, size: 48)
-      @countdown_time_started = Gosu.milliseconds
-      @countdown_time = 3_000
-
       @border_color = Gosu::Color::BLACK
+
+      @countdown = Countdown.new(viewport: self)
+      @countdown.start
     end
 
     def draw
       Gosu.clip_to(@x, @y, @width, @height) do
         draw_border
         @car_text.draw
-        draw_countdown
+        @countdown.draw
 
         Gosu.scale(@scale, @scale, @x + @width / 2, @y + @height / 2) do
           Gosu.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
@@ -58,7 +59,12 @@ module Game
     end
 
     def update(keys)
-      if ((@countdown_time_started + @countdown_time) - Gosu.milliseconds) / 1000.0 <= 0
+      position_viewport
+      @countdown.update
+
+      @car_text.x, @car_text.y = @x + 10, @y + 10
+
+      if @countdown.complete?
         keys.each do |key, value|
           @player.handle(key)
         end
@@ -76,6 +82,35 @@ module Game
       @screen_vector.y = ((entity.y - @y) - @height / 2)
     end
 
+    def position_viewport
+      case @position
+      when :top
+        @x, @y = 0, 0
+        @width, @height = $window.width, $window.height/2
+      when :bottom
+        @x, @y = 0, $window.height/2
+        @width, @height = $window.width, $window.height/2
+
+      when :top_left
+        @x, @y = 0, 0
+        @width, @height = $window.width/2, $window.height/2
+      when :top_right
+        @x, @y = $window.width/2, 0
+        @width, @height = $window.width/2, $window.height/2
+
+      when :bottom_left
+        @x, @y = 0, $window.height/2
+        @width, @height = $window.width/2, $window.height/2
+      when :bottom_right
+        @x, @y = $window.width/2, $window.height/2
+        @width, @height = $window.width/2, $window.height/2
+
+      else
+        @x, @y = 0, $window.height/2
+        @width, @height = $window.width, $window.height
+      end
+    end
+
     def draw_bounding_box(box)
       $window.current_game_state.draw_bounding_box(box)
     end
@@ -85,22 +120,6 @@ module Game
       $window.draw_line(@x+@width, @y+@height, @border_color, @x, @y+@height, @border_color, Float::INFINITY) # Bottom
       $window.draw_line(@x+1, @y+@height, @border_color, @x+1, @y, @border_color, Float::INFINITY) # Left
       $window.draw_line(@x, @y+1, @border_color, @x+@width, @y+1, @border_color, Float::INFINITY) # Top
-    end
-
-    def draw_countdown
-      time_left = ((@countdown_time_started + @countdown_time) - Gosu.milliseconds)/1000.0
-
-      if time_left > 0
-        @countdown_text.text = "#{time_left.round(1)} seconds"
-        @countdown_text.x = (@x + @width/2) - @countdown_text.width / 2
-        @countdown_text.y = (@y + @height/2) - @countdown_text.height/ 2
-        $window.draw_rect(
-          @countdown_text.x - 10, @countdown_text.y - 10,
-          @countdown_text.width + 20, @countdown_text.height + 20,
-          Gosu::Color.rgba(0,0,0, 255.0 * (time_left.to_f / (@countdown_time/1000.0))), 8181
-        )
-        @countdown_text.draw
-      end
     end
 
     def lap_check

@@ -4,6 +4,7 @@ class CarPhysics
     @entity = entity
 
     @angle = 0.0
+    @key_active = false
   end
 
   def update
@@ -11,17 +12,20 @@ class CarPhysics
   end
 
   def forward
+    @key_active = true
+
     if @entity.speed >= 0.0
       @entity.braking = false
       @entity.speed += acceleration_force
     else
       @entity.braking = true
-      puts "braking"
       @entity.speed += brake_force
     end
   end
 
   def reverse
+    @key_active = true
+
     if @entity.speed <= 0.0
       @entity.braking = false
       @entity.speed -= acceleration_force
@@ -85,5 +89,12 @@ class CarPhysics
 
     @entity.angle += @entity.angular_velocity
     @entity.angular_velocity *= @entity.angular_drag
+
+    unless @key_active
+      if @entity.speed.abs <= (@entity.brake_speed * Display.dt) then @entity.speed = 0.0; end
+      @entity.braking = @entity.speed == 0
+    end
+
+    @key_active = false
   end
 end
