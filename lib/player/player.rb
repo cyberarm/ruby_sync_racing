@@ -1,15 +1,15 @@
 module Game
   class Player
-    attr_reader :actor, :name, :local, :controls, :viewport
-    def initialize(actor:, name: Config.get(:player_username), local: true, controls: {}, viewport:)
+    attr_reader :actor, :name, :local, :controls
+    def initialize(actor:, name: Config.get(:player_username), local: true, controls: {}, track:)
       raise "actor must be a Car" unless actor.is_a?(Car)
       @actor    = actor
       @name     = name.freeze
       @local    = local.freeze
       @controls = controls.freeze
-      @viewport = viewport
+      @track    = track
 
-      @viewport.player = self
+      @actor.boundry = @track.bounding_box
     end
 
     def handle(key)
@@ -22,8 +22,7 @@ module Game
       @viewport.draw
     end
 
-    def update(keys)
-      @viewport.update(keys)
+    def update
       @actor.update
     end
   end

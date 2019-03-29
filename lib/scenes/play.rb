@@ -21,7 +21,8 @@ module Game
 
         @color = @track.track.background
 
-        @players = []
+        @players   = []
+        @viewports = []
 
         player_1_controls = {
           Gosu.char_to_button_id(Config.get(:player_1_forward)) => :forward,
@@ -38,10 +39,10 @@ module Game
           Gosu.char_to_button_id(Config.get(:player_2_headlights)) => :toggle_headlights
         }
 
-        player_1_viewport = Viewport.new(track: @track, x: 0, y: 0, width: $window.width, height: $window.height/2)
-        player_2_viewport = Viewport.new(track: @track, x: 0, y: $window.height/2, width: $window.width, height: $window.height/2)
-        @players << Player.new(actor: @car, controls: player_1_controls, viewport: player_1_viewport)
-        @players << Player.new(actor: @car2, controls: player_2_controls, viewport: player_2_viewport)
+        @players << Player.new(actor: @car, controls: player_1_controls, track: @track)
+        @players << Player.new(actor: @car2, controls: player_2_controls, track: @track)
+        @viewports << Viewport.new(player: @players[0], track: @track, x: 0, y: 0, width: $window.width, height: $window.height/2)
+        @viewports << Viewport.new(player: @players[1], track: @track, x: 0, y: $window.height/2, width: $window.width, height: $window.height/2)
       end
 
       def players
@@ -51,8 +52,8 @@ module Game
       def draw
         draw_overlay
 
-        @players.each do |player|
-          player.draw
+        @viewports.each do |viewport|
+          viewport.draw
         end
 
         fill(@color, -1)
@@ -61,7 +62,7 @@ module Game
       def update
         super
 
-        @players.each { |player| player.update(@down_keys) }
+        @viewports.each { |viewport| viewport.update(@down_keys) }
       end
 
       def draw_overlay

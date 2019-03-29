@@ -1,11 +1,11 @@
 module Game
   class Viewport
-    def initialize(track:, x:, y:, width:, height:)
+    def initialize(player:, track:, x:, y:, width:, height:)
+      @player = player
       @track  = track
       @x, @y  = x, y
       @width, @height = width, height
 
-      @player = nil
 
       @screen_vector = Vector2D.new(0.0, 0.0)
       @scale = 1.0
@@ -23,15 +23,6 @@ module Game
       @countdown_time = 3_000
 
       @border_color = Gosu::Color::BLACK
-    end
-
-    def player
-      @player
-    end
-
-    def player=(plyr)
-      @player = plyr
-      @player.actor.boundry = @track.bounding_box
     end
 
     def draw
@@ -69,7 +60,7 @@ module Game
     def update(keys)
       if ((@countdown_time_started + @countdown_time) - Gosu.milliseconds) / 1000.0 <= 0
         keys.each do |key, value|
-          player.handle(key)
+          @player.handle(key)
         end
       end
 
@@ -77,6 +68,7 @@ module Game
       @car_text.text = "Car speed: #{@player.actor.speed.round} x: #{@player.actor.x.round}, y: #{@player.actor.y.round}, angle: #{@player.actor.angle.round}.\nLaps: #{@completed_laps}/#{@laps}, Checkpoints: #{@checkpoints_list.size}/#{@track.checkpoints.size}"
 
       lap_check if @track.checkpoints.size > 0
+      @player.update
     end
 
     def center_around(entity)
