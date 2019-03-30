@@ -81,11 +81,10 @@ class CarPhysics
     apply_drag
     @entity.speed = @entity.speed.clamp(-@entity.top_speed, @entity.top_speed)
 
-    @entity.velocity_x = speed_force * Math.cos(@entity.angle.gosu_to_radians)
-    @entity.velocity_y = speed_force * Math.sin(@entity.angle.gosu_to_radians)
+    @entity.velocity.x = speed_force * Math.cos(@entity.angle.gosu_to_radians)
+    @entity.velocity.y = speed_force * Math.sin(@entity.angle.gosu_to_radians)
 
-    @entity.x += @entity.velocity_x
-    @entity.y += @entity.velocity_y
+    @entity.position += @entity.velocity
 
     @entity.angle += @entity.angular_velocity
     @entity.angular_velocity *= @entity.angular_drag

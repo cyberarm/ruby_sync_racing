@@ -4,7 +4,7 @@ class Track
     Label   = Struct.new(:text, :x, :y)
     EditLine= Struct.new(:text, :password, :x, :y, :input)
 
-    class EditorContainer < GameState
+    class EditorContainer < CyberarmEngine::GameState
       Selector = Struct.new(:name, :text, :instance, :color, :selected)
       BoundingBox = Struct.new(:x, :y, :width, :height)
       EditorMessage=Struct.new(:text, :born, :time_to_live, :alpha)
@@ -26,7 +26,7 @@ class Track
         EditorContainer.instance = self
         @track_tainted = false
         @editor_messages = []
-        @screen_vector = Vector2D.new(0, 0)
+        @screen_vector = CyberarmEngine::Vector.new(0, 0)
         @selectors_height = 50
 
         @mode_selectors = []
@@ -40,8 +40,8 @@ class Track
 
         @save_file = nil
 
-        @click_sound = sample("assets/track_editor/click.ogg")
-        @error_sound = sample("assets/track_editor/error.ogg")
+        @click_sound = get_sample("assets/track_editor/click.ogg")
+        @error_sound = get_sample("assets/track_editor/error.ogg")
 
         @active_area = BoundingBox.new(0, @selectors_height, $window.width, $window.height) # set x position dynamically
 
@@ -94,43 +94,43 @@ class Track
       end
 
       def draw_mode_selectors
-        $window.fill_rect(0, 0, $window.width, @selectors_height, Gosu::Color.rgb(0,0,150))
+        draw_rect(0, 0, $window.width, @selectors_height, Gosu::Color.rgb(0,0,150))
         @mode_selectors.each_with_index do |s, i|
           s.text.x = (@tab_width*i)-(s.text.width/2)+@tab_width/2
           s.text.y = (@selectors_height/2)-s.text.height/2
           if mouse_over?(@tab_width*i, 0, @tab_width, @selectors_height) && s.instance
-            $window.fill_rect(@tab_width*i, 0, @tab_width, @selectors_height, lighten(s.color))
-            $window.fill_rect(@tab_width*i, 45, @tab_width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
+            draw_rect(@tab_width*i, 0, @tab_width, @selectors_height, lighten(s.color))
+            draw_rect(@tab_width*i, 45, @tab_width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
 
-            $window.fill_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
+            draw_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
           else
-            $window.fill_rect(@tab_width*i, 0, @tab_width, @selectors_height, s.color)
-            $window.fill_rect(@tab_width*i, 45, @tab_width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
+            draw_rect(@tab_width*i, 0, @tab_width, @selectors_height, s.color)
+            draw_rect(@tab_width*i, 45, @tab_width, 1, Gosu::Color::BLACK, 5) if s == @active_selector
 
-            $window.fill_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
+            draw_rect(0, 45, $window.width, 5, darken(s.color), 5) if s == @active_selector
           end
 
-          $window.fill_rect(@tab_width*(i+1), 0, 2, @selectors_height, Gosu::Color::BLACK, 4)
-          $window.fill_rect(0, 44, $window.width, 1, Gosu::Color::BLACK, 4)
+          draw_rect(@tab_width*(i+1), 0, 2, @selectors_height, Gosu::Color::BLACK, 4)
+          draw_rect(0, 44, $window.width, 1, Gosu::Color::BLACK, 4)
           s.text.draw
         end
       end
 
       def draw_map
         Gosu.clip_to(@active_area.x, @active_area.y, @active_area.width, @active_area.height) do
-          $window.fill_rect(@active_area.x, @active_area.y, @active_area.width, @active_area.height, @background, -10)
+          draw_rect(@active_area.x, @active_area.y, @active_area.width, @active_area.height, @background, -10)
 
           Gosu.translate(@screen_vector.x, @screen_vector.y) do
             @tiles.each do |tile|
-              image(tile.image).draw_rot(tile.x, tile.y, tile.z, tile.angle)
+              get_image(tile.image).draw_rot(tile.x, tile.y, tile.z, tile.angle)
             end
 
             @decorations.each do |decoration|
-              image(decoration.image).draw_rot(decoration.x, decoration.y, decoration.z, decoration.angle, 0.5, 0.5, decoration.scale, decoration.scale)
+              get_image(decoration.image).draw_rot(decoration.x, decoration.y, decoration.z, decoration.angle, 0.5, 0.5, decoration.scale, decoration.scale)
             end
 
             @checkpoints.each do |checkpoint|
-              $window.fill_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(255, 255, 127, 75), 5)
+              draw_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(255, 255, 127, 75), 5)
             end
 
             @starting_positions.each_with_index do |starting_position, i|
@@ -183,10 +183,10 @@ class Track
       def button_up(id)
         if id == Gosu::KbEscape
           if track_save_tainted?
-            close_dialog { push_game_state(Track::Editor::Menu) }
+            close_dialog { push_state(Track::Editor::Menu) }
             return
           else
-            push_game_state(Track::Editor::Menu)
+            push_state(Track::Editor::Menu)
             return
           end
         end
@@ -251,7 +251,7 @@ class Track
 
       def save_track
         p @background
-        push_game_state(Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints, starting_positions: @starting_positions, background_color: @background, time_of_day: @time_of_day)
+        push_state(Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints, starting_positions: @starting_positions, background_color: @background, time_of_day: @time_of_day)
         @track_tainted = false if @save_file
       end
 
@@ -267,7 +267,7 @@ class Track
 
       def window(type, title, caption, callback = nil, &block)
         _window = EditorWindow.new(type: type, title: title, caption: caption, callback: callback, block: block, editor: self)
-        push_game_state(_window)
+        push_state(_window)
       end
 
       def add_message(string, time_to_live = 5)

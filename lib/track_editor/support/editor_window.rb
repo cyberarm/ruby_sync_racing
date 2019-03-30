@@ -1,6 +1,6 @@
 class Track
   class Editor
-    class EditorWindow < GameState
+    class EditorWindow < CyberarmEngine::GameState
       def setup
         @type = options[:type]
         @title= options[:title]
@@ -48,25 +48,25 @@ class Track
         @previous_game_state.draw
         $window.flush
         # BACKGROUND
-        $window.fill_rect(0, 0, $window.width, $window.height, @background_color)#Gosu::Color.rgba(100, 100, 100, 200))
+        Gosu.draw_rect(0, 0, $window.width, $window.height, @background_color)#Gosu::Color.rgba(100, 100, 100, 200))
         # WINDOW BORDER
-        $window.fill_rect($window.width/2-@width/2-Sidebar::PADDING, $window.height/2-@height/2-Sidebar::PADDING, @width+(Sidebar::PADDING*2), @height+(Sidebar::PADDING*2), @window_border_color)#Gosu::Color.rgba(25, 25, 25, 200))
+        Gosu.draw_rect($window.width/2-@width/2-Sidebar::PADDING, $window.height/2-@height/2-Sidebar::PADDING, @width+(Sidebar::PADDING*2), @height+(Sidebar::PADDING*2), @window_border_color)#Gosu::Color.rgba(25, 25, 25, 200))
         # WINDOW
-        $window.fill_rect($window.width/2-@width/2, $window.height/2-@height/2, @width, @height, @window_background_color)#Gosu::Color.rgba(50, 50, 50, 200))
+        Gosu.draw_rect($window.width/2-@width/2, $window.height/2-@height/2, @width, @height, @window_background_color)#Gosu::Color.rgba(50, 50, 50, 200))
         # WINDOW TITLE BAR
-        $window.fill_rect($window.width/2-@width/2, $window.height/2-@height/2, @width, @titlebar_height, @titlebar_color)#Gosu::Color.rgba(25, 25, 25, 200))
+        Gosu.draw_rect($window.width/2-@width/2, $window.height/2-@height/2, @width, @titlebar_height, @titlebar_color)#Gosu::Color.rgba(25, 25, 25, 200))
         @title_text.draw
 
         @elements.each do |element|
           if element.is_a?(Button)
             if @editor.mouse_over?(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2))
               if $window.button_down?(Gosu::MsLeft)
-                $window.fill_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color, 50), 10)
+                Gosu.draw_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color, 50), 10)
               else
-                $window.fill_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color, 40), 10)
+                Gosu.draw_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color, 40), 10)
               end
             else
-              $window.fill_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color), 10)
+              Gosu.draw_rect(element.x-Sidebar::PADDING, element.y-Sidebar::PADDING, element.width+(Sidebar::PADDING*2), element.text.height+(Sidebar::PADDING*2), @editor.darken(@base_color), 10)
             end
             element.text.draw
           elsif element.is_a?(Label)
@@ -132,7 +132,7 @@ class Track
       end
 
       def close
-        push_game_state(@previous_game_state)
+        push_state(@previous_game_state)
       end
 
       # WINDOW TYPES

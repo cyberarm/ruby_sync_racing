@@ -50,7 +50,7 @@ module Game
 
         button "Cancel" do
           @client.disconnect if @client && @client.is_a?(Game::Net::Client)
-          push_game_state(MainMenu)
+          push_state(MainMenu)
         end
       end
 
@@ -65,7 +65,7 @@ module Game
         super
         if defined?(@client) && @client.is_a?(Game::Net::Client)
           @client.update
-          push_game_state(MultiplayerLobbyMenu) if @client.connected? && Game::Net::Client.token
+          push_state(MultiplayerLobbyMenu) if @client.connected? && Game::Net::Client.token
 
           if Gosu.milliseconds-@tick >= 5_000 && !@client.connected?
             @client.disconnect

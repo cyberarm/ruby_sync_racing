@@ -10,9 +10,9 @@ class Track
         @show_cursor = true
 
         if ARGV.join.include?("--new")
-          push_game_state(Edit)
+          push_state(Edit)
         else
-          push_game_state(Menu)
+          push_state(Menu)
         end
       end
     end

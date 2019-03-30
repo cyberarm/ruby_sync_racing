@@ -1,5 +1,5 @@
  # Contains all the tiles for track.
-class Track < GameObject
+class Track < CyberarmEngine::GameObject
   Tile = Struct.new(:type, :image, :x, :y, :z, :angle, :color)
   Decoration = Struct.new(:collidable, :image, :x, :y, :z, :angle, :scale, :radius)
   StartingPosition = Struct.new(:x, :y, :angle)
@@ -46,7 +46,7 @@ class Track < GameObject
 
   def process_tiles
     @track.tiles.each do |tile|
-       _tile = Tile.new(tile["type"], image(AssetManager.image_from_id(tile["image"])), tile["x"], tile["y"], tile["z"], tile["angle"], nil)
+       _tile = Tile.new(tile["type"], get_image(AssetManager.image_from_id(tile["image"])), tile["x"], tile["y"], tile["z"], tile["angle"], nil)
        unless tile["z"] then _tile["z"] = 0; end
        unless tile["angle"] then _tile["angle"] = 0; end
       @tiles << _tile

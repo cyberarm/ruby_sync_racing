@@ -55,7 +55,7 @@ module Game
       def button_up(id)
         case id
         when Gosu::KbEscape
-          push_game_state(Pause.new(last_state: self))
+          push_state(Pause.new(last_state: self))
         end
       end
     end

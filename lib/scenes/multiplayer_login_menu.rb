@@ -12,14 +12,14 @@ module Game
           # Network request for access token
           # Net::Auth.new(username.text.text)
           Game::Net::Client.username = username.text.text
-          push_game_state(MultiplayerMenu.new(username: username))
+          push_state(MultiplayerMenu.new(username: username))
         end
         button "Sign up" do
-          push_game_state(MultiplayerSignUpMenu)
+          push_state(MultiplayerSignUpMenu)
         end
 
         button "Cancel" do
-          push_game_state(MainMenu)
+          push_state(MainMenu)
         end
       end
     end

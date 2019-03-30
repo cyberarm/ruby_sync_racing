@@ -12,10 +12,14 @@ require "gosu"
 require "gameoverseer/version"
 require "gameoverseer/client"
 
+begin
+  require "cyberarm_engine"
+rescue LoadError
+  require_relative "../cyberarm_engine/lib/cyberarm_engine"
+end
+
 require_relative "lib/require_all"
 require_relative "lib/engine" # require all the things.
-Vector2D = Struct.new(:x, :y)
-Vector3D = Struct.new(:x, :y, :z)
 
 if not defined?(Ocra)
   if ARGV.join.include?("--editor")

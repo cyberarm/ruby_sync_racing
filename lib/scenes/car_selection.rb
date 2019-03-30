@@ -4,15 +4,15 @@ module Game
       def prepare
         title("Ruby Sync Racing")
         label("Choose Car", size: 50)
-        button("← Track Selection") {push_game_state(LevelSelection)}
+        button("← Track Selection") {push_state(LevelSelection)}
         label("", size: 25)
 
-        @card_box = Track::Editor::EditorContainer::BoundingBox.new($window.width/2-150, 280, 300, 128+15)
+        @card_box        = Track::Editor::EditorContainer::BoundingBox.new($window.width/2-150, 280, 300, 128+15)
         @left_arrow_box  = Track::Editor::EditorContainer::BoundingBox.new(@card_box.x-64, @card_box.y, 32, @card_box.height)
         @right_arrow_box = Track::Editor::EditorContainer::BoundingBox.new(@card_box.x+@card_box.width+32, @card_box.y, 32, @card_box.height)
 
         @left_arrow  = Text.new("◄", y: @left_arrow_box.y+@left_arrow_box.height/2, size: 32)
-        @left_arrow.x = (@left_arrow_box.x-(@left_arrow_box.width/2)+(@left_arrow.width))
+        @left_arrow.x = (@left_arrow_box.x-(@left_arrow_box.width/2)+(@left_arrow.width/2))
         @right_arrow = Text.new("►", y: @right_arrow_box.y+@right_arrow_box.height/2, size: 32)
         @right_arrow.x = (@right_arrow_box.x+(@right_arrow_box.width/2)-(@right_arrow.width/2))
 
@@ -41,7 +41,7 @@ module Game
 
         @active_color = @color_options.first
         @hover_color = nil
-        @multiline_text = MultiLineText.new("0\n1\n2\n3\n", x: @card_box.x+(@card_box.width/2)-24, y: @card_box.y-10, size: 18)
+        @multiline_text = MultiLineText.new("", x: @card_box.x+(@card_box.width/2)-24, y: @card_box.y-10, size: 18)
       end
 
       def populate_color_options(colors)
@@ -54,12 +54,12 @@ module Game
 
       def process_cars
         @cars.each do |car|
-          data = AbstractJSON.load(File.open(car).read)
+          data = AbstractJSON.load(File.read(car))
           hash = {}
           hash[:data]        = data
           hash[:json]        = car
-          hash[:image]       = image(AssetManager.image_from_id(data["spec"]["image"]))
-          hash[:body_image]  = image(AssetManager.image_from_id(data["spec"]["body_image"]))
+          hash[:image]       = get_image(AssetManager.image_from_id(data["spec"]["image"]))
+          hash[:body_image]  = get_image(AssetManager.image_from_id(data["spec"]["body_image"]))
           hash[:top_speed]   = data["spec"]["top_speed"]
           hash[:brake_speed] = data["spec"]["brake_speed"]
           hash[:acceleration]= data["spec"]["acceleration"]
@@ -138,7 +138,7 @@ module Game
 
       def continue_to_game
         list = @car_list[@list_index]
-        push_game_state(Play.new(trackfile: @options[:trackfile], carfile: list[:json], body_color: @active_color))
+        push_state(Play.new(trackfile: @options[:trackfile], carfile: list[:json], body_color: @active_color))
       end
 
       def button_up(id)

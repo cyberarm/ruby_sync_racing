@@ -22,7 +22,7 @@ module Game
           @client.disconnect
           Game::Net::Client.token = nil
           Game::Net::Client.username = nil
-          push_game_state(MainMenu)
+          push_state(MainMenu)
         end
 
         @peer_counter = label "Peers connected #{@players.count}/8", size: 40
@@ -48,7 +48,7 @@ module Game
       end
 
       def start
-        push_game_state(NetPlay)
+        push_state(NetPlay)
       end
 
       def recalculate_peers

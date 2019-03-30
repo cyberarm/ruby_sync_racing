@@ -39,7 +39,7 @@ class Track
               x-=@editor.tile_size if x < 0
               y-=@editor.tile_size if y < 0
 
-              $window.fill_rect(x-1, y-1, 3, 3, Gosu::Color::RED, Float::INFINITY) # Shows the tile placement mid-point as a red dot
+              Gosu.draw_rect(x-1, y-1, 3, 3, Gosu::Color::RED, Float::INFINITY) # Shows the tile placement mid-point as a red dot
             end
           end
         end

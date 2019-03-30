@@ -44,10 +44,10 @@ class Track
         @tiles_list.each do |type, list|
           sidebar_label(type.capitalize)
           list.each do |tile|
-            sidebar_button(@editor.image(tile), tile.split('/').last.split('.').first.capitalize) do
+            sidebar_button(@editor.get_image(tile), tile.split('/').last.split('.').first.capitalize) do
               @current_tile_image_path = tile
               @current_tile_type = type
-              mouse_image(@editor.image(tile))
+              mouse_image(@editor.get_image(tile))
               @use_mouse_image = true
             end
           end

@@ -7,11 +7,11 @@ module Game
 
         button("Return to Game") do
           $window.show_cursor = false
-          push_game_state(@options[:last_state], setup: false)
+          push_state(@options[:last_state], setup: false)
         end
 
         button("Main Menu") do
-          push_game_state(MainMenu)
+          push_state(MainMenu)
         end
       end
 
@@ -28,7 +28,7 @@ module Game
         case id
         when Gosu::KbEscape
           $window.show_cursor = false
-          push_game_state(@options[:last_state], setup: false)
+          push_state(@options[:last_state], setup: false)
         end
       end
     end

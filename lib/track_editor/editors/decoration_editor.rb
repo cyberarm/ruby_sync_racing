@@ -49,13 +49,13 @@ class Track
         end
 
         sidebar_label("Decorations")
-        sidebar_button(@editor.image("assets/cars/CAR.png"), "Car") do
-          mouse_image(@editor.image("assets/cars/CAR.png"))
+        sidebar_button(@editor.get_image("assets/cars/CAR.png"), "Car") do
+          mouse_image(@editor.get_image("assets/cars/CAR.png"))
           @current_tile_image_path = "assets/cars/CAR.png"
           @use_mouse_image = true
         end
-        sidebar_button(@editor.image("assets/cars/sport.png"), "Sport") do
-          mouse_image(@editor.image("assets/cars/sport.png"))
+        sidebar_button(@editor.get_image("assets/cars/sport.png"), "Sport") do
+          mouse_image(@editor.get_image("assets/cars/sport.png"))
           @current_tile_image_path = "assets/cars/sport.png"
           @use_mouse_image = true
         end
@@ -73,7 +73,7 @@ class Track
                 $window.draw_circle(decoration.x, decoration.y, decoration.radius, 9999, Gosu::Color.rgb(255,144,0))
               end
               # Render current decorations radius
-              radius = ((@editor.image(@current_tile_image_path).width+@editor.image(@current_tile_image_path).height)/4)*@scale
+              radius = ((@editor.get_image(@current_tile_image_path).width+@editor.get_image(@current_tile_image_path).height)/4)*@scale
               $window.draw_circle(@mouse_position[:x], @mouse_position[:y], radius, 9999, Gosu::Color.rgb(255,144,0))
             end
           end
@@ -105,7 +105,7 @@ class Track
           _angle = decoration["angle"]
           _scale = decoration["scale"]
 
-        _radius = ((@editor.image(_image_path).width+@editor.image(_image_path).height)/4)*@scale
+        _radius = ((@editor.get_image(_image_path).width+@editor.get_image(_image_path).height)/4)*@scale
 
           @editor.decorations << Track::Decoration.new(_collidable, _image_path, _x, _y, _z, _angle, _scale, _radius)
         end
@@ -114,7 +114,7 @@ class Track
       def place(image)
         x = @mouse_position[:x]
         y = @mouse_position[:y]
-        radius = ((@editor.image(@current_tile_image_path).width+@editor.image(@current_tile_image_path).height)/4)*@scale
+        radius = ((@editor.get_image(@current_tile_image_path).width+@editor.get_image(@current_tile_image_path).height)/4)*@scale
         @editor.decorations << Decoration.new(@collidable, @current_tile_image_path, x, y, 0, @angle, @scale, radius)
       end
 

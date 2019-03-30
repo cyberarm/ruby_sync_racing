@@ -1,6 +1,6 @@
 class Track
   class Editor
-    class Save < GameState
+    class Save < CyberarmEngine::GameState
       class NameInput < Gosu::TextInput
         def filter(text_in)
           text_in.downcase.gsub(/[^A-z0-9]/, '')
@@ -29,12 +29,12 @@ class Track
         super
         @previous_game_state.draw
         $window.flush
-        $window.fill_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0,180))
+        Gosu.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0,180))
 
-        $window.fill_rect(@save.x-20, @save.y-20, @save.width+40, @save.height+40, Gosu::Color::GRAY, 1)
+        Gosu.draw_rect(@save.x-20, @save.y-20, @save.width+40, @save.height+40, Gosu::Color::GRAY, 1)
 
         pos = @name.textobject.text_width("track_#{$window.text_input.text[0...$window.text_input.caret_pos]}")
-        $window.fill_rect(@name.x+pos, @name.y, 3, 25, Gosu::Color::WHITE, 2) if @caret
+        Gosu.draw_rect(@name.x+pos, @name.y, 3, 25, Gosu::Color::WHITE, 2) if @caret
 
         @title.draw
         @name.draw
@@ -49,7 +49,7 @@ class Track
         if @previous_game_state && defined?(@previous_game_state.save_file) && @previous_game_state.save_file
           save_track(@previous_game_state.save_file, @background_color)
           $window.text_input = nil
-          push_game_state(@previous_game_state)
+          push_state(@previous_game_state)
           return
         end
 
@@ -75,7 +75,7 @@ class Track
         case id
         when Gosu::KbEscape
           $window.text_input = nil
-          push_game_state(@previous_game_state)
+          push_state(@previous_game_state)
 
         when Gosu::MsLeft
           if $window.mouse_x.between?(@save.x-20, @save.x+@save.width+40)
@@ -94,7 +94,7 @@ class Track
         save_track(@name.text, @background_color)
         @previous_game_state.save_file = @name.text
         $window.text_input = nil
-        push_game_state(@previous_game_state)
+        push_state(@previous_game_state)
       end
 
       def save_track(name, color)

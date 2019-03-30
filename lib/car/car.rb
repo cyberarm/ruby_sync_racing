@@ -1,15 +1,15 @@
-class Car < GameObject
-  attr_accessor :speed, :braking
+class Car < CyberarmEngine::GameObject
+  attr_accessor :speed, :braking, :angular_velocity
   attr_reader :braking, :changed, :boundry,
-              :drag, :top_speed, :acceleration, :brake_speed, :turn_speed
+              :drag, :top_speed, :acceleration, :brake_speed, :turn_speed, :angular_drag
 
   def setup
-    self.z = 5
+    self.position.z = 5
     @car_data = CarParser.new(@options[:spec]).data
     @last_x, @last_y, @last_speed = 0, 0, 0
 
-    @image      = image(AssetManager.image_from_id(@car_data["spec"]["image"]))
-    @body_image = image(AssetManager.image_from_id(@car_data["spec"]["body_image"]))
+    @image      = get_image(AssetManager.image_from_id(@car_data["spec"]["image"]))
+    @body_image = get_image(AssetManager.image_from_id(@car_data["spec"]["body_image"]))
     @body_color = @options[:body_color] ? @options[:body_color] : Gosu::Color.rgb(rand(0..150), rand(0..150),rand(0..150)) # Gosu::Color::WHITE
     self.scale = @car_data["spec"]["scale"]
     @physics = CarPhysics.new(self)
@@ -26,12 +26,13 @@ class Car < GameObject
     @brake_speed = @car_data["spec"]["brake_speed"]
     @turn_speed  = @car_data["spec"]["turn_speed"]
     @angular_drag= @car_data["spec"]["angular_drag"]
+    @angular_velocity = 0.0
 
 
     # @engine = Gosu::Sample["assets/sound/engine.wav"]
     # @engine_instance = nil
 
-    @brake = sample(AssetManager.sound_from_id(100))
+    @brake = get_sample(AssetManager.sound_from_id(100))
     @brake_instance = nil
     @brake_volume   = 0.0
 
@@ -50,32 +51,32 @@ class Car < GameObject
 
   def draw
     super
-    @body_image.draw_rot(@x, @y, @z, @angle, @center_x, @center_y, @scale_x, @scale_y, @body_color, @mode)
+    @body_image.draw_rot(@position.x, @position.y, @position.z, @angle, @center_x, @center_y, @scale_x, @scale_y, @body_color, @mode)
     @debug.draw
     @name.draw
 
     # Does some kind of transformation to rotate in sync with car
-    $window.rotate(self.angle, self.x, self.y) do
+    Gosu.rotate(self.angle, @position.x, @position.y) do
       # TODO: fade between 2 colors instead of using Random
       _yellow = Gosu::Color.rgb(@yellow_int, @yellow_int, 0)
       @car_data["spec"]["lights"]["head_lights"].each do |light|
-        $window.fill_rect((self.x-(self.width/2))+light["left"],
-                           (self.y-(self.height/2))+light["top"],
+        draw_rect((@position.x-(self.width/2))+light["left"],
+                           (@position.y-(self.height/2))+light["top"],
                            light["width"],
                            light["height"], _yellow, 6)
         # Light Beams
         if @headlights_on
-          $window.draw_quad(self.x-(self.width/2)+light["left"],
-                            self.y-((self.height/2)), @beam_origin_color,
+          Gosu.draw_quad(@position.x-(self.width/2)+light["left"],
+                            @position.y-((self.height/2)), @beam_origin_color,
 
-                            self.x-(self.width/2)+light["left"],
-                            self.y-((self.height/2)), @beam_origin_color,
+                            @position.x-(self.width/2)+light["left"],
+                            @position.y-((self.height/2)), @beam_origin_color,
 
-                            self.x-(self.width/2)+light["left"]+50,
-                            self.y-((self.height/2)+150), @beam_edge_color,
+                            @position.x-(self.width/2)+light["left"]+50,
+                            @position.y-((self.height/2)+150), @beam_edge_color,
 
-                            self.x-(self.width/2)+light["left"]-50,
-                            self.y-((self.height/2)+150), @beam_edge_color,
+                            @position.x-(self.width/2)+light["left"]-50,
+                            @position.y-((self.height/2)+150), @beam_edge_color,
                             6
           )
         end
@@ -93,8 +94,8 @@ class Car < GameObject
       end
 
       @car_data["spec"]["lights"]["tail_lights"].each do |light|
-        $window.fill_rect((self.x-(self.width/2))+light["left"],
-                           (self.y-(self.height/2))+light["top"],
+        draw_rect((@position.x-(self.width/2))+light["left"],
+                           (@position.y-(self.height/2))+light["top"],
                            light["width"],
                            light["height"], _red, 6)
       end
@@ -104,11 +105,12 @@ class Car < GameObject
   def update
     super
     @angle = (@angle % 359)
+    @last_position = @position.clone
+    @last_speed = @speed
 
     unless inside_boundry?
       # puts "#{@x}-#{@last_x}|#{@y}-#{@last_y}|#{@speed}-#{@last_speed}" if $debug
-      @x = @last_x
-      @y = @last_y
+      @position = @last_position
       @speed = 30.0 if @speed > 30.0
       @speed = -30.0 if @speed < -30.0
     end
@@ -119,13 +121,9 @@ class Car < GameObject
     # play_engine_sound
     play_braking_sound
 
-    debug_text("Braking: #{@braking}\nX:#{self.x.round}\nY:#{self.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
+    debug_text("Braking: #{@braking}\nX:#{@position.x.round}\nY:#{@position.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
     @physics.update
-    @name.x,@name.y = self.x-@name.width/2, self.y-self.height
-
-    @last_x = @x
-    @last_y = @y
-    @last_speed = @speed
+    @name.x,@name.y = @position.x-@name.width/2, @position.y-self.height
   end
 
   def forward
@@ -219,7 +217,7 @@ class Car < GameObject
   end
 
   def inside_boundry?
-    x.between?(@boundry.x, @boundry.max_x) &&
-    y.between?(@boundry.y, @boundry.max_y)
+    @position.x.between?(@boundry.x, @boundry.max_x) &&
+    @position.y.between?(@boundry.y, @boundry.max_y)
   end
 end

@@ -1,6 +1,6 @@
 module Game
   class Scene
-    class Boot < GameState
+    class Boot < CyberarmEngine::GameState
       def setup
         @up = true
         @render = false
@@ -44,7 +44,7 @@ module Game
         when Gosu::KbEscape
           exit
         else
-          push_game_state(MainMenu)
+          push_state(MainMenu)
         end
       end
     end

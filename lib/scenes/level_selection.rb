@@ -4,7 +4,7 @@ module Game
       def prepare
         title("Ruby Sync Racing")
         label("Choose Track", size: 50)
-        button("← Main Menu") {push_game_state(MainMenu)}
+        button("← Main Menu") {push_state(MainMenu)}
         label("", size: 25)
 
         process_tracks
@@ -19,7 +19,7 @@ module Game
           _track = "#{_track} (Custom)" if track.include?("/custom/")
 
           button(_track) do
-            push_game_state(CarSelection.new(trackfile: track))
+            push_state(CarSelection.new(trackfile: track))
           end
         end
       end

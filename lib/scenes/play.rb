@@ -1,9 +1,9 @@
 module Game
   class Scene
-    class Play < GameState
+    class Play < CyberarmEngine::GameState
       def setup
         $window.show_cursor = false
-        @screen_vector = Vector2D.new(0, 0)
+        @screen_vector = CyberarmEngine::Vector.new(0, 0)
         @screen_scale  = 1.0
 
         @trackfile = @options[:trackfile] || "data/tracks/test_track.json"
@@ -83,7 +83,7 @@ module Game
         super
         case id
         when Gosu::KbEscape
-          push_game_state(Pause.new(last_state: self))
+          push_state(Pause.new(last_state: self))
         when Gosu::Kb0
           @screen_scale = 1.0 if $debug
         when Gosu::MsWheelUp

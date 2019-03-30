@@ -38,7 +38,7 @@ module Game
         @text.x = (@viewport.x + @viewport.width/2)  - @text.width / 2
         @text.y = (@viewport.y + @viewport.height/2) - @text.height/ 2
 
-        $window.draw_rect(
+        Gosu.draw_rect(
           @text.x - 10, @text.y - 10,
           @text.width + 20, @text.height + 20,
           Gosu::Color.rgba(0,0,0, 255.0 * factor), 8181

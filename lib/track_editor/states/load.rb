@@ -8,7 +8,7 @@ class Track
         label("Load Track", size: 40)
 
         button "← Back", Gosu::Color.rgba(50, 150, 50, 200), Gosu::Color.rgba(100, 150, 100, 200) do
-          push_game_state(Track::Editor::Menu)
+          push_state(Track::Editor::Menu)
         end
 
         @track_list = Dir.glob("data/tracks/custom/*.json")
@@ -20,7 +20,7 @@ class Track
       def process_tracks
         @track_list.each do |track|
           button track, Gosu::Color.rgba(25, 200, 25, 200), Gosu::Color.rgba(100, 200, 100, 200) do
-            push_game_state(Track::Editor::Edit.new(track_file: track))
+            push_state(Track::Editor::Edit.new(track_file: track))
           end
         end
       end
@@ -30,7 +30,7 @@ class Track
 
         case id
         when Gosu::KbEscape
-          push_game_state(Track::Editor::Menu)
+          push_state(Track::Editor::Menu)
         end
       end
     end

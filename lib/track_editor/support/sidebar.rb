@@ -1,6 +1,7 @@
 class Track
   class Editor
     class Sidebar
+      include CyberarmEngine::Common
       PADDING = 5
 
       attr_reader :widest_element
@@ -25,7 +26,7 @@ class Track
       end
 
       def render
-        $window.fill_rect(0, 50, @widest_element, $window.height-50, @editor.darken(@editor.active_selector.color))
+        draw_rect(0, 50, @widest_element, $window.height-50, @editor.darken(@editor.active_selector.color))
         Gosu.clip_to(0, @editor.selectors_height, $window.width, $window.height) do
           Gosu.translate(0, @y_offset) do
             @elements.each do |element|
@@ -34,12 +35,12 @@ class Track
                   if @editor.mouse_over?(element.x-(element.width/2-element.text.width/2), (element.y-PADDING)+@y_offset, element.width, element.text.height+(PADDING*2))
                     show_tooltip(element)
                     if $window.button_down?(Gosu::MsLeft)
-                      $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @active_background_color)
+                      draw_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @active_background_color)
                     else
-                      $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @hover_background_color)
+                      draw_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @hover_background_color)
                     end
                   else
-                    $window.fill_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @background_color)
+                    draw_rect(element.x-(element.width/2-element.text.width/2), element.y-PADDING, element.width, element.text.height+(PADDING*2), @background_color)
                   end
                   element.text.draw
 
@@ -47,12 +48,12 @@ class Track
                   if @editor.mouse_over?(element.x-(element.width/2-element.image.width/2), (element.y-PADDING)+@y_offset, element.width, element.image.height+(PADDING*2))
                     show_tooltip(element)
                     if $window.button_down?(Gosu::MsLeft)
-                      $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @active_background_color)
+                      draw_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @active_background_color)
                     else
-                      $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @hover_background_color)
+                      draw_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @hover_background_color)
                     end
                   else
-                    $window.fill_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @background_color)
+                    draw_rect(element.x-(element.width/2-element.image.width/2), element.y-PADDING, element.width, element.image.height+(PADDING*2), @background_color)
                   end
                   element.image.draw(element.x, element.y,10)
                 end
@@ -80,7 +81,7 @@ class Track
             @tooltip.y = (element.y+(element.text.height/2)-(@tooltip.height/2))#+@y_offset
           end
 
-          $window.fill_rect(@tooltip.x-PADDING, @tooltip.y-PADDING, @tooltip.width+(PADDING*2), @tooltip.height+(PADDING*2), @editor.darken(@editor.active_selector.color), 10)
+          draw_rect(@tooltip.x-PADDING, @tooltip.y-PADDING, @tooltip.width+(PADDING*2), @tooltip.height+(PADDING*2), @editor.darken(@editor.active_selector.color), 10)
           @tooltip.draw
         end
       end

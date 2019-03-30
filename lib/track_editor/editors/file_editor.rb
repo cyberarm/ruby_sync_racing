@@ -27,14 +27,14 @@ class Track
           if @editor.track_save_tainted?
             if @editor.save_file
               @editor.save_track
-              @editor.push_game_state(Track::Editor::Menu)
+              @editor.push_state(Track::Editor::Menu)
             else
               @editor.close_dialog do
-                @editor.push_game_state(Track::Editor::Menu)
+                @editor.push_state(Track::Editor::Menu)
               end
             end
           else
-            @editor.push_game_state(Track::Editor::Menu)
+            @editor.push_state(Track::Editor::Menu)
           end
         end
       end
