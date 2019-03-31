@@ -41,7 +41,7 @@ module Game
 
         @active_color = @color_options.first
         @hover_color = nil
-        @multiline_text = CyberarmEngine::MultiLineText.new("", x: @card_box.x+(@card_box.width/2)-24, y: @card_box.y-10, size: 18)
+        @multiline_text = CyberarmEngine::Text.new("", x: @card_box.x+(@card_box.width/2)-24, y: @card_box.y+10, size: 18)
       end
 
       def populate_color_options(colors)
@@ -82,11 +82,11 @@ module Game
         @right_arrow.draw
 
         list = @car_list[@list_index]
-        list[:image].draw(@card_box.x+15, @card_box.y+10, 3, list[:scale], list[:scale])
+        list[:image].draw(@card_box.x+15, @card_box.y+20, 3, list[:scale], list[:scale])
         if @hover_color
-          list[:body_image].draw(@card_box.x+15, @card_box.y+10, 3, list[:scale], list[:scale], @hover_color)
+          list[:body_image].draw(@card_box.x+15, @card_box.y+20, 3, list[:scale], list[:scale], @hover_color)
         else
-          list[:body_image].draw(@card_box.x+15, @card_box.y+10, 3, list[:scale], list[:scale], @active_color)
+          list[:body_image].draw(@card_box.x+15, @card_box.y+20, 3, list[:scale], list[:scale], @active_color)
         end
         @multiline_text.draw
 

@@ -22,4 +22,9 @@ class Display < CyberarmEngine::Engine
       push_state(Game::Scene::Boot)
     end
   end
+
+  def button_up(id)
+    $debug = !$debug if ARGV.join.include?("--debug") && id == Gosu::KbBacktick
+    super
+  end
 end
