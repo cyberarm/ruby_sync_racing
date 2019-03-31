@@ -86,9 +86,9 @@ module Game
 
           unless create
             if player['client_id'] == Game::Net::Client.id
-              @player_elements.push(Game::Text.new(player['username'], y: @_y, size: 26, color: Gosu::Color::BLUE))
+              @player_elements.push(CyberarmEngine::Text.new(player['username'], y: @_y, size: 26, color: Gosu::Color::BLUE))
             else
-              @player_elements.push(Game::Text.new(player['username'], y: @_y, size: 26, color: Gosu::Color::GRAY))
+              @player_elements.push(CyberarmEngine::Text.new(player['username'], y: @_y, size: 26, color: Gosu::Color::GRAY))
             end
 
             p "created: #{player['username']} - IAM: #{Game::Net::Client.username}"

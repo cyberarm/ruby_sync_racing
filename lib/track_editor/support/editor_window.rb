@@ -36,7 +36,7 @@ class Track
       end
 
       def create_window
-        @title_text = Game::Text.new(@title, x: $window.width/2-@width/2+Sidebar::PADDING, size: 36)
+        @title_text = CyberarmEngine::Text.new(@title, x: $window.width/2-@width/2+Sidebar::PADDING, size: 36)
         label(@caption, 32)
 
         self.send(@type)
@@ -123,7 +123,7 @@ class Track
 
             @relative_y+=element.text.height+Sidebar::PADDING
           elsif element.is_a?(EditLine)
-          elsif element.is_a?(Game::Text)
+          elsif element.is_a?(CyberarmEngine::Text)
             element.y = @relative_y
 
             @relative_y+=element.height
@@ -164,12 +164,12 @@ class Track
 
       # Elements
       def button(label, &block)
-        text = Game::Text.new(label, x: @button_relative_x, y: @relative_y, z: 20, size: 30)
+        text = CyberarmEngine::Text.new(label, x: @button_relative_x, y: @relative_y, z: 20, size: 30)
         @elements << Button.new(text, nil, @relative_x, @button_relative_y, text.width, block)
       end
 
       def label(string, size = 24)
-        text = Game::Text.new(string, x: @relative_x, y: @relative_y, z: 20, size: size)
+        text = CyberarmEngine::Text.new(string, x: @relative_x, y: @relative_y, z: 20, size: size)
         @elements << Label.new(text, @relative_x, @relative_y)
       end
 

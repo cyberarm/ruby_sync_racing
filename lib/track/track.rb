@@ -55,7 +55,7 @@ class Track < CyberarmEngine::GameObject
 
   def process_decorations
     @track.decorations.each do |decoration|
-      @decorations << Decoration.new(decoration["collidable"], image(AssetManager.image_from_id(decoration["image"])), decoration["x"], decoration["y"], decoration["z"], decoration["angle"], decoration["scale"], nil)
+      @decorations << Decoration.new(decoration["collidable"], get_image(AssetManager.image_from_id(decoration["image"])), decoration["x"], decoration["y"], decoration["z"], decoration["angle"], decoration["scale"], nil)
     end
   end
 
@@ -68,7 +68,7 @@ class Track < CyberarmEngine::GameObject
 
   def process_starting_positions
     @track.starting_positions.each do |starting_position|
-      @starting_positions << StartingPosition.new(starting_position["x"], starting_position["y"], starting_position["angle"])
+      @starting_positions << StartingPosition.new(starting_position["x"]+@tile_size/2, starting_position["y"]+@tile_size/2, starting_position["angle"])
     end
   end
 
@@ -111,7 +111,7 @@ class Track < CyberarmEngine::GameObject
     end
 
     @decorations.each do |decoration|
-      decoration.image.draw_rot(decoration.x, decoration.y, decoration.z, decoration.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)
+      decoration.image.draw_rot(decoration.x+@tile_size/2, decoration.y+@tile_size/2, decoration.z, decoration.angle, 0.5, 0.5, 1, 1, Gosu::Color::WHITE)
     end
   end
 

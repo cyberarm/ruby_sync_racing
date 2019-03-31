@@ -1,6 +1,6 @@
-source "http://rubygems.org"
+source "https://rubygems.org"
 
-gem "gosu"
+gem "cyberarm_engine"
 gem "rake"#, "0.9.2.2"
 # gem "chipmunk"
 gem "oj"

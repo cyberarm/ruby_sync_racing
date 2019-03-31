@@ -5,9 +5,11 @@ GIT
     renet (0.2.2)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
-    concurrent-ruby (1.1.4)
+    concurrent-ruby (1.1.5)
+    cyberarm_engine (0.1.0)
+      gosu (~> 0.14.0)
     gameoverseer (0.1.8)
       concurrent-ruby
       multi_json
@@ -19,7 +21,7 @@ GEM
     gosu (0.14.5-x64-mingw32)
     gosu (0.14.5-x86-mingw32)
     multi_json (1.13.1)
-    oj (3.7.9)
+    oj (3.7.11)
     rake (12.3.2)
 
 PLATFORMS
@@ -28,12 +30,12 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  cyberarm_engine
   gameoverseer
   gameoverseer-client
-  gosu
   oj
   rake
   renet!
 
 BUNDLED WITH
-   1.17.2
+   1.17.3

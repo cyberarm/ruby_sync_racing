@@ -7,7 +7,7 @@ module Game
       @time = 0
       @running = false
 
-      @text = Text.new("", z: 8182, size: 48)
+      @text = CyberarmEngine::Text.new("", z: 8182, size: 48)
     end
 
     def start

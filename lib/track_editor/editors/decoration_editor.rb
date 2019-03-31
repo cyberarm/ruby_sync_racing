@@ -8,6 +8,13 @@ class Track
         @scale_step  = 0.1
         @collidable = false
         @use_grid_placement = true
+
+        @tiles_list = {
+          "track": [
+            AssetManager.image_from_id(141),
+          ]
+        }
+
         sidebar_label("Tools")
         sidebar_button("Jump 0:0", "Press \"0\"") do
           @editor.screen_vector.x,@editor.screen_vector.y = 0,0
@@ -49,18 +56,17 @@ class Track
         end
 
         sidebar_label("Decorations")
-        sidebar_button(@editor.get_image("assets/cars/CAR.png"), "Car") do
-          mouse_image(@editor.get_image("assets/cars/CAR.png"))
-          @current_tile_image_path = "assets/cars/CAR.png"
-          @use_mouse_image = true
+        @tiles_list.each do |type, list|
+          sidebar_label(type.capitalize)
+          list.each do |tile|
+            sidebar_button(@editor.get_image(tile), tile.split('/').last.split('.').first.capitalize) do
+              @current_tile_image_path = tile
+              @current_tile_type = type
+              mouse_image(@editor.get_image(tile))
+              @use_mouse_image = true
+            end
+          end
         end
-        sidebar_button(@editor.get_image("assets/cars/sport.png"), "Sport") do
-          mouse_image(@editor.get_image("assets/cars/sport.png"))
-          @current_tile_image_path = "assets/cars/sport.png"
-          @use_mouse_image = true
-        end
-
-        puts @editor
       end
 
       def draw
@@ -112,8 +118,8 @@ class Track
       end
 
       def place(image)
-        x = @mouse_position[:x]
-        y = @mouse_position[:y]
+        x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
+        y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
         radius = ((@editor.get_image(@current_tile_image_path).width+@editor.get_image(@current_tile_image_path).height)/4)*@scale
         @editor.decorations << Decoration.new(@collidable, @current_tile_image_path, x, y, 0, @angle, @scale, radius)
       end

@@ -14,9 +14,9 @@ class Car < CyberarmEngine::GameObject
     self.scale = @car_data["spec"]["scale"]
     @physics = CarPhysics.new(self)
 
-    @debug = Game::Text.new("", size: 50)
+    @debug = CyberarmEngine::Text.new("", size: 50)
     @username = @options[:username] || "#{@car_data["name"]}"
-    @name  = Game::Text.new(@username, size: 20)
+    @name  = CyberarmEngine::Text.new(@username, size: 20)
 
     @speed = 0.0
 

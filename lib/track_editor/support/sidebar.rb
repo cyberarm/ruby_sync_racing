@@ -14,7 +14,7 @@ class Track
 
         @y_offset = 0
 
-        @tooltip = Game::Text.new("", size: 24)
+        @tooltip = CyberarmEngine::Text.new("", size: 24)
 
         @set_colors = false
       end
@@ -148,7 +148,7 @@ class Track
         if text_or_image.is_a?(Gosu::Image)
           @elements << Button.new(nil, text_or_image, 15, relative_y(text_or_image.height), 0, block, tooltip)
         else
-          text = Game::Text.new(text_or_image, size: 24, x: 15)
+          text = CyberarmEngine::Text.new(text_or_image, size: 24, x: 15)
           @elements << Button.new(text, nil, 15, relative_y(text.height), 0, block, tooltip)
           text.y = @elements.last.y
         end
@@ -158,7 +158,7 @@ class Track
       end
 
       def add_label(string)
-        text = Game::Text.new(string, size: 24, x: 15)
+        text = CyberarmEngine::Text.new(string, size: 24, x: 15)
         text.y = relative_y(text.height)
         @elements << Label.new(text, 15, text.y)
 

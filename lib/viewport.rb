@@ -18,7 +18,7 @@ module Game
       @checkpoints = @track.checkpoints.size
       @checkpoints_list = []
 
-      @car_text = Text.new("", x: @x + 10, y: @y + 10, z: 8181, size: 28, color: Gosu::Color::BLACK)
+      @car_text = CyberarmEngine::Text.new("", x: @x + 10, y: @y + 10, z: 8181, size: 28, color: Gosu::Color::BLACK)
 
       @border_color = Gosu::Color::BLACK
 

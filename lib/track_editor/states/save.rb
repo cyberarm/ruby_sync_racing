@@ -20,9 +20,9 @@ class Track
         @time_of_day        = @options[:time_of_day]
         $window.text_input = NameInput.new
 
-        @title = Game::Text.new("Enter Track Name:", y: $window.height/4, size: 50)
-        @name = Game::Text.new("#{@tiles.count}", y: $window.height/4+100, size: 30)
-        @save = Game::Text.new("Save", y: $window.height/4+200, size: 23)
+        @title = CyberarmEngine::Text.new("Enter Track Name:", y: $window.height/4, size: 50)
+        @name = CyberarmEngine::Text.new("#{@tiles.count}", y: $window.height/4+100, size: 30)
+        @save = CyberarmEngine::Text.new("Save", y: $window.height/4+200, size: 23)
       end
 
       def draw

@@ -11,15 +11,48 @@ class Track
           "asphalt": [
             AssetManager.image_from_id(100),
             AssetManager.image_from_id(101),
-            AssetManager.image_from_id(102)
+            AssetManager.image_from_id(102),
+            AssetManager.image_from_id(103),
+            AssetManager.image_from_id(105),
+            AssetManager.image_from_id(104),
+            AssetManager.image_from_id(106),
+            AssetManager.image_from_id(107),
+            AssetManager.image_from_id(108),
+            AssetManager.image_from_id(109),
+            AssetManager.image_from_id(110),
           ],
           "dirt": [
             AssetManager.image_from_id(115),
+            AssetManager.image_from_id(120),
+            AssetManager.image_from_id(121),
+            AssetManager.image_from_id(122),
+            AssetManager.image_from_id(123),
+            AssetManager.image_from_id(124),
+
             AssetManager.image_from_id(116),
-            AssetManager.image_from_id(117)
+            AssetManager.image_from_id(125),
+            AssetManager.image_from_id(126),
+            AssetManager.image_from_id(127),
+            AssetManager.image_from_id(128),
+            AssetManager.image_from_id(129),
+
+            AssetManager.image_from_id(117),
+            AssetManager.image_from_id(130),
+            AssetManager.image_from_id(131),
+            AssetManager.image_from_id(132),
+            AssetManager.image_from_id(133),
+            AssetManager.image_from_id(134),
+
+            AssetManager.image_from_id(119),
+            AssetManager.image_from_id(135),
+            AssetManager.image_from_id(136),
+            AssetManager.image_from_id(137),
+            AssetManager.image_from_id(138),
+            AssetManager.image_from_id(139),
           ],
           "water": [
-            AssetManager.image_from_id(118)
+            AssetManager.image_from_id(118),
+            AssetManager.image_from_id(140),
           ],
           "ice": [
 
@@ -80,7 +113,7 @@ class Track
         if $window.button_down?(Gosu::MsLeft) or $window.button_down?(Gosu::MsRight)
           @painting = Gosu.milliseconds-@left_mouse_down_at >= @left_mouse_down_paint
           if @painting
-            if @mouse && @editor.mouse_in?(@editor.active_area) && @mouse == @editor.image(@current_tile_image_path) && $window.button_down?(Gosu::MsLeft)
+            if @mouse && @editor.mouse_in?(@editor.active_area) && @mouse == @editor.get_image(@current_tile_image_path) && $window.button_down?(Gosu::MsLeft)
               add_tile(@current_tile_type, @current_tile_image_path, @mouse_position[:angle])
 
               @editor.track_changed!
@@ -129,7 +162,7 @@ class Track
 
         case id
         when Gosu::MsLeft
-          if @mouse && @editor.mouse_in?(@editor.active_area) && @mouse == @editor.image(@current_tile_image_path)
+          if @mouse && @editor.mouse_in?(@editor.active_area) && @mouse == @editor.get_image(@current_tile_image_path)
             add_tile(@current_tile_type, @current_tile_image_path, @mouse_position[:angle])
           end
 
@@ -140,7 +173,7 @@ class Track
             if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
               tile = @grid["#{x}"]["#{y}"]
               @current_tile_image_path = tile.image
-              mouse_image(@editor.image(tile.image))
+              mouse_image(@editor.get_image(tile.image))
               @use_mouse_image = true
             end
           end

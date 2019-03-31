@@ -89,7 +89,7 @@ class Track
       end
 
       def selector(name, instance, color = Gosu::Color.rgb(rand(200), rand(200), rand(200)), selected = false)
-        text = Game::Text.new(name, size: 36, y: 10)
+        text = CyberarmEngine::Text.new(name, size: 36, y: 10)
         @mode_selectors << Selector.new(name, text, instance, color, selected)
       end
 
@@ -135,7 +135,7 @@ class Track
 
             @starting_positions.each_with_index do |starting_position, i|
               starting_position_tile.draw_rot(starting_position.x, starting_position.y, 3, starting_position.angle, 0.5, 0.5)
-              @font.draw("#{i}", starting_position.x-(@font.text_width("#{i}")/2), starting_position.y-(@font.height/2), 3)
+              @font.draw_text("#{i}", starting_position.x-(@font.text_width("#{i}")/2), starting_position.y-(@font.height/2), 3)
             end
           end
         end
@@ -271,7 +271,7 @@ class Track
       end
 
       def add_message(string, time_to_live = 5)
-        text    = Game::Text.new(string, y: -100, z: 255, size: 26)
+        text    = CyberarmEngine::Text.new(string, y: -100, z: 255, size: 26)
         message = EditorMessage.new(text, Time.now, Time.now+time_to_live, 255)
         @editor_messages << message
       end

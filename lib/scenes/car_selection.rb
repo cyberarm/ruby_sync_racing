@@ -11,9 +11,9 @@ module Game
         @left_arrow_box  = Track::Editor::EditorContainer::BoundingBox.new(@card_box.x-64, @card_box.y, 32, @card_box.height)
         @right_arrow_box = Track::Editor::EditorContainer::BoundingBox.new(@card_box.x+@card_box.width+32, @card_box.y, 32, @card_box.height)
 
-        @left_arrow  = Text.new("◄", y: @left_arrow_box.y+@left_arrow_box.height/2, size: 32)
+        @left_arrow  = CyberarmEngine::Text.new("◄", y: @left_arrow_box.y+@left_arrow_box.height/2, size: 32)
         @left_arrow.x = (@left_arrow_box.x-(@left_arrow_box.width/2)+(@left_arrow.width/2))
-        @right_arrow = Text.new("►", y: @right_arrow_box.y+@right_arrow_box.height/2, size: 32)
+        @right_arrow = CyberarmEngine::Text.new("►", y: @right_arrow_box.y+@right_arrow_box.height/2, size: 32)
         @right_arrow.x = (@right_arrow_box.x+(@right_arrow_box.width/2)-(@right_arrow.width/2))
 
         @button_hover_color = Gosu::Color.rgba(56,45,89,212)
@@ -41,7 +41,7 @@ module Game
 
         @active_color = @color_options.first
         @hover_color = nil
-        @multiline_text = MultiLineText.new("", x: @card_box.x+(@card_box.width/2)-24, y: @card_box.y-10, size: 18)
+        @multiline_text = CyberarmEngine::MultiLineText.new("", x: @card_box.x+(@card_box.width/2)-24, y: @card_box.y-10, size: 18)
       end
 
       def populate_color_options(colors)

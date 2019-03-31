@@ -6,9 +6,9 @@ module Game
         @render = false
         @alpha = 0
 
-        @text = Game::Text.new("Ruby Sync Racing", y: $window.height/3, size: 100)
+        @text = CyberarmEngine::Text.new("Ruby Sync Racing", y: $window.height/3, size: 100)
         @text.x = ($window.width/2)-@text.width/2
-        @instructions = Game::Text.new("Press ANY KEY to continue", y: $window.height/2, size: 30, color: Gosu::Color::GRAY)
+        @instructions = CyberarmEngine::Text.new("Press ANY KEY to continue", y: $window.height/2, size: 30, color: Gosu::Color::GRAY)
         @instructions.x = ($window.width/2)-@instructions.width/2
       end
 

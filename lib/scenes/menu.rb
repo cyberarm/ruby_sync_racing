@@ -29,7 +29,7 @@ module Game
         super
         fill(@background, @z)
         @elements.each do |e|
-          if e.is_a?(Game::Text)
+          if e.is_a?(CyberarmEngine::Text)
             e.draw
           elsif e.is_a?(Game::Button)
             e.text.draw
@@ -60,7 +60,7 @@ module Game
 
         @elements.each do |e|
           # Center text
-          e.x = $window.width/2-e.width/2 if e.is_a?(Game::Text)
+          e.x = $window.width/2-e.width/2 if e.is_a?(CyberarmEngine::Text)
 
           if e.is_a?(Game::Input)
             e.rect[2] = e.text.width+20
@@ -85,7 +85,7 @@ module Game
       end
 
       def title(string)
-        text = Game::Text.new(string, y: @y, size: 80)
+        text = CyberarmEngine::Text.new(string, y: @y, size: 80)
         text.x = $window.width/2-text.width/2
 
         @elements.push(text)
@@ -98,7 +98,7 @@ module Game
         options[:y] ||= @y-10
         options[:size] ||= 26
 
-        text = Game::Text.new(string, options)
+        text = CyberarmEngine::Text.new(string, options)
         text.x = $window.width/2-text.width/2
 
         @elements.push(text)
@@ -113,7 +113,7 @@ module Game
         options[:focus]  ||= false
         options[:secret] ||= false
 
-        text  = Game::Text.new(string, options)
+        text  = CyberarmEngine::Text.new(string, options)
         text.x = $window.width/2-text.width/2
 
         x = text.x-10
@@ -135,7 +135,7 @@ module Game
       end
 
       def button(string, color = Gosu::Color.rgba(0,45,89,212), hover_color = Gosu::Color.rgba(56,45,89,212), &block)
-        text   = Game::Text.new(string, y: @y, size: 26)
+        text   = CyberarmEngine::Text.new(string, y: @y, size: 26)
         text.x = $window.width/2-text.width/2
         x = text.x-10
         y = text.y-10
