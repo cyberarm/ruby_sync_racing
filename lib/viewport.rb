@@ -8,6 +8,7 @@ module Game
 
       @x, @y  = 0, 0
       @width, @height = 0, 0
+      @lag_x, @lag_y = 0.0, 0.0
 
       @screen_vector = CyberarmEngine::Vector.new(0.0, 0.0)
       @scale = 1.0
@@ -24,6 +25,12 @@ module Game
 
       @countdown = Countdown.new(viewport: self)
       @countdown.start
+
+      center_around(@player.actor)
+    end
+
+    def lag=(lag)
+      @lag_x, @lag_y = lag, lag
     end
 
     def draw
@@ -70,7 +77,7 @@ module Game
         end
       end
 
-      center_around(@player.actor)
+      move_towards(@player.actor)
       @car_text.text = "Car speed: #{@player.actor.speed.round} x: #{@player.actor.position.x.round}, y: #{@player.actor.position.y.round}, angle: #{@player.actor.angle.round}.\nLaps: #{@completed_laps}/#{@laps}, Checkpoints: #{@checkpoints_list.size}/#{@track.checkpoints.size}"
 
       lap_check if @track.checkpoints.size > 0
@@ -78,8 +85,13 @@ module Game
     end
 
     def center_around(entity)
-      @screen_vector.x = ((entity.position.x - @x) - @width / 2)
+      @screen_vector.x = ((entity.position.x - @x) - @width  / 2)
       @screen_vector.y = ((entity.position.y - @y) - @height / 2)
+    end
+
+    def move_towards(entity)
+      @screen_vector.x += (((entity.position.x - @x) - @width  / 2) - @screen_vector.x) * (1.0 - @lag_x)# * $window.dt
+      @screen_vector.y += (((entity.position.y - @y) - @height / 2) - @screen_vector.y) * (1.0 - @lag_y)# * $window.dt
     end
 
     def position_viewport

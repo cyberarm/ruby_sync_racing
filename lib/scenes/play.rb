@@ -43,6 +43,8 @@ module Game
         @players << Player.new(actor: @car2, controls: player_2_controls, track: @track)
         @viewports << Viewport.new(player: @players[0], track: @track, position: :top)
         @viewports << Viewport.new(player: @players[1], track: @track, position: :bottom)
+
+        @viewports.each {|viewport| viewport.lag=(0.9)}
       end
 
       def players
