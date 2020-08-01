@@ -1,5 +1,5 @@
 GIT
-  remote: git://github.com/Dahrkael/rENet.git
+  remote: https://github.com/Dahrkael/rENet.git
   revision: 7ece24f1b41603dcca23ef97cdb9dc6b1d5917cd
   specs:
     renet (0.2.2)
@@ -7,9 +7,10 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    concurrent-ruby (1.1.5)
-    cyberarm_engine (0.5.1)
-      gosu (~> 0.14.0)
+    concurrent-ruby (1.1.6)
+    cyberarm_engine (0.14.0)
+      gosu (~> 0.15.0)
+      gosu_more_drawables (~> 0.3)
     gameoverseer (0.1.8)
       concurrent-ruby
       multi_json
@@ -17,17 +18,14 @@ GEM
     gameoverseer-client (0.0.2)
       multi_json
       renet (>= 0.2.0)
-    gosu (0.14.5)
-    gosu (0.14.5-x64-mingw32)
-    gosu (0.14.5-x86-mingw32)
-    multi_json (1.13.1)
-    oj (3.7.12)
-    rake (12.3.2)
+    gosu (0.15.1)
+    gosu_more_drawables (0.3.0)
+    multi_json (1.14.1)
+    oj (3.10.6)
+    rake (13.0.1)
 
 PLATFORMS
   ruby
-  x64-mingw32
-  x86-mingw32
 
 DEPENDENCIES
   cyberarm_engine
@@ -38,4 +36,4 @@ DEPENDENCIES
   renet!
 
 BUNDLED WITH
-   1.17.3
+   2.1.4

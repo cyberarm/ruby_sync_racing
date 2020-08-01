@@ -213,7 +213,7 @@ class Track
       end
 
       def close_dialog(&block)
-        window(:confirm, "Are you sure?", "Any unsaved changes will be lost!") { block.call }
+        dialog(:confirm, "Are you sure?", "Any unsaved changes will be lost!") { block.call }
       end
 
       def normalize_map_position(number)
@@ -265,7 +265,7 @@ class Track
         @track_tainted
       end
 
-      def window(type, title, caption, callback = nil, &block)
+      def dialog(type, title, caption, callback = nil, &block)
         _window = EditorWindow.new(type: type, title: title, caption: caption, callback: callback, block: block, editor: self)
         push_state(_window)
       end

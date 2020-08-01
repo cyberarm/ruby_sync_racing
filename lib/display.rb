@@ -1,4 +1,4 @@
-class Display < CyberarmEngine::Engine
+class Display < CyberarmEngine::Window
   def initialize(width = 800, height = 600, fullscreen = false, update_interval = 1000.0/60)
     if Config.get(:screen_width).downcase == "max" then dwidth = Gosu.screen_width; else dwidth = Integer(Config.get(:screen_width)); end
     if Config.get(:screen_height).downcase == "max" then dheight = Gosu.screen_height; else dheight = Integer(Config.get(:screen_height)); end
