@@ -7,7 +7,7 @@ GIT
 GEM
   remote: https://rubygems.org/
   specs:
-    concurrent-ruby (1.1.6)
+    concurrent-ruby (1.1.7)
     cyberarm_engine (0.14.0)
       gosu (~> 0.15.0)
       gosu_more_drawables (~> 0.3)
@@ -18,10 +18,10 @@ GEM
     gameoverseer-client (0.0.2)
       multi_json
       renet (>= 0.2.0)
-    gosu (0.15.1)
-    gosu_more_drawables (0.3.0)
-    multi_json (1.14.1)
-    oj (3.10.6)
+    gosu (0.15.2)
+    gosu_more_drawables (0.3.1)
+    multi_json (1.15.0)
+    oj (3.10.14)
     rake (13.0.1)
 
 PLATFORMS
