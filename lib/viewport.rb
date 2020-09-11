@@ -70,6 +70,8 @@ module Game
       @countdown.update
 
       @car_text.x, @car_text.y = @x + 10, @y + 10
+      speed_ratio = (@player.actor.speed.abs / @player.actor.top_speed)
+      @scale = 1.75 - speed_ratio
 
       if @countdown.complete?
         keys.each do |key, value|
@@ -77,8 +79,9 @@ module Game
         end
       end
 
-      move_towards(@player.actor)
-      @car_text.text = "Car speed: #{@player.actor.speed.round} x: #{@player.actor.position.x.round}, y: #{@player.actor.position.y.round}, angle: #{@player.actor.angle.round}.\nLaps: #{@completed_laps}/#{@laps}, Checkpoints: #{@checkpoints_list.size}/#{@track.checkpoints.size}"
+      # move_towards(@player.actor)
+      move_ahead_of(@player.actor, 100.0 * speed_ratio)
+      @car_text.text = "#{@player.actor.speed.round(1)}MPH\nLap #{@completed_laps} of #{@laps}\nCheckpoint #{@checkpoints_list.size} of #{@track.checkpoints.size}"
 
       lap_check if @track.checkpoints.size > 0
       @player.update
@@ -92,6 +95,14 @@ module Game
     def move_towards(entity)
       @screen_vector.x += (((entity.position.x - @x) - @width  / 2) - @screen_vector.x) * (1.0 - @lag_x)# * $window.dt
       @screen_vector.y += (((entity.position.y - @y) - @height / 2) - @screen_vector.y) * (1.0 - @lag_y)# * $window.dt
+    end
+
+    def move_ahead_of(entity, ahead_by)
+      heading = (entity.position - entity.last_position).normalized * ahead_by
+
+      center_around(entity)
+
+      @screen_vector += heading
     end
 
     def position_viewport

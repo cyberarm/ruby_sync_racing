@@ -8,15 +8,15 @@ class Car < CyberarmEngine::GameObject
     @car_data = CarParser.new(@options[:spec]).data
     @last_x, @last_y, @last_speed = 0, 0, 0
 
-    @image      = get_image(AssetManager.image_from_id(@car_data["spec"]["image"]))
-    @body_image = get_image(AssetManager.image_from_id(@car_data["spec"]["body_image"]))
+    @image      = get_image(AssetManager.image_from_id(@car_data["spec"]["image"]), retro: false, tileable: true)
+    @body_image = get_image(AssetManager.image_from_id(@car_data["spec"]["body_image"]), retro: false, tileable: true)
     @body_color = @options[:body_color] ? @options[:body_color] : Gosu::Color.rgb(rand(0..150), rand(0..150),rand(0..150)) # Gosu::Color::WHITE
     self.scale = @car_data["spec"]["scale"]
     @physics = CarPhysics.new(self)
 
     @debug = CyberarmEngine::Text.new("", size: 50)
-    @username = @options[:username] || "#{@car_data["name"]}"
-    @name  = CyberarmEngine::Text.new(@username, size: 20)
+    @username = Config.get(:player_username) || @options[:username] || "#{@car_data["name"]}"
+    @name  = CyberarmEngine::Text.new("<b>#{@username}</b>", size: 20, color: lighten(@body_color))
 
     @speed = 0.0
 
@@ -99,6 +99,8 @@ class Car < CyberarmEngine::GameObject
                            light["width"],
                            light["height"], _red, 6)
       end
+
+      show_debug_heading if $debug
     end
   end
 

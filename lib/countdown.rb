@@ -7,7 +7,12 @@ module Game
       @time = 0
       @running = false
 
-      @text = CyberarmEngine::Text.new("", z: 8182, size: 48)
+      @text = CyberarmEngine::Text.new("Waiting...", z: 8182, size: 48)
+      @last_text = @text.text
+
+      @text_initial_scale = 3.0
+      @text_min_scale = 1.0
+      @text_scale = @text_initial_scale
     end
 
     def start
@@ -28,22 +33,36 @@ module Game
 
     def update
       if @running
-        @time += Display.dt * 1000.0
+        @time += Window.dt * 1000.0
+
+        @text_scale -= Window.dt * @text_initial_scale
+
+        if @last_text != @text.text
+          @last_text = @text.text
+          @text_scale = @text_initial_scale
+        end
+
+        if time_left > 0
+          @text.text = "#{time_left.ceil}"
+        elsif time_left <= 0 && time_left > -1
+          @text.text = "GO!"
+        else
+          @text.text = ""
+        end
+
+        @text.x = (@viewport.x + @viewport.width/2)  - @text.width / 2
+        @text.y = (@viewport.y + @viewport.height/2) - @text.height/ 2
       end
     end
 
     def draw_countdown
-      if time_left > 0
-        @text.text = "#{time_left.round(1)} seconds"
-        @text.x = (@viewport.x + @viewport.width/2)  - @text.width / 2
-        @text.y = (@viewport.y + @viewport.height/2) - @text.height/ 2
+      Gosu.draw_rect(
+        @viewport.x, @viewport.y,
+        @viewport.width, @viewport.height,
+        Gosu::Color.rgba(0,0,0, 255.0 * factor), 8181
+      )
 
-        Gosu.draw_rect(
-          @text.x - 10, @text.y - 10,
-          @text.width + 20, @text.height + 20,
-          Gosu::Color.rgba(0,0,0, 255.0 * factor), 8181
-        )
-
+      Gosu.scale(@text_scale, @text_scale, @viewport.x + @viewport.width / 2, @viewport.y + @viewport.height / 2) do
         @text.draw
       end
     end
@@ -53,7 +72,7 @@ module Game
     end
 
     def factor
-      time_left.to_f / (@period / 1000.0)
+      (time_left.to_f / (@period / 1000.0))
     end
   end
 end

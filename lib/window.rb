@@ -1,4 +1,4 @@
-class Display < CyberarmEngine::Window
+class Window < CyberarmEngine::Window
   def initialize(width = 800, height = 600, fullscreen = false, update_interval = 1000.0/60)
     if Config.get(:screen_width).downcase == "max" then dwidth = Gosu.screen_width; else dwidth = Integer(Config.get(:screen_width)); end
     if Config.get(:screen_height).downcase == "max" then dheight = Gosu.screen_height; else dheight = Integer(Config.get(:screen_height)); end
@@ -16,7 +16,9 @@ class Display < CyberarmEngine::Window
     @current_frame_time = Gosu.milliseconds
     $window.caption = "Ruby Sync Racing"
 
-    if ARGV.join.include?("--quick")
+    if ARGV.join.include?("--editor")
+      push_state(Track::Editor::Menu)
+    elsif ARGV.join.include?("--quick")
       push_state(Game::Scene::MainMenu)
     else
       push_state(Game::Scene::Boot)
@@ -24,7 +26,7 @@ class Display < CyberarmEngine::Window
   end
 
   def button_up(id)
-    $debug = !$debug if ARGV.join.include?("--debug") && id == Gosu::KbBacktick
+    $debug = !$debug if id == Gosu::KbBacktick
     super
   end
 end

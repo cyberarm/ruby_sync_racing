@@ -46,7 +46,7 @@ class Track < CyberarmEngine::GameObject
 
   def process_tiles
     @track.tiles.each do |tile|
-       _tile = Tile.new(tile["type"], get_image(AssetManager.image_from_id(tile["image"])), tile["x"], tile["y"], tile["z"], tile["angle"], nil)
+       _tile = Tile.new(tile["type"], get_image(AssetManager.image_from_id(tile["image"]), tileable: true), tile["x"], tile["y"], tile["z"], tile["angle"], nil)
        unless tile["z"] then _tile["z"] = 0; end
        unless tile["angle"] then _tile["angle"] = 0; end
       @tiles << _tile
@@ -55,7 +55,7 @@ class Track < CyberarmEngine::GameObject
 
   def process_decorations
     @track.decorations.each do |decoration|
-      @decorations << Decoration.new(decoration["collidable"], get_image(AssetManager.image_from_id(decoration["image"])), decoration["x"], decoration["y"], decoration["z"], decoration["angle"], decoration["scale"], nil)
+      @decorations << Decoration.new(decoration["collidable"], get_image(AssetManager.image_from_id(decoration["image"]), tileable: true), decoration["x"], decoration["y"], decoration["z"], decoration["angle"], decoration["scale"], nil)
     end
   end
 

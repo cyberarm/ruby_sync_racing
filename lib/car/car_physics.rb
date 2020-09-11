@@ -64,7 +64,7 @@ class CarPhysics
   end
 
   def dt
-    Display.dt
+    Window.dt
   end
 
   def apply_drag
@@ -90,8 +90,9 @@ class CarPhysics
     @entity.angular_velocity *= @entity.angular_drag
 
     unless @key_active
-      if @entity.speed.abs <= (@entity.brake_speed * Display.dt) then @entity.speed = 0.0; end
-      @entity.braking = @entity.speed == 0
+      if @entity.speed.abs <= (@entity.brake_speed * Window.dt)
+        @entity.braking = @entity.speed == 0
+      end
     end
 
     @key_active = false
