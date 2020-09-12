@@ -1,6 +1,8 @@
 module Game
   class Scene
     class Play < CyberarmEngine::GameState
+      attr_reader :track
+
       def setup
         $window.show_cursor = false
         @screen_vector = CyberarmEngine::Vector.new(0, 0)
@@ -41,8 +43,8 @@ module Game
 
         @players << Player.new(actor: @car, controls: player_1_controls, track: @track)
         @players << Player.new(actor: @car2, controls: player_2_controls, track: @track)
-        @viewports << Viewport.new(player: @players[0], track: @track, position: :top)
-        @viewports << Viewport.new(player: @players[1], track: @track, position: :bottom)
+        @viewports << Player::View.new(game: self, player: @players[0], position: :top)
+        @viewports << Player::View.new(game: self, player: @players[1], position: :bottom)
 
         @viewports.each {|viewport| viewport.lag=(0.9)}
       end

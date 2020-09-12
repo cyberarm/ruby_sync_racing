@@ -3,6 +3,13 @@ class Car < CyberarmEngine::GameObject
   attr_reader :braking, :changed, :boundry,
               :drag, :top_speed, :acceleration, :brake_speed, :turn_speed, :angular_drag
 
+  DRAG = 10.0
+  TOP_SPEED = 240.0
+  BRAKE_SPEED = 120.0
+  ACCELERATION = 100.0
+  TURN_SPEED = 16.0
+  ANGULAR_DRAG = 0.9
+
   def setup
     self.position.z = 5
     @car_data = CarParser.new(@options[:spec]).data
@@ -20,12 +27,12 @@ class Car < CyberarmEngine::GameObject
 
     @speed = 0.0
 
-    @drag        = @car_data["spec"]["drag"]
-    @top_speed   = @car_data["spec"]["top_speed"]
-    @acceleration= @car_data["spec"]["acceleration"]
-    @brake_speed = @car_data["spec"]["brake_speed"]
-    @turn_speed  = @car_data["spec"]["turn_speed"]
-    @angular_drag= @car_data["spec"]["angular_drag"]
+    @drag        = DRAG         # @car_data["spec"]["drag"]
+    @top_speed   = TOP_SPEED    # @car_data["spec"]["top_speed"]
+    @acceleration= ACCELERATION # @car_data["spec"]["acceleration"]
+    @brake_speed = BRAKE_SPEED  # @car_data["spec"]["brake_speed"]
+    @turn_speed  = TURN_SPEED   # @car_data["spec"]["turn_speed"]
+    @angular_drag= ANGULAR_DRAG # @car_data["spec"]["angular_drag"]
     @angular_velocity = 0.0
 
 
@@ -99,9 +106,9 @@ class Car < CyberarmEngine::GameObject
                            light["width"],
                            light["height"], _red, 6)
       end
-
-      show_debug_heading if $debug
     end
+
+    show_debug_heading if $debug
   end
 
   def update

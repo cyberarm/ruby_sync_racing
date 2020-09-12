@@ -1,9 +1,7 @@
 module Game
   class Viewport
     attr_reader :x, :y, :width, :height
-    def initialize(player:, track:, position:)
-      @player = player
-      @track  = track
+    def initialize(position:)
       @position = position
 
       @x, @y  = 0, 0
@@ -12,21 +10,6 @@ module Game
 
       @screen_vector = CyberarmEngine::Vector.new(0.0, 0.0)
       @scale = 1.0
-
-      @laps = 3
-      @completed_laps = 0
-
-      @checkpoints = @track.checkpoints.size
-      @checkpoints_list = []
-
-      @car_text = CyberarmEngine::Text.new("", x: @x + 10, y: @y + 10, z: 8181, size: 28, color: Gosu::Color::BLACK)
-
-      @border_color = Gosu::Color::BLACK
-
-      @countdown = Countdown.new(viewport: self)
-      @countdown.start
-
-      center_around(@player.actor)
     end
 
     def lag=(lag)
@@ -35,56 +18,26 @@ module Game
 
     def draw
       Gosu.clip_to(@x, @y, @width, @height) do
-        draw_border
-        @car_text.draw
-        @countdown.draw
-
         Gosu.scale(@scale, @scale, @x + @width / 2, @y + @height / 2) do
           Gosu.translate(-@screen_vector.x.to_i, -@screen_vector.y.to_i) do
-            @track.draw
-            # @player.actor.draw
-            if $window.current_state.is_a?(Game::Scene::Play)
-              $window.current_state.players.each do |player|
-                player.actor.draw
-              end
-            end
-
-            if $debug
-              draw_bounding_box(@track.bounding_box)
-
-              (@track.checkpoints-@checkpoints_list).each do |checkpoint|
-                Gosu.draw_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(200,200,200, 200), 5)
-              end
-
-              @checkpoints_list.each do |checkpoint|
-                Gosu.draw_rect(checkpoint.x, checkpoint.y, checkpoint.width, checkpoint.height, Gosu::Color.rgba(100,200,100, 200), 5)
-              end
-            end
+            render_transformed
           end
         end
+
+        render
+
+        draw_border
       end
     end
 
-    def update(keys)
+    def render
+    end
+
+    def render_transformed
+    end
+
+    def update
       position_viewport
-      @countdown.update
-
-      @car_text.x, @car_text.y = @x + 10, @y + 10
-      speed_ratio = (@player.actor.speed.abs / @player.actor.top_speed)
-      @scale = 1.75 - speed_ratio
-
-      if @countdown.complete?
-        keys.each do |key, value|
-          @player.handle(key)
-        end
-      end
-
-      # move_towards(@player.actor)
-      move_ahead_of(@player.actor, 100.0 * speed_ratio)
-      @car_text.text = "#{@player.actor.speed.round(1)}MPH\nLap #{@completed_laps} of #{@laps}\nCheckpoint #{@checkpoints_list.size} of #{@track.checkpoints.size}"
-
-      lap_check if @track.checkpoints.size > 0
-      @player.update
     end
 
     def center_around(entity)
@@ -109,27 +62,27 @@ module Game
       case @position
       when :top
         @x, @y = 0, 0
-        @width, @height = $window.width, $window.height/2
+        @width, @height = $window.width, $window.height / 2
       when :bottom
-        @x, @y = 0, $window.height/2
-        @width, @height = $window.width, $window.height/2
+        @x, @y = 0, $window.height / 2
+        @width, @height = $window.width, $window.height / 2
 
       when :top_left
         @x, @y = 0, 0
-        @width, @height = $window.width/2, $window.height/2
+        @width, @height = $window.width / 2, $window.height / 2
       when :top_right
-        @x, @y = $window.width/2, 0
-        @width, @height = $window.width/2, $window.height/2
+        @x, @y = $window.width / 2, 0
+        @width, @height = $window.width / 2, $window.height / 2
 
       when :bottom_left
-        @x, @y = 0, $window.height/2
-        @width, @height = $window.width/2, $window.height/2
+        @x, @y = 0, $window.height / 2
+        @width, @height = $window.width / 2, $window.height / 2
       when :bottom_right
-        @x, @y = $window.width/2, $window.height/2
-        @width, @height = $window.width/2, $window.height/2
+        @x, @y = $window.width / 2, $window.height / 2
+        @width, @height = $window.width / 2, $window.height / 2
 
       else
-        @x, @y = 0, $window.height/2
+        @x, @y = 0, $window.height / 2
         @width, @height = $window.width, $window.height
       end
     end
@@ -139,35 +92,10 @@ module Game
     end
 
     def draw_border
-      Gosu.draw_line(@x+@width, @y, @border_color, @x+@width, @y+@height, @border_color, Float::INFINITY)  # Right
-      Gosu.draw_line(@x+@width, @y+@height, @border_color, @x, @y+@height, @border_color, Float::INFINITY) # Bottom
-      Gosu.draw_line(@x+1, @y+@height, @border_color, @x+1, @y, @border_color, Float::INFINITY) # Left
-      Gosu.draw_line(@x, @y+1, @border_color, @x+@width, @y+1, @border_color, Float::INFINITY) # Top
-    end
-
-    def lap_check
-      rejectable = nil
-      ((@track.checkpoints)-@checkpoints_list).each do |checkpoint|
-        if @player.actor.position.x.between?(checkpoint.x, checkpoint.x+checkpoint.width)
-          if @player.actor.position.y.between?(checkpoint.y, checkpoint.y+checkpoint.height)
-            # puts "CHECKPOINT: #{checkpoint}"
-            rejectable = checkpoint
-            @checkpoints_list << checkpoint unless checkpoint == @lap_rejectable
-          end
-        end
-      end
-
-      @lap_rejectable = nil if rejectable != @lap_rejectable
-
-      if @track.checkpoints.size == @checkpoints_list.size
-        @completed_laps+=1
-        @checkpoints_list.clear
-        @lap_rejectable = rejectable
-      end
-
-      if @completed_laps == @laps
-        $window.current_state.push_state(Game::Scene::MainMenu)
-      end
+      Gosu.draw_line(@x + @width, @y, @border_color, @x + @width, @y + @height, @border_color, Float::INFINITY)  # Right
+      Gosu.draw_line(@x + @width, @y + @height, @border_color, @x, @y + @height, @border_color, Float::INFINITY) # Bottom
+      Gosu.draw_line(@x + 1, @y + @height, @border_color, @x + 1, @y, @border_color, Float::INFINITY) # Left
+      Gosu.draw_line(@x, @y + 1, @border_color, @x + @width, @y + 1, @border_color, Float::INFINITY)  # Top
     end
   end
 end

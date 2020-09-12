@@ -1,5 +1,6 @@
 module Game
   class Countdown
+    attr_reader :period, :time
     def initialize(viewport:, period: 3_000)
       @viewport = viewport
       @period = period
@@ -37,9 +38,16 @@ module Game
 
         @text_scale -= Window.dt * @text_initial_scale
 
-        if @last_text != @text.text
+        if @last_text != @text.text && !@text.text.empty?
           @last_text = @text.text
           @text_scale = @text_initial_scale
+
+          if time_left <= 0
+            $window.current_state.get_sample("assets/track_editor/error.ogg").play(2)
+          else
+            $window.current_state.get_sample("assets/track_editor/error.ogg").play(2)
+            $window.current_state.get_sample("assets/track_editor/click.ogg").play(2)
+          end
         end
 
         if time_left > 0
@@ -50,8 +58,8 @@ module Game
           @text.text = ""
         end
 
-        @text.x = (@viewport.x + @viewport.width/2)  - @text.width / 2
-        @text.y = (@viewport.y + @viewport.height/2) - @text.height/ 2
+        @text.x = (@viewport.x + @viewport.width / 2)  - @text.width / 2
+        @text.y = (@viewport.y + @viewport.height / 2) - @text.height/ 2
       end
     end
 
