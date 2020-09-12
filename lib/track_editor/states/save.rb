@@ -49,7 +49,7 @@ class Track
         if @previous_game_state && defined?(@previous_game_state.save_file) && @previous_game_state.save_file
           save_track(@previous_game_state.save_file, @background_color)
           $window.text_input = nil
-          push_state(@previous_game_state)
+          pop_state
           return
         end
 
@@ -75,17 +75,12 @@ class Track
         case id
         when Gosu::KbEscape
           $window.text_input = nil
-          push_state(@previous_game_state)
+          pop_state
 
         when Gosu::MsLeft
-          if $window.mouse_x.between?(@save.x-20, @save.x+@save.width+40)
-            if $window.mouse_x.between?(@save.y-20, @save.y+@save.height+40)
-              save
-            end
-          end
-        when Gosu::KbEnter
-          save
-        when Gosu::KbReturn
+          save if $window.mouse_x.between?(@save.x - 20, @save.x + @save.width + 40) &&
+                  $window.mouse_x.between?(@save.y - 20, @save.y + @save.height + 40)
+        when Gosu::KbEnter, Gosu::KbReturn
           save
         end
       end
@@ -94,7 +89,7 @@ class Track
         save_track(@name.text, @background_color)
         @previous_game_state.save_file = @name.text
         $window.text_input = nil
-        push_state(@previous_game_state)
+        pop_state
       end
 
       def save_track(name, color)

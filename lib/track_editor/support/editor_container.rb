@@ -217,46 +217,47 @@ class Track
       end
 
       def normalize_map_position(number)
-        return (Integer((number/@tile_size).to_f.round(1).to_s.split('.').first))*@tile_size
+        return (Integer((number / @tile_size).to_f.round(1).to_s.split('.').first)) * @tile_size
       end
 
       def update_map_offset(sensitivity = 3, speed = Gosu.fps/2)
-        if $window.mouse_x.between?($window.width-sensitivity, $window.width)
-          @screen_vector.x-=speed
+        if $window.mouse_x.between?($window.width - sensitivity, $window.width)
+          @screen_vector.x -= speed
         elsif $window.mouse_x.between?(0, 0+sensitivity)
-          @screen_vector.x+=speed
+          @screen_vector.x += speed
         end
 
         if $window.button_down?(Gosu::KbRight)
-          @screen_vector.x-=speed
+          @screen_vector.x -= speed
         end
         if $window.button_down?(Gosu::KbLeft)
-          @screen_vector.x+=speed
+          @screen_vector.x += speed
         end
 
         if $window.mouse_y.between?($window.height-sensitivity, $window.height)
-          @screen_vector.y-=speed
+          @screen_vector.y -= speed
         end
         if $window.mouse_y.between?(0, 0+sensitivity)
-          @screen_vector.y+=speed
+          @screen_vector.y += speed
         end
 
         if $window.button_down?(Gosu::KbUp)
-          @screen_vector.y+=speed
+          @screen_vector.y += speed
         end
         if $window.button_down?(Gosu::KbDown)
-          @screen_vector.y-=speed
+          @screen_vector.y -= speed
         end
       end
 
       def save_track
-        p @background
-        push_state(Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints, starting_positions: @starting_positions, background_color: @background, time_of_day: @time_of_day)
+        push_state(
+          Save, edit_state: self, tiles: @tiles, decorations: @decorations, checkpoints: @checkpoints,
+          starting_positions: @starting_positions, background_color: @background, time_of_day: @time_of_day
+        )
         @track_tainted = false if @save_file
       end
 
       def track_changed!
-        puts "#{@active_selector.class} marked track as changed!"
         @track_tainted = true
       end
 
@@ -271,33 +272,19 @@ class Track
       end
 
       def add_message(string, time_to_live = 5)
-        text    = CyberarmEngine::Text.new(string, y: -100, z: 255, size: 26)
-        message = EditorMessage.new(text, Time.now, Time.now+time_to_live, 255)
+        text    = CyberarmEngine::Text.new(string, y: -100, z: 255, size: 26, shadow: true, shadow_color: 0xff_000000, shadow_size: 1)
+        message = EditorMessage.new(text, Time.now, Time.now + time_to_live, 255)
         @editor_messages << message
       end
 
       def mouse_in?(bounding_box)
-        if $window.mouse_x.between?(bounding_box.x, bounding_box.x+bounding_box.width)
-          if $window.mouse_y.between?(bounding_box.y, bounding_box.y+bounding_box.height)
-            true
-          else
-            false
-          end
-        else
-          false
-        end
+        $window.mouse_x.between?(bounding_box.x, bounding_box.x + bounding_box.width) &&
+          $window.mouse_y.between?(bounding_box.y, bounding_box.y + bounding_box.height)
       end
 
       def mouse_over?(x, y, width, height)
-        if $window.mouse_x.between?(x+1, x-1+width)
-          if $window.mouse_y.between?(y, y-1+height)
-            true
-          else
-            false
-          end
-        else
-          false
-        end
+        $window.mouse_x.between?(x + 1, x - 1 + width) &&
+          $window.mouse_y.between?(y, y - 1 + height)
       end
     end
   end

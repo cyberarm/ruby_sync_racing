@@ -132,7 +132,7 @@ class Track
       end
 
       def close
-        push_state(@previous_game_state)
+        pop_state
       end
 
       # WINDOW TYPES

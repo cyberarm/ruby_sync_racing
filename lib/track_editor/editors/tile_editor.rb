@@ -7,6 +7,8 @@ class Track
         @left_mouse_down_at = Gosu.milliseconds
         @left_mouse_down_paint = 150
 
+        @tile_lock = true
+
         @tiles_list = {
           "asphalt": [
             AssetManager.image_from_id(100),
@@ -72,6 +74,11 @@ class Track
           @mouse_position[:angle]-=90
           @mouse_position[:angle] %= 360
         end
+        sidebar_button("Disable Tile Lock", "Toggles tile overwrite protection") do |button|
+          @tile_lock = !@tile_lock
+
+          button.text.text = @tile_lock ? "Disable Tile Lock" : "Enable Tile Lock"
+        end
 
         sidebar_label("Tiles")
         @tiles_list.each do |type, list|
@@ -91,13 +98,14 @@ class Track
         x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
         y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
         z = 0
-        if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
-          @editor.add_message("#{@grid["#{x}"]["#{y}"].image} is already placed there.") unless @painting
+        if @grid.dig(x, y).is_a?(Track::Tile) && @tile_lock
+          tile_name = File.basename(@grid[x][y].image, ".png").split("_").map { |t| t.capitalize }.join(" ")
+          @editor.add_message("Tile \"#{tile_name}\" is already placed there.") unless @painting
           @editor.error_sound.play unless @painting
         else
           tile = Track::Tile.new(type, image_path, x, y, z, angle)
-          @grid["#{x}"] = {} unless @grid["#{x}"].is_a?(Hash)
-          @grid["#{x}"]["#{y}"] = tile
+          @grid[x] = {} unless @grid[x].is_a?(Hash)
+          @grid[x][y] = tile
           @editor.tiles << tile
 
           @editor.track_changed!
@@ -122,9 +130,9 @@ class Track
             if @mouse && @editor.mouse_in?(@editor.active_area) && $window.button_down?(Gosu::MsRight)
               x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
               y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
-              if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
-                @editor.tiles.delete(@grid["#{x}"]["#{y}"])
-                @grid["#{x}"]["#{y}"] = nil
+              if @grid.dig(x, y).is_a?(Track::Tile)
+                @editor.tiles.delete(@grid.dig(x, y))
+                @grid[x][y] = nil
 
                 @editor.track_changed!
               end
@@ -151,8 +159,8 @@ class Track
                                   _y,
                                   _z,
                                   _angle)
-          @grid["#{_x}"] = {} unless @grid["#{_x}"].is_a?(Hash)
-          @grid["#{_x}"]["#{_y}"] = _tile
+          @grid[_x] = {} unless @grid[_x].is_a?(Hash)
+          @grid[_x][_y] = _tile
           @editor.tiles << _tile
         end
       end
@@ -170,8 +178,7 @@ class Track
           if @mouse && @editor.mouse_in?(@editor.active_area)
             x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
             y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
-            if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
-              tile = @grid["#{x}"]["#{y}"]
+            if tile = @grid.dig(x, y) && tile.is_a?(Track::Tile)
               @current_tile_image_path = tile.image
               mouse_image(@editor.get_image(tile.image))
               @use_mouse_image = true
@@ -182,9 +189,9 @@ class Track
           if @mouse && @editor.mouse_in?(@editor.active_area)
             x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
             y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
-            if @grid["#{x}"] && @grid["#{x}"]["#{y}"] && @grid["#{x}"]["#{y}"].is_a?(Track::Tile)
-              @editor.tiles.delete(@grid["#{x}"]["#{y}"])
-              @grid["#{x}"]["#{y}"] = nil
+            if @grid.dig(x, y).is_a?(Track::Tile)
+              @editor.tiles.delete(@grid[x][y])
+              @grid[x][y] = nil
 
               @editor.track_changed!
             end
