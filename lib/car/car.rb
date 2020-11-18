@@ -1,6 +1,6 @@
 class Car < CyberarmEngine::GameObject
   attr_accessor :speed, :braking, :angular_velocity
-  attr_reader :braking, :changed, :boundry,
+  attr_reader :braking, :changed, :boundry, :body_color,
               :drag, :top_speed, :acceleration, :brake_speed, :turn_speed, :angular_drag
 
   DRAG = 10.0
@@ -22,8 +22,6 @@ class Car < CyberarmEngine::GameObject
     @physics = CarPhysics.new(self)
 
     @debug = CyberarmEngine::Text.new("", size: 50)
-    @username = Config.get(:player_username) || @options[:username] || "#{@car_data["name"]}"
-    @name  = CyberarmEngine::Text.new("<b>#{@username}</b>", size: 20, color: lighten(@body_color))
 
     @speed = 0.0
 
@@ -60,7 +58,6 @@ class Car < CyberarmEngine::GameObject
     super
     @body_image.draw_rot(@position.x, @position.y, @position.z, @angle, @center_x, @center_y, @scale_x, @scale_y, @body_color, @mode)
     @debug.draw
-    @name.draw
 
     # Does some kind of transformation to rotate in sync with car
     Gosu.rotate(self.angle, @position.x, @position.y) do
@@ -132,7 +129,6 @@ class Car < CyberarmEngine::GameObject
 
     debug_text("Braking: #{@braking}\nX:#{@position.x.round}\nY:#{@position.y.round}\nAngle:#{self.angle.round(1)}\nSpeed:#{@speed.round(1)}\n(Pixels Per Frame)\nFPS:#{Gosu.fps}")
     @physics.update
-    @name.x,@name.y = @position.x-@name.width/2, @position.y-self.height
   end
 
   def forward

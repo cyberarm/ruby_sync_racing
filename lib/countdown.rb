@@ -1,9 +1,8 @@
 module Game
   class Countdown
-    attr_reader :period, :time
-    def initialize(viewport:, period: 3_000)
-      @viewport = viewport
-      @period = period
+    attr_reader :duration, :time
+    def initialize(duration: 3_000)
+      @duration = duration
 
       @time = 0
       @running = false
@@ -25,11 +24,11 @@ module Game
     end
 
     def complete?
-      @time >= @period
+      @time >= @duration
     end
 
-    def draw
-      draw_countdown
+    def draw(viewport)
+      draw_countdown(viewport)
     end
 
     def update
@@ -57,30 +56,34 @@ module Game
         else
           @text.text = ""
         end
-
-        @text.x = (@viewport.x + @viewport.width / 2)  - @text.width / 2
-        @text.y = (@viewport.y + @viewport.height / 2) - @text.height/ 2
       end
     end
 
-    def draw_countdown
+    def draw_countdown(viewport)
+      @text.x = (viewport.x + viewport.width / 2)  - @text.width / 2
+      @text.y = (viewport.y + viewport.height / 2) - @text.height/ 2
+
       Gosu.draw_rect(
-        @viewport.x, @viewport.y,
-        @viewport.width, @viewport.height,
+        viewport.x, viewport.y,
+        viewport.width, viewport.height,
         Gosu::Color.rgba(0,0,0, 255.0 * factor), 8181
       )
 
-      Gosu.scale(@text_scale, @text_scale, @viewport.x + @viewport.width / 2, @viewport.y + @viewport.height / 2) do
+      Gosu.scale(@text_scale, @text_scale, viewport.x + viewport.width / 2, viewport.y + viewport.height / 2) do
         @text.draw
       end
     end
 
     def time_left
-      (@period - @time) / 1000.0
+      (@duration - @time) / 1000.0
+    end
+
+    def race_time
+      ((@time - @duration) / 1000.0)
     end
 
     def factor
-      (time_left.to_f / (@period / 1000.0))
+      (time_left.to_f / (@duration / 1000.0))
     end
   end
 end

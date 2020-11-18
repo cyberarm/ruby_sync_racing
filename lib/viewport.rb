@@ -1,5 +1,7 @@
 module Game
   class Viewport
+    include CyberarmEngine::Common
+
     attr_reader :x, :y, :width, :height
     def initialize(position:)
       @position = position
@@ -82,7 +84,7 @@ module Game
         @width, @height = $window.width / 2, $window.height / 2
 
       else
-        @x, @y = 0, $window.height / 2
+        @x, @y = 0, 0
         @width, @height = $window.width, $window.height
       end
     end

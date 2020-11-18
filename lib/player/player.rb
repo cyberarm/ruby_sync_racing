@@ -1,6 +1,6 @@
 module Game
   class Player
-    attr_reader :actor, :name, :local, :controls
+    attr_reader :actor, :name, :local, :controls, :nametag
     def initialize(actor:, name: Config.get(:player_username), local: true, controls: {}, track:)
       raise "actor must be a Car" unless actor.is_a?(Car)
       @actor    = actor
@@ -8,6 +8,8 @@ module Game
       @local    = local.freeze
       @controls = controls.freeze
       @track    = track
+
+      @nametag = CyberarmEngine::Text.new("<b>#{@name}</b>", size: 20, color: Gosu::Color::WHITE)
 
       @actor.boundry = @track.bounding_box
     end
@@ -24,6 +26,9 @@ module Game
 
     def update
       @actor.update
+
+      @nametag.x = @actor.position.x - @nametag.width / 2
+      @nametag.y = @actor.position.y - @actor.height
     end
   end
 end

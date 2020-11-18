@@ -1,29 +1,35 @@
 module Game
   class Scene
     class Play < CyberarmEngine::GameState
-      attr_reader :track
+      attr_reader :game_data
 
       def setup
-        $window.show_cursor = false
+        window.show_cursor = false
         @screen_vector = CyberarmEngine::Vector.new(0, 0)
         @screen_scale  = 1.0
 
         @trackfile = @options[:trackfile] || "data/tracks/test_track.json"
-        @track = Track.new(spec: @trackfile)
-        if @track.starting_positions.count > 0
-          start_position = @track.starting_positions.first
+
+        @game_data = GameData.new(
+          track: Track.new(spec: @trackfile),
+          players: [],
+          countdown: Countdown.new(duration: 3_000),
+          laps: 3
+        )
+
+        if @game_data.track.starting_positions.count > 0
+          start_position = @game_data.track.starting_positions.first
           @car = Car.new(x: start_position[:x], y: start_position[:y], angle: start_position[:angle], spec: @options[:carfile], body_color: @options[:body_color])
-          start_position = @track.starting_positions[1]
+
+          start_position = @game_data.track.starting_positions[1]
           @car2 = Car.new(x: start_position[:x], y: start_position[:y], angle: start_position[:angle], spec: @options[:carfile], body_color: @options[:body_color])
         else
-          @car = Car.new(x: $window.width/2, y: $window.height/2, spec: @options[:carfile], body_color: @options[:body_color])
-          @car2 = Car.new(x: $window.width/2, y: $window.height/2, spec: @options[:carfile], body_color: @options[:body_color])
+          @car = Car.new(x: window.width/2, y: window.height/2, spec: @options[:carfile], body_color: @options[:body_color])
+          @car2 = Car.new(x: window.width/2, y: window.height/2, spec: @options[:carfile], body_color: @options[:body_color])
         end
-        @last_tile = nil
 
-        @color = @track.track.background
+        @color = @game_data.track.track.background
 
-        @players   = []
         @viewports = []
 
         player_1_controls = {
@@ -33,24 +39,14 @@ module Game
           Gosu.char_to_button_id(Config.get(:player_1_turn_right)) => :turn_right,
           Gosu.char_to_button_id(Config.get(:player_1_headlights)) => :toggle_headlights
         }
-        player_2_controls = {
-          Gosu.char_to_button_id(Config.get(:player_2_forward)) => :forward,
-          Gosu.char_to_button_id(Config.get(:player_2_reverse)) => :reverse,
-          Gosu.char_to_button_id(Config.get(:player_2_turn_left)) => :turn_left,
-          Gosu.char_to_button_id(Config.get(:player_2_turn_right)) => :turn_right,
-          Gosu.char_to_button_id(Config.get(:player_2_headlights)) => :toggle_headlights
-        }
 
-        @players << Player.new(actor: @car, controls: player_1_controls, track: @track)
-        @players << Player.new(actor: @car2, controls: player_2_controls, track: @track)
-        @viewports << Player::View.new(game: self, player: @players[0], position: :top)
-        @viewports << Player::View.new(game: self, player: @players[1], position: :bottom)
+        @game_data.add_player( Player.new(actor: @car, controls: player_1_controls, track: @game_data.track) )
+        @game_data.add_player( AIPlayer.new(actor: @car2, controls: {}, track: @game_data.track) )
+        @viewports << PlayerViewport.new(game_data: @game_data, player: @game_data.players[0], position: nil)
 
-        @viewports.each {|viewport| viewport.lag=(0.9)}
-      end
+        @viewports.each { |viewport| viewport.lag=(0.9) }
 
-      def players
-        @players
+        @game_data.countdown.start
       end
 
       def draw
@@ -65,21 +61,25 @@ module Game
 
       def update
         super
+        @game_data.countdown.update
 
         @viewports.each { |viewport| viewport.update(@down_keys) }
+
+        # Human players are updated from their viewport, while AI players are not
+        @game_data.ai_players.each(&:update) if @game_data.countdown.complete?
       end
 
       def draw_overlay
-        return unless @track.track.time_of_day
-        case @track.track.time_of_day
+        return unless @game_data.track.track.time_of_day
+        case @game_data.track.track.time_of_day
         when "morning"
-          $window.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(255,127,0, 50), Float::INFINITY)
+          window.draw_rect(0, 0, window.width, window.height, Gosu::Color.rgba(255,127,0, 50), Float::INFINITY)
         when "noon"
         when "evening"
-          $window.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0, 200), Float::INFINITY)
+          window.draw_rect(0, 0, window.width, window.height, Gosu::Color.rgba(0,0,0, 200), Float::INFINITY)
         when "night"
           # TODO: Implement some form of lighting
-          $window.draw_rect(0, 0, $window.width, $window.height, Gosu::Color.rgba(0,0,0, 250), Float::INFINITY)
+          window.draw_rect(0, 0, window.width, window.height, Gosu::Color.rgba(0,0,0, 250), Float::INFINITY)
         end
       end
 
