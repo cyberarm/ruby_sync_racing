@@ -5,8 +5,7 @@ class Track
         # sidebar_label "Options"
 
         sidebar_button("Jump 0:0", "Press \"0\"") do
-          @editor.screen_vector.x = 0
-          @editor.screen_vector.y = 0
+          @editor.button_up(Gosu::Kb0)
         end
         sidebar_button("Rotate", "Press \"R\"") do
           @angle+=45

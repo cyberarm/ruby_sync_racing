@@ -43,7 +43,10 @@ class Track
         @click_sound = get_sample("assets/track_editor/click.ogg")
         @error_sound = get_sample("assets/track_editor/error.ogg")
 
-        @active_area = BoundingBox.new(0, @selectors_height, $window.width, $window.height) # set x position dynamically
+        @active_area = BoundingBox.new(0, @selectors_height, window.width, window.height) # set x position dynamically
+        @window_width = window.width
+        @window_height = window.height
+        @grid_color = Gosu::Color.rgb(50, 50, 50)
 
         prepare
 
@@ -54,19 +57,7 @@ class Track
         @active_selector.instance = @mode_selectors.first.instance
         @active_selector.selected = true
 
-        @tab_width = $window.width.to_f/@mode_selectors.count
-
-        @mode_selectors.each do |s|
-          if s.text.width > @tab_width
-            until(s.text.width <= @tab_width)
-              text = s.text.text.gsub(".", "")
-              text = text[0...text.length-1]
-              s.text.text = text+"..."
-              puts s.text.text
-            end
-          end
-        end
-
+        resize_ui
       end
 
       def prepare
@@ -141,6 +132,18 @@ class Track
         end
       end
 
+      def draw_grid
+        Gosu.clip_to(@active_area.x, @active_area.y, @active_area.width, @active_area.height) do
+          ((@screen_vector.x % @tile_size) .. window.width).step(@tile_size) do |x|
+            Gosu.draw_rect(x, @active_area.y, 1, @active_area.height, @grid_color)
+          end
+
+          ((@screen_vector.y % @tile_size) .. window.width).step(@tile_size) do |y|
+            Gosu.draw_rect(@active_area.x, y, @active_area.width, 1, @grid_color)
+          end
+        end
+      end
+
       def draw_messages
         _height = (Sidebar::PADDING*1.5)
         @editor_messages.each_with_index do |message, i|
@@ -166,6 +169,8 @@ class Track
 
         draw_map
 
+        draw_grid
+
         draw_messages
       end
 
@@ -175,6 +180,8 @@ class Track
         @active_selector.instance.update if @active_selector && @active_selector.instance
 
         update_map_offset
+
+        update_ui_on_resize
 
         # @screen_vector.x = 0 if @screen_vector.x > 0
         # @screen_vector.y = 0 if @screen_vector.y > 0
@@ -207,6 +214,10 @@ class Track
           if $window.button_down?(Gosu::KbLeftControl) || $window.button_down?(Gosu::KbRightControl)
             self.save_track
           end
+        when Gosu::Kb0
+          add_message "Reset screen position to 0:0"
+          @screen_vector.x = 0
+          @screen_vector.y = 0
         end
 
         @active_selector.instance.button_up(id) if @active_selector
@@ -247,6 +258,36 @@ class Track
         if $window.button_down?(Gosu::KbDown)
           @screen_vector.y -= speed
         end
+      end
+
+      def update_ui_on_resize
+        if window.width != @window_width || window.height != @window_height
+
+          resize_ui
+
+          @window_width = window.width
+          @window_height = window.height
+        end
+      end
+
+      def resize_ui
+        @tab_width = $window.width.to_f / @mode_selectors.count
+
+        @mode_selectors.each do |s|
+          s.text.text = s.name
+
+          if s.text.width > @tab_width
+            until(s.text.width <= @tab_width or s.text.width == s.text.textobject.text_width("..."))
+              text = s.text.text.gsub(".", "")
+              text = text[0...text.length-1]
+
+              s.text.text = text + "..."
+            end
+          end
+        end
+
+        @active_area.width = window.width
+        @active_area.height = window.height
       end
 
       def save_track

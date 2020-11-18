@@ -63,8 +63,7 @@ class Track
 
         sidebar_label "Tools"
         sidebar_button("Jump 0:0", "Press \"0\"") do
-          @editor.screen_vector.x = 0
-          @editor.screen_vector.y = 0
+          @editor.button_up(Gosu::Kb0)
         end
         sidebar_button("Rotate 90", "Press \"R\"") do
           @mouse_position[:angle]+=90
@@ -196,11 +195,6 @@ class Track
               @editor.track_changed!
             end
           end
-
-        when Gosu::Kb0
-          @editor.add_message "Screen reset to default position"
-          @editor.screen_vector.x=0
-          @editor.screen_vector.y=0
 
         when Gosu::KbR
            @mouse_position[:angle]+=90

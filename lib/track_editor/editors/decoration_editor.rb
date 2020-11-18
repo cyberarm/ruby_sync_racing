@@ -17,8 +17,7 @@ class Track
 
         sidebar_label("Tools")
         sidebar_button("Jump 0:0", "Press \"0\"") do
-          @editor.screen_vector.x,@editor.screen_vector.y = 0,0
-          @editor.add_message("Reset screen position to 0:0")
+          @editor.button_up(Gosu::Kb0)
         end
         @grid_toggle = sidebar_button("Disable Grid", "Toggle grid placement. Press \"T\"") do |button|
           if @use_grid_placement # Turning it off
@@ -118,9 +117,17 @@ class Track
       end
 
       def place(image)
-        x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
-        y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
+        x, y = 0, 0
+
+        if @use_grid_placement
+          x = @editor.normalize_map_position($window.mouse_x-@editor.screen_vector.x)+@mouse.width/2
+          y = @editor.normalize_map_position($window.mouse_y-@editor.screen_vector.y)+@mouse.height/2
+        else
+          x = $window.mouse_x-@editor.screen_vector.x
+          y = $window.mouse_y-@editor.screen_vector.y
+        end
         radius = ((@editor.get_image(@current_tile_image_path).width+@editor.get_image(@current_tile_image_path).height)/4)*@scale
+
         @editor.decorations << Decoration.new(@collidable, @current_tile_image_path, x, y, 0, @angle, @scale, radius)
       end
 
@@ -165,9 +172,6 @@ class Track
         super
 
         case id
-        when Gosu::Kb0
-          @editor.screen_vector.x,@editor.screen_vector.y = 0,0
-          @editor.add_message("Reset screen position to 0:0")
         when Gosu::KbR
           if $window.button_down?(Gosu::KbLeftShift) || $window.button_down?(Gosu::KbRightShift)
             @angle-=@rotate_step
