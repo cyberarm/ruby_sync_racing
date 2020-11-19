@@ -40,8 +40,8 @@ module Game
           Gosu.char_to_button_id(Config.get(:player_1_headlights)) => :toggle_headlights
         }
 
-        @game_data.add_player( Player.new(actor: @car, controls: player_1_controls, track: @game_data.track) )
-        @game_data.add_player( AIPlayer.new(actor: @car2, controls: {}, track: @game_data.track) )
+        @game_data.add_player( Player.new(actor: @car, controls: {}, track: @game_data.track) )
+        @game_data.add_player( AIPlayer.new(actor: @car2, controls: player_1_controls, track: @game_data.track) )
         @viewports << PlayerViewport.new(game_data: @game_data, player: @game_data.players[0], position: nil)
 
         @viewports.each { |viewport| viewport.lag=(0.9) }

@@ -35,6 +35,8 @@ module Game
         player.nametag.draw
       end
 
+      @game_data.ai_players.each(&:draw)
+
       if $debug
         draw_bounding_box(@game_data.track.bounding_box)
 

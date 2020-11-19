@@ -1,4 +1,4 @@
-require_all Dir.glob("lib/**/*.rb").reject { |f| f.include?("server/") }
+require_all Dir.glob("lib/**/*.rb").reject { |f| f.include?("server/") or f.include?("net/") }
 
 module Engine
   def self.timestamp

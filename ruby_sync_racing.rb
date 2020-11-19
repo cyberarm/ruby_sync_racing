@@ -1,10 +1,10 @@
 require "pp"
 require "set"
 
-require "gosu"
+# require "gosu"
 # require "chipmunk"
-require "gameoverseer/version"
-require "gameoverseer/client"
+# require "gameoverseer/version"
+# require "gameoverseer/client"
 
 begin
   require_relative "../cyberarm_engine/lib/cyberarm_engine"

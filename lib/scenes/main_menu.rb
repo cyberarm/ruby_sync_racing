@@ -7,9 +7,9 @@ module Game
           push_state(LevelSelection)
         end
 
-        button "Play Online" do
-          push_state(MultiplayerMenu)
-        end
+        # button "Play Online" do
+        #   push_state(MultiplayerMenu)
+        # end
 
         button "Track Editor", Gosu::Color.rgba(50, 150, 50, 200), Gosu::Color.rgba(100, 150, 100, 200) do
           push_state(Track::Editor::Menu)

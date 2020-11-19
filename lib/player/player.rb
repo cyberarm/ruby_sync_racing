@@ -1,6 +1,6 @@
 module Game
   class Player
-    attr_reader :actor, :name, :local, :controls, :nametag
+    attr_reader :actor, :name, :local, :controls, :track, :nametag
     def initialize(actor:, name: Config.get(:player_username), local: true, controls: {}, track:)
       raise "actor must be a Car" unless actor.is_a?(Car)
       @actor    = actor
